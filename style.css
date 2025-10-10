@@ -45,6 +45,14 @@ table th { background-color: var(--light-bg); }
 .discussion-form { display: flex; gap: 10px; align-items: center; }
 .discussion-form textarea { min-height: 40px; margin: 0; }
 .discussion-form button { width: auto; margin: 0; }
+.grade-display, .feedback-display {
+    width: 100%; text-align: left; padding: 8px; border-radius: 5px; margin: 4px 0;
+}
+.grade-display { background-color: #E6F7FF; border: 1px solid #91D5FF; }
+.feedback-display { background-color: #F6FFED; border: 1px solid #B7EB8F; }
+.submission-list { list-style-type: none; padding-left: 0; }
+.submission-list li { background-color: #fff; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border-color); }
+.grading-container { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 
 /* --- GAYA BARU UNTUK MANAJEMEN JADWAL --- */
 .jadwal-guru-container { border-left: 5px solid var(--edit-color); }
