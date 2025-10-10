@@ -65,7 +65,7 @@ function showDashboard() {
 }
 
 // =================================================================================
-// BAGIAN 5: FITUR-FITUR INTI (DENGAN PENAMBAHAN MANAJEMEN JADWAL)
+// BAGIAN 5: FITUR-FITUR INTI (DENGAN MANAJEMEN JADWAL DAN PERBAIKAN)
 // =================================================================================
 
 function renderAdminDashboard() {
@@ -158,6 +158,55 @@ function hapusJadwalGuru(guruId, jadwalIndex) {
     }
 }
 
+// --- PEMBARUAN FUNGSI TUGAS DENGAN PERBAIKAN ---
+function renderDaftarTugas() {
+    const container = document.getElementById("daftar-tugas-container");
+    const notif = document.getElementById("notif-tugas");
+    const tugasSiswa = data.tugas.filter(t => t.id_kelas === currentUser.id_kelas);
+    notif.textContent = tugasSiswa.length;
+    if (tugasSiswa.length === 0) { container.innerHTML = "<p>🎉 Hore, tidak ada tugas saat ini!</p>"; return; }
+    
+    let html = "";
+    tugasSiswa.forEach(t => {
+        const submission = t.submissions ? t.submissions.find(s => s.id_siswa === currentUser.id) : null;
+        
+        // **PERBAIKAN DI SINI**
+        const submissionHTML = submission 
+            ? `<div class="submission-status"><p style="color:green;"><strong>✔ Anda sudah mengumpulkan.</strong></p>${submission.nilai !== null ? `<p class="grade-display"><strong>Nilai: ${submission.nilai}</strong></p><p class="feedback-display"><em>Feedback: ${submission.feedback}</em></p>` : `<p>Menunggu penilaian...</p>`}</div>`
+            : `<label>Kirim Jawaban:</label><input type="file" id="submit-file-${t.id}"><button onclick="submitTugas(${t.id})">Kirim</button>`;
+
+        html += `<div class="task-card">
+            <div class="task-header"><span><strong>${t.judul}</strong> - ${t.nama_guru}</span><span class="task-deadline">Deadline: ${t.deadline}</span></div>
+            <p>${t.deskripsi}</p><p>File: <em>${t.file}</em></p>
+            ${submissionHTML}
+            ${renderDiskusi(t.id)}
+        </div>`;
+    });
+    container.innerHTML = html;
+}
+
+function renderTugasSubmissions() {
+    const container = document.getElementById("submission-container");
+    const tugasGuru = data.tugas.filter(t => t.id_guru === currentUser.id);
+    if (tugasGuru.length === 0) { container.innerHTML = "<p>Anda belum mengirim tugas apapun.</p>"; return; }
+    
+    let html = "";
+    tugasGuru.forEach(t => {
+        html += `<div class="task-card"><h5>Tugas: ${t.judul} (Kelas: ${data.kelas.find(k=>k.id===t.id_kelas).nama})</h5>`;
+        if (t.submissions && t.submissions.length > 0) {
+            html += "<ul class='submission-list'>";
+            t.submissions.forEach(sub => {
+                // **PERBAIKAN DI SINI**
+                const submissionDetailHTML = `<strong>${sub.nama_siswa}</strong> mengumpulkan file: <em>${sub.file}</em><div class="grading-container">${sub.nilai !== null ? `<p class="grade-display"><strong>Nilai: ${sub.nilai}</strong></p><p class="feedback-display"><em>Feedback: ${sub.feedback}</em></p>` : `<input type="number" id="nilai-${t.id}-${sub.id_siswa}" placeholder="Nilai"><input type="text" id="feedback-${t.id}-${sub.id_siswa}" placeholder="Umpan Balik"><button class="small-btn" onclick="simpanNilai(${t.id}, ${sub.id_siswa})">Simpan</button>`}</div>`;
+                html += `<li>${submissionDetailHTML}</li>`;
+            });
+            html += "</ul>";
+        } else { html += "<p>Belum ada siswa yang mengumpulkan.</p>"; }
+        html += renderDiskusi(t.id) + `</div>`;
+    });
+    container.innerHTML = html;
+}
+
 // =================================================================================
 // BAGIAN 6: SEMUA FUNGSI LAINNYA (TIDAK BERUBAH)
 // =================================================================================
@@ -172,8 +221,6 @@ function kirimTugas(){const id_kelas=parseInt(document.getElementById("tugas-kel
 function submitTugas(id_tugas){const file=document.getElementById(`submit-file-${id_tugas}`).files[0];if(!file)return alert("Pilih file jawaban terlebih dahulu!");const tugas=data.tugas.find(t=>t.id===id_tugas);tugas&&(tugas.submissions.push({id_siswa:currentUser.id,nama_siswa:currentUser.nama,file:file.name,timestamp:(new Date).toLocaleString("id-ID"),nilai:null,feedback:""}),createNotification(tugas.id_guru,"guru",`Siswa '${currentUser.nama}' telah mengumpulkan tugas '${tugas.judul}'.`),alert("Jawaban berhasil dikirim!"),renderDaftarTugas())}
 function simpanNilai(id_tugas,id_siswa){const nilai=document.getElementById(`nilai-${id_tugas}-${id_siswa}`).value,feedback=document.getElementById(`feedback-${id_tugas}-${id_siswa}`).value;if(""===nilai||nilai<0||nilai>100)return alert("Nilai harus diisi antara 0-100.");const tugas=data.tugas.find(t=>t.id===id_tugas),submission=tugas.submissions.find(s=>s.id_siswa===id_siswa);submission.nilai=parseInt(nilai),submission.feedback=feedback||"Tidak ada feedback.",createNotification(id_siswa,"siswa",`Tugas '${tugas.judul}' Anda telah dinilai.`),alert("Nilai berhasil disimpan!"),renderTugasSubmissions()}
 function buatPengumuman(){const judul=document.getElementById("pengumuman-judul").value,isi=document.getElementById("pengumuman-isi").value;if(!judul||!isi)return alert("Judul dan isi harus diisi!");data.pengumuman.push({id:Date.now(),oleh:"admin"===currentRole?"Admin":currentUser.nama,judul,isi,tanggal:(new Date).toISOString().slice(0,10),target_kelas_id:"semua"}),data.users.siswas.forEach(s=>createNotification(s.id,"siswa",`Pengumuman baru: '${judul}'`)),data.users.gurus.forEach(g=>createNotification(g.id,"guru",`Pengumuman baru: '${judul}'`)),alert("Pengumuman berhasil dikirim!"),"admin"===currentRole?renderAdminPengumuman():showDashboard()}
-function renderDaftarTugas(){const container=document.getElementById("daftar-tugas-container"),notif=document.getElementById("notif-tugas"),tugasSiswa=data.tugas.filter(t=>t.id_kelas===currentUser.id_kelas);if(notif.textContent=tugasSiswa.length,0===tugasSiswa.length)return void(container.innerHTML="<p>🎉 Hore, tidak ada tugas saat ini!</p>");let html="";tugasSiswa.forEach(t=>{const submission=t.submissions?t.submissions.find(s=>s.id_siswa===currentUser.id):null;html+=`<div class="task-card"><div class="task-header"><span><strong>${t.judul}</strong> - ${t.nama_guru}</span><span class="task-deadline">Deadline: ${t.deadline}</span></div><p>${t.deskripsi}</p><p>File: <em>${t.file}</em></p>${submission?"... (status pengumpulan & nilai tidak berubah) ...":"... (form submit tidak berubah) ..."} ${renderDiskusi(t.id)}</div>`;const submissionHTML=submission?`<div class="submission-status"><p style="color:green;"><strong>✔ Anda sudah mengumpulkan.</strong></p>${null!==submission.nilai?`<p class="grade-display"><strong>Nilai: ${submission.nilai}</strong></p><p class="feedback-display"><em>Feedback: ${submission.feedback}</em></p>`:"<p>Menunggu penilaian...</p>"}</div>":`<label>Kirim Jawaban:</label><input type="file" id="submit-file-${t.id}"><button onclick="submitTugas(${t.id})">Kirim</button>`;html=html.replace("... (status pengumpulan & nilai tidak berubah) ...",submissionHTML.substring(0,submissionHTML.indexOf("</div>")+6)),html=html.replace("... (form submit tidak berubah) ...",submissionHTML.substring(submissionHTML.indexOf("<label>")))}),container.innerHTML=html}
-function renderTugasSubmissions(){const container=document.getElementById("submission-container"),tugasGuru=data.tugas.filter(t=>t.id_guru===currentUser.id);if(0===tugasGuru.length)return void(container.innerHTML="<p>Anda belum mengirim tugas apapun.</p>");let html="";tugasGuru.forEach(t=>{html+=`<div class="task-card"><h5>Tugas: ${t.judul} (Kelas: ${data.kelas.find(k=>k.id===t.id_kelas).nama})</h5>`,t.submissions&&t.submissions.length>0?(html+="<ul class='submission-list'>",t.submissions.forEach(sub=>{html+="<li>... (detail submission tidak berubah) ...</li>";const submissionDetailHTML=`<strong>${sub.nama_siswa}</strong> mengumpulkan file: <em>${sub.file}</em><div class="grading-container">${null!==sub.nilai?`<p class="grade-display"><strong>Nilai: ${sub.nilai}</strong></p><p class="feedback-display"><em>Feedback: ${sub.feedback}</em></p>`:`<input type="number" id="nilai-${t.id}-${sub.id_siswa}" placeholder="Nilai"><input type="text" id="feedback-${t.id}-${sub.id_siswa}" placeholder="Umpan Balik"><button class="small-btn" onclick="simpanNilai(${t.id}, ${sub.id_siswa})">Simpan</button>`}</div>`;html=html.replace("... (detail submission tidak berubah) ...",submissionDetailHTML)}),html+="</ul>"):html+="<p>Belum ada siswa yang mengumpulkan.</p>",html+=renderDiskusi(t.id)+`</div>`}),container.innerHTML=html}
 function renderAdminAnalitik(){const container=document.getElementById("Analitik"),totalSiswa=data.users.siswas.length,totalGuru=data.users.gurus.length,totalAbsenHariIni=data.absensi.filter(a=>a.tanggal===(new Date).toISOString().slice(0,10)).length;let chartHTML='<div class="chart-container"><h5>Persentase Kehadiran per Kelas (Bulan Ini)</h5>';data.kelas.forEach(k=>{const siswaDiKelas=data.users.siswas.filter(s=>s.id_kelas===k.id),absenBulanIni=data.absensi.filter(a=>siswaDiKelas.some(s=>s.id===a.id_user)&&"masuk"===a.status),persentase=siswaDiKelas.length>0?absenBulanIni.length/(30*siswaDiKelas.length)*100:0;chartHTML+=`<div class="chart-bar-wrapper"><div class="chart-label">${k.nama}</div><div class="chart-bar-background"><div class="chart-bar-foreground" style="width: ${Math.min(persentase,100)}%;">${Math.round(persentase)}%</div></div></div>`}),chartHTML+="</div>",container.innerHTML=`<div class="stats-container"><div class="stat-card"><h4>Total Siswa</h4><p>${totalSiswa}</p></div><div class="stat-card"><h4>Total Guru</h4><p>${totalGuru}</p></div><div class="stat-card"><h4>Absen Hari Ini</h4><p>${totalAbsenHariIni}</p></div></div> ${chartHTML}`}
 function renderAdminPengumuman(){const container=document.getElementById("Pengumuman");let listHTML="<h5>Daftar Pengumuman</h5>";0===data.pengumuman.length?listHTML+="<p>Belum ada pengumuman.</p>":[...data.pengumuman].reverse().forEach(p=>{listHTML+=`<div class="announcement-card"><div class="announcement-header"><strong>${p.judul}</strong> - <span>Oleh: ${p.oleh} (${p.tanggal})</span></div><p>${p.isi}</p><button class="small-btn delete" onclick="hapusPengumuman(${p.id})">Hapus</button></div>`}),container.innerHTML=`<div class="dashboard-section"><h4>Buat Pengumuman Baru</h4><input type="text" id="pengumuman-judul" placeholder="Judul Pengumuman"><textarea id="pengumuman-isi" placeholder="Isi pengumuman..."></textarea><button onclick="buatPengumuman()">Kirim Pengumuman</button></div><div class="dashboard-section">${listHTML}</div>`}
 function hapusPengumuman(id){confirm("Yakin ingin menghapus pengumuman ini?")&&(data.pengumuman=data.pengumuman.filter(p=>p.id!==id),renderAdminPengumuman())}
