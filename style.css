@@ -23,37 +23,32 @@ button:disabled { background-color: #ccc; cursor: not-allowed; transform: none; 
 table { width: 100%; border-collapse: collapse; }
 table th, table td { padding: 10px; border: 1px solid var(--border-color); text-align: center; }
 table th { background-color: var(--light-bg); }
-.tabs { display: flex; border-bottom: 2px solid var(--border-color); margin-bottom: 1.5rem; }
+.tabs { display: flex; border-bottom: 2px solid var(--border-color); margin-bottom: 1.5rem; flex-wrap: wrap; }
 .tab-link { background: transparent; color: var(--text-color); border: none; padding: 12px 18px; cursor: pointer; margin-bottom: -2px; border-bottom: 3px solid transparent; border-radius: 0; width: auto; }
 .tab-link.active { color: var(--primary-color); border-bottom: 3px solid var(--primary-color); font-weight: 600; }
 .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
 .stat-card { background: var(--light-bg); text-align: center; padding: 1.5rem; border-radius: var(--border-radius); }
 .stat-card p { font-size: 2rem; font-weight: 700; color: var(--primary-color); margin: 0; }
-
-/* --- GAYA BARU UNTUK FITUR INOVATIF --- */
-/* Header & Notifikasi */
 .header-actions { display: flex; align-items: center; gap: 15px; position: relative; }
 .logout-button { width: auto; padding: 8px 15px; margin: 0; }
 #notification-bell { font-size: 1.5rem; cursor: pointer; position: relative; }
-#notif-badge { position: absolute; top: -5px; right: -10px; background-color: var(--danger-color); color: #fff; border-radius: 50%; padding: 2px 6px; font-size: .7rem; font-weight: 700; }
-#notification-dropdown {
-    position: absolute; top: 120%; right: 0; background: #fff; border-radius: var(--border-radius);
-    box-shadow: var(--shadow); width: 320px; max-height: 400px; overflow-y: auto;
-    text-align: left; z-index: 100;
-}
+#notif-badge { position: absolute; top: -5px; right: -10px; background-color: var(--danger-color); color: #fff; border-radius: 50%; padding: 2px 6px; font-size: .7rem; }
+#notification-dropdown { position: absolute; top: 120%; right: 0; background: #fff; border-radius: var(--border-radius); box-shadow: var(--shadow); width: 320px; max-height: 400px; overflow-y: auto; text-align: left; z-index: 100; }
 .notif-item { padding: 1rem; border-bottom: 1px solid var(--border-color); cursor: pointer; }
 .notif-item:last-child { border: none; }
-.notif-item:hover { background-color: var(--light-bg); }
-.notif-item p { margin: 0 0 0.25rem 0; font-size: 0.9rem; }
 .notif-item.read p { color: #888; }
 .notif-time { font-size: 0.75rem; color: #999; }
-
-/* Forum Diskusi */
 .discussion-container { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color); }
 .discussion-message { background-color: var(--light-bg); padding: .8rem; border-radius: var(--border-radius); margin-bottom: .8rem; }
-.discussion-message p { margin: 0.25rem 0; }
-.discussion-message.sender-self { background-color: #E6F7FF; border-left: 3px solid var(--primary-color); }
-.discussion-message.sender-other { background-color: #F6FFED; border-left: 3px solid var(--success-color); }
+.discussion-message.sender-self { background-color: #E6F7FF; }
+.discussion-message.sender-other { background-color: #F6FFED; }
 .discussion-form { display: flex; gap: 10px; align-items: center; }
 .discussion-form textarea { min-height: 40px; margin: 0; }
 .discussion-form button { width: auto; margin: 0; }
+
+/* --- GAYA BARU UNTUK MANAJEMEN JADWAL --- */
+.jadwal-guru-container { border-left: 5px solid var(--edit-color); }
+.jadwal-list { list-style-type: none; padding-left: 0; margin-bottom: 1rem; }
+.jadwal-item { display: flex; justify-content: space-between; align-items: center; background-color: var(--light-bg); padding: 10px; border-radius: 8px; margin-bottom: 8px; }
+.jadwal-form { display: grid; grid-template-columns: 2fr 2fr 1fr auto; gap: 10px; align-items: center; padding-top: 1rem; border-top: 1px solid var(--border-color); }
+.jadwal-form select, .jadwal-form button { margin-bottom: 0; }
