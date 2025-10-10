@@ -16,24 +16,29 @@ const data = {
         { id: 2, nama: "Kelas 11B", lokasi: { latitude: -7.983500, longitude: 112.621800 } }
     ],
     tugas: [], absensi: [], pengumuman: [], materi: [], notifikasi: [],
+    // --- STRUKTUR DATA BARU UNTUK JADWAL & CATATAN PR ---
     jadwalPelajaran: {
-        1: [
+        // key adalah id_kelas
+        1: [ // Jadwal untuk Kelas 10A
             { id: 1672531200000, hari: 1, jamMulai: '08:00', jamSelesai: '09:30', mataPelajaran: 'Matematika' },
             { id: 1672537200001, hari: 1, jamMulai: '10:00', jamSelesai: '11:30', mataPelajaran: 'Bahasa Indonesia' },
             { id: 1672621200002, hari: 2, jamMulai: '08:00', jamSelesai: '09:30', mataPelajaran: 'Fisika' },
         ],
-        2: [
+        2: [ // Jadwal untuk Kelas 11B
             { id: 1672707600003, hari: 3, jamMulai: '09:00', jamSelesai: '10:30', mataPelajaran: 'Kimia' }
         ]
     },
-    catatanPR: []
+    catatanPR: [
+        // Contoh data: { id_siswa: 101, id_jadwal: 1672531200000, catatan: 'Kerjakan LKS hal 52', mingguDibuat: 40 }
+    ]
 };
 
 // BAGIAN 2: PENGATURAN AWAL & FUNGSI HELPER
 let currentUser = null, currentRole = null, absensiHariIniSelesai = false;
 document.addEventListener("DOMContentLoaded", () => { document.getElementById("kata-harian") ? setupHalamanAwal() : document.getElementById("app") && showView("view-role-selection"); });
 function showView(viewId) { document.querySelectorAll("#app > div").forEach(div => div.classList.add("hidden")); document.getElementById(viewId).classList.remove("hidden"); }
-function setupHalamanAwal() { const quotes = ["Minggu: Istirahat.", "Senin: Mulailah!", "Selasa: Terus bertumbuh.", "Rabu: Jangan takut gagal.", "Kamis: Optimis!", "Jumat: Selesaikan.", "Sabtu: Refleksi."]; document.getElementById("kata-harian").textContent = quotes[new Date().getDay()]; document.getElementById("tombol-buka").addEventListener("click", () => window.location.href = "main.html"); }
+function setupHalamanAwal() { const quotes = ["Minggu: Istirahat adalah bagian dari proses.", "Senin: Mulailah minggu dengan energi penuh!", "Selasa: Terus belajar, terus bertumbuh.", "Rabu: Jangan takut gagal, takutlah tidak mencoba.", "Kamis: Optimis melihat masa depan!", "Jumat: Selesaikan apa yang kamu mulai.", "Sabtu: Refleksi dan siapkan hari esok."]; document.getElementById("kata-harian").textContent = quotes[new Date().getDay()]; document.getElementById("tombol-buka").addEventListener("click", () => window.location.href = "main.html"); }
+
 function getNomorMinggu(date) {
     const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
     const dayNum = d.getUTCDay() || 7;
@@ -80,7 +85,7 @@ function showDashboard() {
 }
 
 // =================================================================================
-// BAGIAN 5: FITUR-FITUR INTI (DENGAN PENAMBAHAN MANAJEMEN JADWAL PELAJARAN)
+// BAGIAN 5: FITUR-FITUR INTI DAN PERBAIKANNYA
 // =================================================================================
 
 function renderAdminDashboard() {
@@ -102,7 +107,6 @@ function openAdminTab(evt, tabName) {
     document.querySelectorAll(".tab-link").forEach(tl => tl.className = tl.className.replace(" active", ""));
     document.getElementById(tabName).style.display = "block";
     evt.currentTarget.className += " active";
-
     if (tabName === 'Analitik') renderAdminAnalitik();
     else if (tabName === 'Absensi') renderAdminAbsensi();
     else if (tabName === 'Manajemen') renderAdminManajemen();
@@ -141,15 +145,12 @@ function tambahSesiPelajaran(id_kelas) {
     renderTabelJadwalAdmin(id_kelas);
 }
 
-function hapusSesiPelajaran(id_kelas, index) {
-    if (confirm('Yakin ingin menghapus sesi pelajaran ini?')) { data.jadwalPelajaran[id_kelas].splice(index, 1); renderTabelJadwalAdmin(id_kelas); }
-}
+function hapusSesiPelajaran(id_kelas, index) { if (confirm('Yakin ingin menghapus sesi pelajaran ini?')) { data.jadwalPelajaran[id_kelas].splice(index, 1); renderTabelJadwalAdmin(id_kelas); } }
 
-// --- PERUBAHAN DASHBOARD SISWA ---
+// --- PERBAIKAN DASHBOARD SISWA ---
 function renderSiswaDashboard() {
     const locked = absensiHariIniSelesai ? "" : "locked-feature";
     const warning = absensiHariIniSelesai ? "" : '<p><strong>🔒 Lakukan absensi untuk membuka fitur lain.</strong></p>';
-    // Catatan PR dipisahkan agar tidak terkunci
     return `
     <div class="dashboard-section" id="siswa-absen"><h4>✅ Absensi Siswa</h4><button id="btn-absen-masuk-siswa" onclick="absen('masuk')">📍 Masuk</button><button onclick="absen('izin')">📝 Izin</button><button onclick="absen('sakit')">🤒 Sakit (Wajib Foto)</button></div>
     <div class="dashboard-section"><h4>🗓️ Jadwal & Catatan PR</h4><div id="jadwal-siswa-container">Memuat jadwal...</div></div>
@@ -177,10 +178,8 @@ function renderJadwalSiswa() {
     const container = document.getElementById('jadwal-siswa-container');
     const jadwalKelas = data.jadwalPelajaran[currentUser.id_kelas] || [];
     if (jadwalKelas.length === 0) { container.innerHTML = '<p>Jadwal pelajaran belum diatur oleh admin.</p>'; return; }
-    
-    const hariSekolah = [1, 2, 3, 4, 5]; // Senin - Jumat
+    const hariSekolah = [1, 2, 3, 4, 5];
     const namaHari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat'];
-    
     let html = '<div class="jadwal-grid">';
     hariSekolah.forEach(hari => {
         html += `<div class="jadwal-hari"><h5>${namaHari[hari]}</h5>`;
@@ -206,57 +205,55 @@ function simpanCatatan(id_jadwal) {
     setTimeout(() => { textarea.style.borderColor = 'var(--border-color)'; }, 1500);
 }
 
-// --- PERUBAHAN LOGIKA ABSENSI ---
-function absen(status, id_kelas = null) {
-    const today = new Date().toISOString().slice(0, 10);
-    if (data.absensi.find(a => a.id_user === currentUser.id && a.role === currentRole && a.tanggal === today)) { return alert("Anda sudah absen hari ini."); }
+// --- PERBAIKAN FUNGSI TUGAS ---
+function renderDaftarTugas() {
+    const container = document.getElementById("daftar-tugas-container");
+    const notif = document.getElementById("notif-tugas");
+    const tugasSiswa = data.tugas.filter(t => t.id_kelas === currentUser.id_kelas);
+    notif.textContent = tugasSiswa.length;
+    if (tugasSiswa.length === 0) { container.innerHTML = "<p>🎉 Hore, tidak ada tugas saat ini!</p>"; return; }
     
-    const catatAbsensi = (keterangan = "") => {
-        data.absensi.push({ id_user: currentUser.id, role: currentRole, nama: currentUser.nama, tanggal: today, status, keterangan });
-        alert(`Absensi '${status}' berhasil!`);
-        if (currentRole === 'siswa') { absensiHariIniSelesai = true; showDashboard(); }
-        else if (currentRole === 'guru') { document.getElementById("container-absen-kelas").innerHTML = '<p style="color:green;"><strong>Absensi Anda telah tercatat.</strong></p>'; }
-    };
+    let html = "";
+    tugasSiswa.forEach(t => {
+        const submission = t.submissions ? t.submissions.find(s => s.id_siswa === currentUser.id) : null;
+        const submissionHTML = submission 
+            ? `<div class="submission-status"><p style="color:green;"><strong>✔ Anda sudah mengumpulkan.</strong></p>${submission.nilai !== null ? `<p class="grade-display"><strong>Nilai: ${submission.nilai}</strong></p><p class="feedback-display"><em>Feedback: ${submission.feedback}</em></p>` : `<p>Menunggu penilaian...</p>`}</div>`
+            : `<label>Kirim Jawaban:</label><input type="file" id="submit-file-${t.id}"><button onclick="submitTugas(${t.id})">Kirim</button>`;
 
-    if (status === 'masuk') {
-        let targetLokasi, btn;
-        const radius = 200;
-        if (currentRole === 'guru' && id_kelas) {
-            const kelas = data.kelas.find(k => k.id === id_kelas); targetLokasi = kelas.lokasi;
-        } else if (currentRole === 'siswa') {
-            targetLokasi = { latitude: -7.983908, longitude: 112.621391 };
-            btn = document.getElementById("btn-absen-masuk-siswa"); btn.disabled = true; btn.textContent = "Mengecek Lokasi...";
-        }
-        navigator.geolocation.getCurrentPosition(pos => {
-            const jarak = hitungJarak(pos.coords.latitude, pos.coords.longitude, targetLokasi.latitude, targetLokasi.longitude);
-            jarak <= radius ? catatAbsensi("") : alert(`Gagal! Jarak Anda dari lokasi: ${Math.round(jarak)} meter.`);
-            if (btn) { btn.disabled = false; btn.textContent = "📍 Masuk"; }
-        }, () => { alert("Tidak bisa mengakses lokasi."); if (btn) { btn.disabled = false; btn.textContent = "📍 Masuk"; } });
-    } else if (status === 'izin') {
-        const alasan = prompt("Masukkan alasan Anda izin:");
-        alasan ? catatAbsensi(alasan) : alert("Absensi dibatalkan.");
-    } else if (status === 'sakit') {
-        const fileInput = document.createElement('input');
-        fileInput.type = 'file'; fileInput.accept = 'image/*'; fileInput.style.display = 'none';
-        fileInput.onchange = e => {
-            const file = e.target.files[0];
-            if (file) {
-                catatAbsensi(`Bukti foto: ${file.name}`);
-            } else {
-                alert("Absensi sakit dibatalkan karena tidak ada foto dipilih.");
-            }
-            document.body.removeChild(fileInput);
-        };
-        document.body.appendChild(fileInput);
-        fileInput.click();
-    }
+        html += `<div class="task-card">
+            <div class="task-header"><span><strong>${t.judul}</strong> - ${t.nama_guru}</span><span class="task-deadline">Deadline: ${t.deadline}</span></div>
+            <p>${t.deskripsi}</p><p>File: <em>${t.file}</em></p>
+            ${submissionHTML}
+            ${renderDiskusi(t.id)}
+        </div>`;
+    });
+    container.innerHTML = html;
+}
+
+function renderTugasSubmissions() {
+    const container = document.getElementById("submission-container");
+    const tugasGuru = data.tugas.filter(t => t.id_guru === currentUser.id);
+    if (tugasGuru.length === 0) { container.innerHTML = "<p>Anda belum mengirim tugas apapun.</p>"; return; }
+    
+    let html = "";
+    tugasGuru.forEach(t => {
+        html += `<div class="task-card"><h5>Tugas: ${t.judul} (Kelas: ${data.kelas.find(k=>k.id===t.id_kelas).nama})</h5>`;
+        if (t.submissions && t.submissions.length > 0) {
+            html += "<ul class='submission-list'>";
+            t.submissions.forEach(sub => {
+                const submissionDetailHTML = `<strong>${sub.nama_siswa}</strong> mengumpulkan file: <em>${sub.file}</em><div class="grading-container">${sub.nilai !== null ? `<p class="grade-display"><strong>Nilai: ${sub.nilai}</strong></p><p class="feedback-display"><em>Feedback: ${sub.feedback}</em></p>` : `<input type="number" id="nilai-${t.id}-${sub.id_siswa}" placeholder="Nilai"><input type="text" id="feedback-${t.id}-${sub.id_siswa}" placeholder="Umpan Balik"><button class="small-btn" onclick="simpanNilai(${t.id}, ${sub.id_siswa})">Simpan</button>`}</div>`;
+                html += `<li>${submissionDetailHTML}</li>`;
+            });
+            html += "</ul>";
+        } else { html += "<p>Belum ada siswa yang mengumpulkan.</p>"; }
+        html += renderDiskusi(t.id) + `</div>`;
+    });
+    container.innerHTML = html;
 }
 
 // =================================================================================
 // BAGIAN 6: FUNGSI-FUNGSI LAINNYA (TIDAK BERUBAH)
 // =================================================================================
-function renderDaftarTugas(){const container=document.getElementById("daftar-tugas-container"),notif=document.getElementById("notif-tugas"),tugasSiswa=data.tugas.filter(t=>t.id_kelas===currentUser.id_kelas);notif.textContent=tugasSiswa.length;if(0===tugasSiswa.length)return void(container.innerHTML="<p>🎉 Hore, tidak ada tugas saat ini!</p>");let html="";tugasSiswa.forEach(t=>{const submission=t.submissions?t.submissions.find(s=>s.id_siswa===currentUser.id):null,submissionHTML=submission?`<div class="submission-status"><p style="color:green;"><strong>✔ Anda sudah mengumpulkan.</strong></p>${null!==submission.nilai?`<p class="grade-display"><strong>Nilai: ${submission.nilai}</strong></p><p class="feedback-display"><em>Feedback: ${submission.feedback}</em></p>`:"<p>Menunggu penilaian...</p>"}</div>":`<label>Kirim Jawaban:</label><input type="file" id="submit-file-${t.id}"><button onclick="submitTugas(${t.id})">Kirim</button>`;html+=`<div class="task-card"><div class="task-header"><span><strong>${t.judul}</strong> - ${t.nama_guru}</span><span class="task-deadline">Deadline: ${t.deadline}</span></div><p>${t.deskripsi}</p><p>File: <em>${t.file}</em></p>${submissionHTML}${renderDiskusi(t.id)}</div>`}),container.innerHTML=html}
-function renderTugasSubmissions(){const container=document.getElementById("submission-container"),tugasGuru=data.tugas.filter(t=>t.id_guru===currentUser.id);if(0===tugasGuru.length)return void(container.innerHTML="<p>Anda belum mengirim tugas apapun.</p>");let html="";tugasGuru.forEach(t=>{html+=`<div class="task-card"><h5>Tugas: ${t.judul} (Kelas: ${data.kelas.find(k=>k.id===t.id_kelas).nama})</h5>`,t.submissions&&t.submissions.length>0?(html+="<ul class='submission-list'>",t.submissions.forEach(sub=>{const submissionDetailHTML=`<strong>${sub.nama_siswa}</strong> mengumpulkan file: <em>${sub.file}</em><div class="grading-container">${null!==sub.nilai?`<p class="grade-display"><strong>Nilai: ${sub.nilai}</strong></p><p class="feedback-display"><em>Feedback: ${sub.feedback}</em></p>`:`<input type="number" id="nilai-${t.id}-${sub.id_siswa}" placeholder="Nilai"><input type="text" id="feedback-${t.id}-${sub.id_siswa}" placeholder="Umpan Balik"><button class="small-btn" onclick="simpanNilai(${t.id},${sub.id_siswa})">Simpan</button>`}</div>`;html+=`<li>${submissionDetailHTML}</li>`}),html+="</ul>"):html+="<p>Belum ada siswa yang mengumpulkan.</p>",html+=renderDiskusi(t.id)+`</div>`}),container.innerHTML=html}
 function createNotification(id_user,role,message){if(currentUser&&currentUser.id===id_user&&currentRole===role)return;data.notifikasi.push({id:Date.now(),id_user,role,message,read:!1,timestamp:new Date})}
 function renderNotificationBell(){const notifBadge=document.getElementById("notif-badge"),unreadNotifs=data.notifikasi.filter(n=>(n.id_user===currentUser.id||"semua"===n.id_user)&&n.role===currentRole&&!n.read);unreadNotifs.length>0?(notifBadge.textContent=unreadNotifs.length,notifBadge.classList.remove("hidden")):notifBadge.classList.add("hidden")}
 function toggleNotifDropdown(){const dropdown=document.getElementById("notification-dropdown");dropdown.classList.toggle("hidden"),dropdown.classList.contains("hidden")||renderNotifList()}
