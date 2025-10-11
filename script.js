@@ -103,28 +103,17 @@ function openAdminTab(evt, tabName) {
     else if (tabName === 'Pengumuman') renderAdminPengumuman();
 }
 
-// --- FUNGSI BARU UNTUK PERSETUJUAN ADMIN ---
 function renderAdminPersetujuan() {
     const container = document.getElementById('Persetujuan');
     const permintaan = data.absensi.filter(a => (a.status === 'izin' || a.status === 'sakit') && a.disetujui === false);
-    
     let html = '<h4>Permintaan Absen Izin & Sakit</h4>';
     if(permintaan.length === 0) {
         html += '<p>Tidak ada permintaan saat ini.</p>';
         container.innerHTML = html;
         return;
     }
-
     permintaan.forEach(p => {
-        html += `<div class="task-card">
-            <div class="task-header"><strong>${p.nama} (${p.role})</strong> - <span>${p.tanggal}</span></div>
-            <p><strong>Status:</strong> ${p.status}</p>
-            <p><strong>Keterangan:</strong> ${p.keterangan}</p>
-            <div class="approval-buttons">
-                <button class="small-btn success" onclick="setujuiAbsen(${p.id_user}, '${p.tanggal}', true)">Setujui</button>
-                <button class="small-btn delete" onclick="setujuiAbsen(${p.id_user}, '${p.tanggal}', false)">Tolak</button>
-            </div>
-        </div>`;
+        html += `<div class="task-card"><div class="task-header"><strong>${p.nama} (${p.role})</strong> - <span>${p.tanggal}</span></div><p><strong>Status:</strong> ${p.status}</p><p><strong>Keterangan:</strong> ${p.keterangan}</p><div class="approval-buttons"><button class="small-btn success" onclick="setujuiAbsen(${p.id_user}, '${p.tanggal}', true)">Setujui</button><button class="small-btn delete" onclick="setujuiAbsen(${p.id_user}, '${p.tanggal}', false)">Tolak</button></div></div>`;
     });
     container.innerHTML = html;
 }
@@ -135,7 +124,6 @@ function setujuiAbsen(id_user, tanggal, disetujui) {
         if(disetujui) {
             absen.disetujui = true;
         } else {
-            // Hapus dari data jika ditolak
             data.absensi = data.absensi.filter(a => !(a.id_user === id_user && a.tanggal === tanggal));
         }
         createNotification(id_user, absen.role, `Pengajuan absen ${absen.status} Anda pada tanggal ${tanggal} telah ${disetujui ? 'disetujui' : 'ditolak'}.`);
@@ -144,29 +132,23 @@ function setujuiAbsen(id_user, tanggal, disetujui) {
     }
 }
 
-// --- FUNGSI ABSENSI YANG DIPERBARUI ---
 function absen(status, id_kelas = null) {
     const today = new Date().toISOString().slice(0, 10);
     if (data.absensi.find(a => a.id_user === currentUser.id && a.role === currentRole && a.tanggal === today)) {
         return alert("Anda sudah mengajukan absensi hari ini.");
     }
-    
     const catatAbsensi = (keterangan = "", disetujui = true) => {
-        data.absensi.push({ id_user: currentUser.id, role: currentRole, nama: currentUser.nama, tanggal: today, status, keterangan, disetujui });
+        data.absensi.push({ id: Date.now(), id_user: currentUser.id, role: currentRole, nama: currentUser.nama, tanggal: today, status, keterangan, disetujui });
         if(status === 'izin' || status === 'sakit') {
             alert(`Pengajuan absen '${status}' berhasil dikirim dan menunggu persetujuan admin.`);
-            // Notif untuk semua admin
             data.users.admins.forEach(admin => createNotification(admin.username, 'admin', `Permintaan absen ${status} dari ${currentUser.nama}.`));
         } else {
              alert(`Absensi '${status}' berhasil!`);
         }
-       
         if (currentRole === 'siswa') { absensiHariIniSelesai = true; showDashboard(); }
         else if (currentRole === 'guru') { document.getElementById("container-absen-kelas").innerHTML = '<p style="color:green;"><strong>Absensi Anda telah tercatat.</strong></p>'; }
     };
-
     if (status === 'masuk') {
-        // ... (Logika absen masuk tidak berubah)
         let targetLokasi, btn;
         const radius = 200;
         if (currentRole === 'guru' && id_kelas) {
@@ -180,17 +162,16 @@ function absen(status, id_kelas = null) {
             jarak <= radius ? catatAbsensi() : alert(`Gagal! Jarak Anda: ${Math.round(jarak)} meter.`);
             if (btn) { btn.disabled = false; btn.textContent = "📍 Masuk"; }
         }, () => { alert("Tidak bisa mengakses lokasi."); if (btn) { btn.disabled = false; btn.textContent = "📍 Masuk"; } });
-
     } else if (status === 'izin') {
         const alasan = prompt("Masukkan alasan Anda izin:");
-        if (alasan) catatAbsensi(alasan, false); // disetujui = false
+        if (alasan) catatAbsensi(alasan, false);
         else alert("Absensi dibatalkan.");
     } else if (status === 'sakit') {
         const fileInput = document.createElement('input');
         fileInput.type = 'file'; fileInput.accept = 'image/*'; fileInput.style.display = 'none';
         fileInput.onchange = e => {
             const file = e.target.files[0];
-            if (file) catatAbsensi(`Bukti foto: ${file.name}`, false); // disetujui = false
+            if (file) catatAbsensi(`Bukti foto: ${file.name}`, false);
             else alert("Absensi sakit dibatalkan.");
             document.body.removeChild(fileInput);
         };
@@ -199,15 +180,12 @@ function absen(status, id_kelas = null) {
     }
 }
 
-// --- FUNGSI REKAP ABSENSI YANG DIPERBARUI ---
 function renderRekapSiswa() {
     const container = document.getElementById("rekap-container");
     const kelasId = document.getElementById("kelas-select").value;
     if (!kelasId) { container.innerHTML = `<p>Silakan pilih kelas.</p>`; return; }
     const siswaDiKelas = data.users.siswas.filter(s => s.id_kelas == kelasId);
-    // Filter absensi yang sudah disetujui untuk izin dan sakit
     const absensiFiltered = getFilteredAbsensi().filter(a => a.status === 'masuk' || a.disetujui === true);
-    
     let html = `<h5>Rekap Absensi ${document.getElementById("kelas-select").options[document.getElementById("kelas-select").selectedIndex].text}</h5>`;
     html += "<table><thead><tr><th>Nama Siswa</th><th>Masuk</th><th>Izin</th><th>Sakit</th></tr></thead><tbody>";
     siswaDiKelas.forEach(siswa => {
@@ -223,11 +201,46 @@ function renderRekapSiswa() {
     container.innerHTML = html;
 }
 
+// --- FUNGSI TUGAS DENGAN PERBAIKAN ---
+function renderDaftarTugas() {
+    const container = document.getElementById("daftar-tugas-container");
+    const notif = document.getElementById("notif-tugas");
+    const tugasSiswa = data.tugas.filter(t => t.id_kelas === currentUser.id_kelas);
+    notif.textContent = tugasSiswa.length;
+    if (tugasSiswa.length === 0) { container.innerHTML = "<p>🎉 Hore, tidak ada tugas saat ini!</p>"; return; }
+    let html = "";
+    tugasSiswa.forEach(t => {
+        const submission = t.submissions ? t.submissions.find(s => s.id_siswa === currentUser.id) : null;
+        const submissionHTML = submission 
+            ? `<div class="submission-status"><p style="color:green;"><strong>✔ Anda sudah mengumpulkan.</strong></p>${submission.nilai !== null ? `<p class="grade-display"><strong>Nilai: ${submission.nilai}</strong></p><p class="feedback-display"><em>Feedback: ${submission.feedback}</em></p>` : `<p>Menunggu penilaian...</p>`}</div>`
+            : `<label>Kirim Jawaban:</label><input type="file" id="submit-file-${t.id}"><button onclick="submitTugas(${t.id})">Kirim</button>`;
+        html += `<div class="task-card"><div class="task-header"><span><strong>${t.judul}</strong> - ${t.nama_guru}</span><span class="task-deadline">Deadline: ${t.deadline}</span></div><p>${t.deskripsi}</p><p>File: <em>${t.file}</em></p>${submissionHTML}${renderDiskusi(t.id)}</div>`;
+    });
+    container.innerHTML = html;
+}
+
+function renderTugasSubmissions() {
+    const container = document.getElementById("submission-container");
+    const tugasGuru = data.tugas.filter(t => t.id_guru === currentUser.id);
+    if (tugasGuru.length === 0) { container.innerHTML = "<p>Anda belum mengirim tugas apapun.</p>"; return; }
+    let html = "";
+    tugasGuru.forEach(t => {
+        html += `<div class="task-card"><h5>Tugas: ${t.judul} (Kelas: ${data.kelas.find(k=>k.id===t.id_kelas).nama})</h5>`;
+        if (t.submissions && t.submissions.length > 0) {
+            html += "<ul class='submission-list'>";
+            t.submissions.forEach(sub => {
+                const submissionDetailHTML = `<strong>${sub.nama_siswa}</strong> mengumpulkan file: <em>${sub.file}</em><div class="grading-container">${sub.nilai !== null ? `<p class="grade-display"><strong>Nilai: ${sub.nilai}</strong></p><p class="feedback-display"><em>Feedback: ${sub.feedback}</em></p>` : `<input type="number" id="nilai-${t.id}-${sub.id_siswa}" placeholder="Nilai"><input type="text" id="feedback-${t.id}-${sub.id_siswa}" placeholder="Umpan Balik"><button class="small-btn" onclick="simpanNilai(${t.id},${sub.id_siswa})">Simpan</button>`}</div>`;
+                html += `<li>${submissionDetailHTML}</li>`;
+            });
+            html += "</ul>";
+        } else { html += "<p>Belum ada siswa yang mengumpulkan.</p>"; }
+        html += renderDiskusi(t.id) + `</div>`;
+    });
+    container.innerHTML = html;
+}
 // =================================================================================
 // BAGIAN 6: SEMUA FUNGSI LAINNYA (TIDAK BERUBAH)
 // =================================================================================
-function renderDaftarTugas(){const container=document.getElementById("daftar-tugas-container"),notif=document.getElementById("notif-tugas"),tugasSiswa=data.tugas.filter(t=>t.id_kelas===currentUser.id_kelas);notif.textContent=tugasSiswa.length;if(0===tugasSiswa.length)return void(container.innerHTML="<p>🎉 Hore, tidak ada tugas saat ini!</p>");let html="";tugasSiswa.forEach(t=>{const submission=t.submissions?t.submissions.find(s=>s.id_siswa===currentUser.id):null,submissionHTML=submission?`<div class="submission-status"><p style="color:green;"><strong>✔ Anda sudah mengumpulkan.</strong></p>${null!==submission.nilai?`<p class="grade-display"><strong>Nilai: ${submission.nilai}</strong></p><p class="feedback-display"><em>Feedback: ${submission.feedback}</em></p>`:"<p>Menunggu penilaian...</p>"}</div>":`<label>Kirim Jawaban:</label><input type="file" id="submit-file-${t.id}"><button onclick="submitTugas(${t.id})">Kirim</button>`;html+=`<div class="task-card"><div class="task-header"><span><strong>${t.judul}</strong> - ${t.nama_guru}</span><span class="task-deadline">Deadline: ${t.deadline}</span></div><p>${t.deskripsi}</p><p>File: <em>${t.file}</em></p>${submissionHTML}${renderDiskusi(t.id)}</div>`}),container.innerHTML=html}
-function renderTugasSubmissions(){const container=document.getElementById("submission-container"),tugasGuru=data.tugas.filter(t=>t.id_guru===currentUser.id);if(0===tugasGuru.length)return void(container.innerHTML="<p>Anda belum mengirim tugas apapun.</p>");let html="";tugasGuru.forEach(t=>{html+=`<div class="task-card"><h5>Tugas: ${t.judul} (Kelas: ${data.kelas.find(k=>k.id===t.id_kelas).nama})</h5>`,t.submissions&&t.submissions.length>0?(html+="<ul class='submission-list'>",t.submissions.forEach(sub=>{const submissionDetailHTML=`<strong>${sub.nama_siswa}</strong> mengumpulkan file: <em>${sub.file}</em><div class="grading-container">${null!==sub.nilai?`<p class="grade-display"><strong>Nilai: ${sub.nilai}</strong></p><p class="feedback-display"><em>Feedback: ${sub.feedback}</em></p>`:`<input type="number" id="nilai-${t.id}-${sub.id_siswa}" placeholder="Nilai"><input type="text" id="feedback-${t.id}-${sub.id_siswa}" placeholder="Umpan Balik"><button class="small-btn" onclick="simpanNilai(${t.id},${sub.id_siswa})">Simpan</button>`}</div>`;html+=`<li>${submissionDetailHTML}</li>`}),html+="</ul>"):html+="<p>Belum ada siswa yang mengumpulkan.</p>",html+=renderDiskusi(t.id)+`</div>`}),container.innerHTML=html}
 function createNotification(id_user,role,message){if(currentUser&&(currentUser.id===id_user||currentUser.username===id_user)&&currentRole===role)return;data.notifikasi.push({id:Date.now(),id_user,role,message,read:!1,timestamp:new Date})}
 function renderNotificationBell(){const notifBadge=document.getElementById("notif-badge"),unreadNotifs=data.notifikasi.filter(n=>(n.id_user===currentUser.id||n.id_user===currentUser.username||"semua"===n.id_user)&&n.role===currentRole&&!n.read);unreadNotifs.length>0?(notifBadge.textContent=unreadNotifs.length,notifBadge.classList.remove("hidden")):notifBadge.classList.add("hidden")}
 function toggleNotifDropdown(){const dropdown=document.getElementById("notification-dropdown");dropdown.classList.toggle("hidden"),dropdown.classList.contains("hidden")||renderNotifList()}
