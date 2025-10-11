@@ -16,36 +16,22 @@ const data = {
         { id: 2, nama: "Kelas 11B", lokasi: { latitude: -7.983500, longitude: 112.621800 } }
     ],
     tugas: [], absensi: [], pengumuman: [], materi: [], notifikasi: [],
-    // --- STRUKTUR DATA BARU UNTUK JADWAL & CATATAN PR ---
     jadwalPelajaran: {
-        // key adalah id_kelas
-        1: [ // Jadwal untuk Kelas 10A
+        1: [
             { id: 1672531200000, hari: 1, jamMulai: '08:00', jamSelesai: '09:30', mataPelajaran: 'Matematika' },
-            { id: 1672537200001, hari: 1, jamMulai: '10:00', jamSelesai: '11:30', mataPelajaran: 'Bahasa Indonesia' },
             { id: 1672621200002, hari: 2, jamMulai: '08:00', jamSelesai: '09:30', mataPelajaran: 'Fisika' },
         ],
-        2: [ // Jadwal untuk Kelas 11B
-            { id: 1672707600003, hari: 3, jamMulai: '09:00', jamSelesai: '10:30', mataPelajaran: 'Kimia' }
-        ]
+        2: [ { id: 1672707600003, hari: 3, jamMulai: '09:00', jamSelesai: '10:30', mataPelajaran: 'Kimia' } ]
     },
-    catatanPR: [
-        // Contoh data: { id_siswa: 101, id_jadwal: 1672531200000, catatan: 'Kerjakan LKS hal 52', mingguDibuat: 40 }
-    ]
+    catatanPR: []
 };
 
 // BAGIAN 2: PENGATURAN AWAL & FUNGSI HELPER
 let currentUser = null, currentRole = null, absensiHariIniSelesai = false;
 document.addEventListener("DOMContentLoaded", () => { document.getElementById("kata-harian") ? setupHalamanAwal() : document.getElementById("app") && showView("view-role-selection"); });
 function showView(viewId) { document.querySelectorAll("#app > div").forEach(div => div.classList.add("hidden")); document.getElementById(viewId).classList.remove("hidden"); }
-function setupHalamanAwal() { const quotes = ["Minggu: Istirahat adalah bagian dari proses.", "Senin: Mulailah minggu dengan energi penuh!", "Selasa: Terus belajar, terus bertumbuh.", "Rabu: Jangan takut gagal, takutlah tidak mencoba.", "Kamis: Optimis melihat masa depan!", "Jumat: Selesaikan apa yang kamu mulai.", "Sabtu: Refleksi dan siapkan hari esok."]; document.getElementById("kata-harian").textContent = quotes[new Date().getDay()]; document.getElementById("tombol-buka").addEventListener("click", () => window.location.href = "main.html"); }
-
-function getNomorMinggu(date) {
-    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-    const dayNum = d.getUTCDay() || 7;
-    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-    return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-}
+function setupHalamanAwal() { const quotes = ["Minggu: Istirahat.", "Senin: Mulailah!", "Selasa: Terus bertumbuh.", "Rabu: Jangan takut gagal.", "Kamis: Optimis!", "Jumat: Selesaikan.", "Sabtu: Refleksi."]; document.getElementById("kata-harian").textContent = quotes[new Date().getDay()]; document.getElementById("tombol-buka").addEventListener("click", () => window.location.href = "main.html"); }
+function getNomorMinggu(date) { const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())); const dayNum = d.getUTCDay() || 7; d.setUTCDate(d.getUTCDate() + 4 - dayNum); const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1)); return Math.ceil((((d - yearStart) / 86400000) + 1) / 7); }
 
 // BAGIAN 3: LOGIKA LOGIN & LOGOUT
 function showLogin(role){currentRole=role,showView("view-login-form"),document.querySelectorAll("#view-login-form > div").forEach(div=>div.classList.add("hidden"));const title=document.getElementById("login-title");"admin"===role?(title.textContent="Login Admin",document.getElementById("form-admin").classList.remove("hidden")):"guru"===role?(title.textContent="Login Guru",document.getElementById("form-guru").classList.remove("hidden"),populateGuruDropdown()):"siswa"===role&&(title.textContent="Login Siswa",document.getElementById("form-siswa").classList.remove("hidden"),populateKelasDropdown())}
@@ -61,9 +47,7 @@ function showDashboard() {
     const header = document.querySelector("#view-dashboard .header");
     const content = document.getElementById("dashboard-content");
     content.innerHTML = "";
-    if (!document.getElementById('notification-bell')) {
-        header.innerHTML = `<h2 id="dashboard-title">Dashboard</h2><div class="header-actions"><div id="notification-bell" onclick="toggleNotifDropdown()"><span id="notif-badge" class="notification-badge hidden">0</span>🔔</div><div id="notification-dropdown" class="hidden"></div><button class="logout-button" onclick="logout()">Logout</button></div>`;
-    }
+    if (!document.getElementById('notification-bell')) { header.innerHTML = `<h2 id="dashboard-title">Dashboard</h2><div class="header-actions"><div id="notification-bell" onclick="toggleNotifDropdown()"><span id="notif-badge" class="notification-badge hidden">0</span>🔔</div><div id="notification-dropdown" class="hidden"></div><button class="logout-button" onclick="logout()">Logout</button></div>`; }
     const gantiPasswordHTML = `<div class="dashboard-section"><h4>🔑 Ganti Password</h4><input type="password" id="old-pass" placeholder="Password Lama"><input type="password" id="new-pass" placeholder="Password Baru"><input type="password" id="confirm-new-pass" placeholder="Konfirmasi"><button onclick="changePassword()">Simpan</button></div>`;
 
     if (currentRole === 'admin') {
@@ -140,7 +124,11 @@ function setujuiAbsen(id_user, tanggal, disetujui) {
         if(disetujui) {
             absen.disetujui = true;
         } else {
-            data.absensi = data.absensi.filter(a => !(a.id_user === id_user && a.tanggal === tanggal));
+            // Jika ditolak, hapus dari data
+            const index = data.absensi.findIndex(a => a.id_user === id_user && a.tanggal === tanggal);
+            if (index > -1) {
+                data.absensi.splice(index, 1);
+            }
         }
         createNotification(id_user, absen.role, `Pengajuan absen ${absen.status} Anda pada tanggal ${tanggal} telah ${disetujui ? 'disetujui' : 'ditolak'}.`);
         renderAdminPersetujuan();
@@ -154,16 +142,18 @@ function absen(status, id_kelas = null) {
         return alert("Anda sudah mengajukan absensi hari ini.");
     }
     const catatAbsensi = (keterangan = "", disetujui = true) => {
-        data.absensi.push({ id: Date.now(), id_user: currentUser.id, role: currentRole, nama: currentUser.nama, tanggal: today, status, keterangan, disetujui });
+        data.absensi.push({ id_user: currentUser.id, role: currentRole, nama: currentUser.nama, tanggal: today, status, keterangan, disetujui });
         if(status === 'izin' || status === 'sakit') {
             alert(`Pengajuan absen '${status}' berhasil dikirim dan menunggu persetujuan admin.`);
             data.users.admins.forEach(admin => createNotification(admin.username, 'admin', `Permintaan absen ${status} dari ${currentUser.nama}.`));
         } else {
              alert(`Absensi '${status}' berhasil!`);
         }
+       
         if (currentRole === 'siswa') { absensiHariIniSelesai = true; showDashboard(); }
         else if (currentRole === 'guru') { document.getElementById("container-absen-kelas").innerHTML = '<p style="color:green;"><strong>Absensi Anda telah tercatat.</strong></p>'; }
     };
+
     if (status === 'masuk') {
         let targetLokasi, btn;
         const radius = 200;
@@ -202,6 +192,7 @@ function renderRekapSiswa() {
     if (!kelasId) { container.innerHTML = `<p>Silakan pilih kelas.</p>`; return; }
     const siswaDiKelas = data.users.siswas.filter(s => s.id_kelas == kelasId);
     const absensiFiltered = getFilteredAbsensi().filter(a => a.status === 'masuk' || a.disetujui === true);
+    
     let html = `<h5>Rekap Absensi ${document.getElementById("kelas-select").options[document.getElementById("kelas-select").selectedIndex].text}</h5>`;
     html += "<table><thead><tr><th>Nama Siswa</th><th>Masuk</th><th>Izin</th><th>Sakit</th></tr></thead><tbody>";
     siswaDiKelas.forEach(siswa => {
@@ -257,6 +248,7 @@ function renderTugasSubmissions() {
     });
     container.innerHTML = html;
 }
+
 // =================================================================================
 // BAGIAN 6: SEMUA FUNGSI LAINNYA (TIDAK BERUBAH)
 // =================================================================================
