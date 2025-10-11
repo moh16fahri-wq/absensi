@@ -124,11 +124,8 @@ function setujuiAbsen(id_user, tanggal, disetujui) {
         if(disetujui) {
             absen.disetujui = true;
         } else {
-            // Jika ditolak, hapus dari data
             const index = data.absensi.findIndex(a => a.id_user === id_user && a.tanggal === tanggal);
-            if (index > -1) {
-                data.absensi.splice(index, 1);
-            }
+            if (index > -1) { data.absensi.splice(index, 1); }
         }
         createNotification(id_user, absen.role, `Pengajuan absen ${absen.status} Anda pada tanggal ${tanggal} telah ${disetujui ? 'disetujui' : 'ditolak'}.`);
         renderAdminPersetujuan();
@@ -192,7 +189,6 @@ function renderRekapSiswa() {
     if (!kelasId) { container.innerHTML = `<p>Silakan pilih kelas.</p>`; return; }
     const siswaDiKelas = data.users.siswas.filter(s => s.id_kelas == kelasId);
     const absensiFiltered = getFilteredAbsensi().filter(a => a.status === 'masuk' || a.disetujui === true);
-    
     let html = `<h5>Rekap Absensi ${document.getElementById("kelas-select").options[document.getElementById("kelas-select").selectedIndex].text}</h5>`;
     html += "<table><thead><tr><th>Nama Siswa</th><th>Masuk</th><th>Izin</th><th>Sakit</th></tr></thead><tbody>";
     siswaDiKelas.forEach(siswa => {
