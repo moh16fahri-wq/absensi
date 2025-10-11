@@ -1,58 +1,342 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
 :root {
-    --primary-color: #4A90E2; --primary-hover: #357ABD; --secondary-color: #50E3C2;
-    --success-color: #7ED321; --danger-color: #D0021B; --edit-color: #F5A623;
-    --light-bg: #F7F9FC; --text-color: #4A4A4A; --border-color: #E4E9F2;
-    --shadow: 0 10px 25px rgba(74, 144, 226, .1); --border-radius: 12px;
+    --primary-color: #4A90E2;
+    --primary-hover: #357ABD;
+    --secondary-color: #50E3C2;
+    --success-color: #7ED321;
+    --danger-color: #D0021B;
+    --edit-color: #F5A623;
+    --light-bg: #F7F9FC;
+    --text-color: #4A4A4A;
+    --border-color: #E4E9F2;
+    --shadow: 0 10px 25px rgba(74, 144, 226, .1);
+    --border-radius: 12px;
 }
-body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #E0E7FF, #F3E8FF); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; color: var(--text-color); }
-.container { background-color: #fff; padding: 2.5rem; border-radius: var(--border-radius); box-shadow: var(--shadow); text-align: center; width: 90%; max-width: 500px; transition: all .4s; border-top: 5px solid var(--primary-color); }
-.dashboard { max-width: 950px; } /* Perlebar sedikit untuk jadwal */
-h1, h2, h3, h4, h5 { color: #333; }
-button, input, select, textarea { font-family: 'Poppins', sans-serif; display: block; width: 100%; padding: 12px; margin-bottom: 1rem; border-radius: 8px; border: 1px solid var(--border-color); font-size: 1rem; box-sizing: border-box; }
-button { background-color: var(--primary-color); color: white; border: none; cursor: pointer; font-weight: 600; transition: background-color .3s, transform .2s; }
-button:hover { background-color: var(--primary-hover); transform: translateY(-2px); }
-.small-btn { display: inline-block; width: auto; padding: 5px 12px; font-size: .8rem; margin: 0 4px; }
-.small-btn.delete { background-color: var(--danger-color); }
-.hidden { display: none; }
-.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-.dashboard-section { text-align: left; padding: 1.5rem; margin-bottom: 1.5rem; background: var(--light-bg); border-radius: var(--border-radius); }
-.task-card, .announcement-card { background: #fff; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-.locked-feature { opacity: .5; pointer-events: none; }
-table { width: 100%; border-collapse: collapse; }
-table th, table td { padding: 10px; border: 1px solid var(--border-color); text-align: center; }
-table th { background-color: var(--light-bg); }
-.tabs { display: flex; border-bottom: 2px solid var(--border-color); margin-bottom: 1.5rem; flex-wrap: wrap; }
-.tab-link { background: transparent; color: var(--text-color); border: none; padding: 12px 18px; cursor: pointer; margin-bottom: -2px; border-bottom: 3px solid transparent; border-radius: 0; width: auto; }
-.tab-link.active { color: var(--primary-color); border-bottom: 3px solid var(--primary-color); font-weight: 600; }
-.header-actions { display: flex; align-items: center; gap: 15px; position: relative; }
-.logout-button { width: auto; padding: 8px 15px; margin: 0; }
-#notification-bell { font-size: 1.5rem; cursor: pointer; position: relative; }
-#notif-badge { position: absolute; top: -5px; right: -10px; background-color: var(--danger-color); color: #fff; border-radius: 50%; padding: 2px 6px; font-size: .7rem; }
-#notification-dropdown { position: absolute; top: 120%; right: 0; background: #fff; border-radius: var(--border-radius); box-shadow: var(--shadow); width: 320px; max-height: 400px; overflow-y: auto; text-align: left; z-index: 100; }
-.notif-item { padding: 1rem; border-bottom: 1px solid var(--border-color); cursor: pointer; }
-.notif-item.read p { color: #888; }
-.notif-time { font-size: 0.75rem; color: #999; }
-.discussion-container { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color); }
-.discussion-form { display: flex; gap: 10px; align-items: center; }
-.discussion-form textarea { min-height: 40px; margin: 0; }
-.discussion-form button { width: auto; margin: 0; }
-.jadwal-guru-container { border-left: 5px solid var(--edit-color); }
-.jadwal-list { list-style-type: none; padding-left: 0; margin-bottom: 1rem; }
-.jadwal-item { display: flex; justify-content: space-between; align-items: center; background-color: var(--light-bg); padding: 10px; border-radius: 8px; margin-bottom: 8px; }
-.jadwal-form { display: grid; grid-template-columns: 2fr 2fr 1fr auto; gap: 10px; align-items: center; padding-top: 1rem; border-top: 1px solid var(--border-color); }
-.jadwal-form select, .jadwal-form button { margin-bottom: 0; }
-.form-container { background: #fff; padding: 1rem; border-radius: 8px; margin-top: 1rem; border: 1px solid var(--border-color); }
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #E0E7FF, #F3E8FF);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    color: var(--text-color);
+}
+
+.container {
+    background-color: #fff;
+    padding: 2.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    text-align: center;
+    width: 90%;
+    max-width: 500px;
+    transition: all .4s;
+    border-top: 5px solid var(--primary-color);
+}
+
+.dashboard {
+    max-width: 950px; /* Perlebar sedikit untuk jadwal */
+}
+
+h1, h2, h3, h4, h5 {
+    color: #333;
+}
+
+button,
+input,
+select,
+textarea {
+    font-family: 'Poppins', sans-serif;
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color .3s, transform .2s;
+}
+
+button:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.small-btn {
+    display: inline-block;
+    width: auto;
+    padding: 5px 12px;
+    font-size: .8rem;
+    margin: 0 4px;
+}
+
+.small-btn.delete {
+    background-color: var(--danger-color);
+}
+
+.hidden {
+    display: none;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.dashboard-section {
+    text-align: left;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    background: var(--light-bg);
+    border-radius: var(--border-radius);
+}
+
+.task-card,
+.announcement-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.locked-feature {
+    opacity: .5;
+    pointer-events: none;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table th,
+table td {
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    text-align: center;
+}
+
+table th {
+    background-color: var(--light-bg);
+}
+
+.tabs {
+    display: flex;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.tab-link {
+    background: transparent;
+    color: var(--text-color);
+    border: none;
+    padding: 12px 18px;
+    cursor: pointer;
+    margin-bottom: -2px;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    width: auto;
+}
+
+.tab-link.active {
+    color: var(--primary-color);
+    border-bottom: 3px solid var(--primary-color);
+    font-weight: 600;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    position: relative;
+}
+
+.logout-button {
+    width: auto;
+    padding: 8px 15px;
+    margin: 0;
+}
+
+#notification-bell {
+    font-size: 1.5rem;
+    cursor: pointer;
+    position: relative;
+}
+
+#notif-badge {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background-color: var(--danger-color);
+    color: #fff;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: .7rem;
+}
+
+#notification-dropdown {
+    position: absolute;
+    top: 120%;
+    right: 0;
+    background: #fff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    width: 320px;
+    max-height: 400px;
+    overflow-y: auto;
+    text-align: left;
+    z-index: 100;
+}
+
+.notif-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+}
+
+.notif-item.read p {
+    color: #888;
+}
+
+.notif-time {
+    font-size: 0.75rem;
+    color: #999;
+}
+
+.discussion-container {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.discussion-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.discussion-form textarea {
+    min-height: 40px;
+    margin: 0;
+}
+
+.discussion-form button {
+    width: auto;
+    margin: 0;
+}
+
+.jadwal-guru-container {
+    border-left: 5px solid var(--edit-color);
+}
+
+.jadwal-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin-bottom: 1rem;
+}
+
+.jadwal-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--light-bg);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.jadwal-form {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.jadwal-form select,
+.jadwal-form button {
+    margin-bottom: 0;
+}
+
+.form-container {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    border: 1px solid var(--border-color);
+}
 
 /* --- GAYA BARU UNTUK JADWAL PELAJARAN & CATATAN PR --- */
-.jadwal-table { margin-bottom: 1.5rem; }
-.jadwal-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; } /* 5 kolom untuk 5 hari */
-.jadwal-hari { background-color: #fff; padding: 1rem; border-radius: var(--border-radius); }
-.jadwal-hari h5 { margin-top: 0; text-align: center; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; }
-.jadwal-sesi { margin-bottom: 1rem; }
-.sesi-info { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem; }
-.sesi-info span { font-size: 0.8rem; color: #777; }
-.sesi-kosong { text-align: center; color: #aaa; font-size: 0.9rem; margin-top: 1rem; }
+.jadwal-table {
+    margin-bottom: 1.5rem;
+}
+
+.jadwal-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    /* 5 kolom untuk 5 hari */
+    gap: 1rem;
+}
+
+.jadwal-hari {
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+}
+
+.jadwal-hari h5 {
+    margin-top: 0;
+    text-align: center;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.jadwal-sesi {
+    margin-bottom: 1rem;
+}
+
+.sesi-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.5rem;
+}
+
+.sesi-info span {
+    font-size: 0.8rem;
+    color: #777;
+}
+
+.sesi-kosong {
+    text-align: center;
+    color: #aaa;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+}
+
 .catatan-pr {
     width: 100%;
     min-height: 80px;
@@ -60,4 +344,21 @@ table th { background-color: var(--light-bg); }
     padding: 8px;
     margin-top: 4px;
     transition: border-color 0.3s;
+}
+
+/* --- GAYA BARU UNTUK TOMBOL PERSETUJUAN --- */
+.approval-buttons {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 10px;
+}
+
+.approval-buttons .small-btn {
+    flex-grow: 1;
+}
+
+.small-btn.success {
+    background-color: var(--success-color);
 }
