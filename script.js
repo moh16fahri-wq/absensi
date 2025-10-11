@@ -16,29 +16,24 @@ const data = {
         { id: 2, nama: "Kelas 11B", lokasi: { latitude: -7.983500, longitude: 112.621800 } }
     ],
     tugas: [], absensi: [], pengumuman: [], materi: [], notifikasi: [],
-    // --- STRUKTUR DATA BARU UNTUK JADWAL & CATATAN PR ---
     jadwalPelajaran: {
-        // key adalah id_kelas
-        1: [ // Jadwal untuk Kelas 10A
+        1: [
             { id: 1672531200000, hari: 1, jamMulai: '08:00', jamSelesai: '09:30', mataPelajaran: 'Matematika' },
             { id: 1672537200001, hari: 1, jamMulai: '10:00', jamSelesai: '11:30', mataPelajaran: 'Bahasa Indonesia' },
             { id: 1672621200002, hari: 2, jamMulai: '08:00', jamSelesai: '09:30', mataPelajaran: 'Fisika' },
         ],
-        2: [ // Jadwal untuk Kelas 11B
+        2: [
             { id: 1672707600003, hari: 3, jamMulai: '09:00', jamSelesai: '10:30', mataPelajaran: 'Kimia' }
         ]
     },
-    catatanPR: [
-        // Contoh data: { id_siswa: 101, id_jadwal: 1672531200000, catatan: 'Kerjakan LKS hal 52', mingguDibuat: 40 }
-    ]
+    catatanPR: []
 };
 
 // BAGIAN 2: PENGATURAN AWAL & FUNGSI HELPER
 let currentUser = null, currentRole = null, absensiHariIniSelesai = false;
 document.addEventListener("DOMContentLoaded", () => { document.getElementById("kata-harian") ? setupHalamanAwal() : document.getElementById("app") && showView("view-role-selection"); });
 function showView(viewId) { document.querySelectorAll("#app > div").forEach(div => div.classList.add("hidden")); document.getElementById(viewId).classList.remove("hidden"); }
-function setupHalamanAwal() { const quotes = ["Minggu: Istirahat adalah bagian dari proses.", "Senin: Mulailah minggu dengan energi penuh!", "Selasa: Terus belajar, terus bertumbuh.", "Rabu: Jangan takut gagal, takutlah tidak mencoba.", "Kamis: Optimis melihat masa depan!", "Jumat: Selesaikan apa yang kamu mulai.", "Sabtu: Refleksi dan siapkan hari esok."]; document.getElementById("kata-harian").textContent = quotes[new Date().getDay()]; document.getElementById("tombol-buka").addEventListener("click", () => window.location.href = "main.html"); }
-
+function setupHalamanAwal() { const quotes = ["Minggu: Istirahat.", "Senin: Mulailah!", "Selasa: Terus bertumbuh.", "Rabu: Jangan takut gagal.", "Kamis: Optimis!", "Jumat: Selesaikan.", "Sabtu: Refleksi."]; document.getElementById("kata-harian").textContent = quotes[new Date().getDay()]; document.getElementById("tombol-buka").addEventListener("click", () => window.location.href = "main.html"); }
 function getNomorMinggu(date) {
     const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
     const dayNum = d.getUTCDay() || 7;
@@ -147,7 +142,6 @@ function tambahSesiPelajaran(id_kelas) {
 
 function hapusSesiPelajaran(id_kelas, index) { if (confirm('Yakin ingin menghapus sesi pelajaran ini?')) { data.jadwalPelajaran[id_kelas].splice(index, 1); renderTabelJadwalAdmin(id_kelas); } }
 
-// --- PERBAIKAN DASHBOARD SISWA ---
 function renderSiswaDashboard() {
     const locked = absensiHariIniSelesai ? "" : "locked-feature";
     const warning = absensiHariIniSelesai ? "" : '<p><strong>🔒 Lakukan absensi untuk membuka fitur lain.</strong></p>';
@@ -205,7 +199,7 @@ function simpanCatatan(id_jadwal) {
     setTimeout(() => { textarea.style.borderColor = 'var(--border-color)'; }, 1500);
 }
 
-// --- PERBAIKAN FUNGSI TUGAS ---
+// --- FUNGSI TUGAS DENGAN PERBAIKAN ---
 function renderDaftarTugas() {
     const container = document.getElementById("daftar-tugas-container");
     const notif = document.getElementById("notif-tugas");
@@ -252,8 +246,92 @@ function renderTugasSubmissions() {
 }
 
 // =================================================================================
-// BAGIAN 6: FUNGSI-FUNGSI LAINNYA (TIDAK BERUBAH)
+// BAGIAN 6: SEMUA FUNGSI LAINNYA (DENGAN FUNGSI ABSENSI YANG DIPERBAIKI)
 // =================================================================================
+
+// --- FUNGSI ABSENSI YANG DIPERBAIKI ---
+function absen(status, id_kelas = null) {
+    const today = new Date().toISOString().slice(0, 10);
+    if (data.absensi.find(a => a.id_user === currentUser.id && a.role === currentRole && a.tanggal === today)) {
+        return alert("Anda sudah melakukan absensi hari ini.");
+    }
+    
+    const catatAbsensi = (keterangan = "") => {
+        data.absensi.push({
+            id_user: currentUser.id,
+            role: currentRole,
+            nama: currentUser.nama,
+            tanggal: today,
+            status: status,
+            keterangan: keterangan
+        });
+        alert(`Absensi '${status}' berhasil dicatat!`);
+        if (currentRole === 'siswa') {
+            absensiHariIniSelesai = true;
+            showDashboard();
+        } else if (currentRole === 'guru') {
+            document.getElementById("container-absen-kelas").innerHTML = `<p style="color:green;"><strong>Absensi Anda telah tercatat.</strong></p>`;
+        }
+    };
+
+    if (status === 'masuk') {
+        let targetLokasi, btn;
+        const radius = 200;
+        if (currentRole === 'guru' && id_kelas) {
+            const kelas = data.kelas.find(k => k.id === id_kelas);
+            targetLokasi = kelas.lokasi;
+        } else if (currentRole === 'siswa') {
+            targetLokasi = { latitude: -7.983908, longitude: 112.621391 }; // Lokasi sekolah
+            btn = document.getElementById(`btn-absen-masuk-siswa`);
+            if(btn) {
+                btn.disabled = true;
+                btn.textContent = "Mengecek Lokasi...";
+            }
+        }
+        navigator.geolocation.getCurrentPosition(pos => {
+            const jarak = hitungJarak(pos.coords.latitude, pos.coords.longitude, targetLokasi.latitude, targetLokasi.longitude);
+            if (jarak <= radius) {
+                catatAbsensi();
+            } else {
+                alert(`Gagal! Jarak Anda dari lokasi: ${Math.round(jarak)} meter. Terlalu jauh.`);
+            }
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = "📍 Masuk";
+            }
+        }, () => {
+            alert("Tidak bisa mengakses lokasi. Pastikan GPS aktif.");
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = "📍 Masuk";
+            }
+        });
+    } else if (status === 'izin') {
+        const alasan = prompt(`Masukkan alasan Anda ${status}:`);
+        if (alasan) {
+            catatAbsensi(alasan);
+        } else {
+            alert("Absensi dibatalkan karena alasan tidak diisi.");
+        }
+    } else if (status === 'sakit') {
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*';
+        fileInput.style.display = 'none';
+        fileInput.onchange = e => {
+            const file = e.target.files[0];
+            if (file) {
+                catatAbsensi(`Bukti foto: ${file.name}`);
+            } else {
+                alert("Absensi sakit dibatalkan karena tidak ada foto yang dipilih.");
+            }
+            document.body.removeChild(fileInput);
+        };
+        document.body.appendChild(fileInput);
+        fileInput.click();
+    }
+}
+
 function createNotification(id_user,role,message){if(currentUser&&currentUser.id===id_user&&currentRole===role)return;data.notifikasi.push({id:Date.now(),id_user,role,message,read:!1,timestamp:new Date})}
 function renderNotificationBell(){const notifBadge=document.getElementById("notif-badge"),unreadNotifs=data.notifikasi.filter(n=>(n.id_user===currentUser.id||"semua"===n.id_user)&&n.role===currentRole&&!n.read);unreadNotifs.length>0?(notifBadge.textContent=unreadNotifs.length,notifBadge.classList.remove("hidden")):notifBadge.classList.add("hidden")}
 function toggleNotifDropdown(){const dropdown=document.getElementById("notification-dropdown");dropdown.classList.toggle("hidden"),dropdown.classList.contains("hidden")||renderNotifList()}
