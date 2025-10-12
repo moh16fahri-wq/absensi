@@ -37,17 +37,38 @@ document.addEventListener('DOMContentLoaded', () => {
     // Cek apakah ada di halaman index.html atau main.html
     const tombolBuka = document.getElementById('tombol-buka');
     if (tombolBuka) {
-        // Logika untuk index.html
         tombolBuka.onclick = () => window.location.href = 'main.html';
         document.getElementById('kata-harian').textContent = "Pendidikan adalah senjata paling ampuh yang bisa kamu gunakan untuk mengubah dunia.";
     } else {
-        // Logika untuk main.html
+        // Cek tema dari localStorage
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) themeToggle.textContent = '🌙';
+        }
+
+        // Cek user dari sessionStorage
         if (sessionStorage.getItem('currentUser')) {
             currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
             showDashboard();
         } else {
             populateInitialDropdowns();
             showView('view-role-selection');
+        }
+        
+        // Setup Event Listener untuk tombol tema
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                if (document.body.classList.contains('dark-mode')) {
+                    themeToggle.textContent = '🌙';
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    themeToggle.textContent = '☀️';
+                    localStorage.setItem('theme', 'light');
+                }
+            });
         }
     }
 });
@@ -124,102 +145,84 @@ function showDashboard() {
     else if (currentUser.role === 'siswa') tampilkanDashboardSiswa();
 }
 
-// FUNGSI TAMPILAN DASHBOARD (BARU)
-function tampilkanDashboardSiswa() {
-    const siswa = data.users.siswas.find(s => s.id === currentUser.id);
-    const container = document.getElementById('dashboard-content');
-    document.getElementById('dashboard-title').textContent = `Dashboard Siswa`;
-
-    container.innerHTML = `
-        <div class="dashboard-grid">
-            <div class="card">
-                <h3>Halo, ${siswa.nama}!</h3>
-                <p>Selamat belajar hari ini. Jangan lupa untuk tetap semangat!</p>
-            </div>
-            <div class="card">
-                <h4>Jadwal Berikutnya</h4>
-                <p><strong>Matematika</strong> - Jam 09:00</p>
-                <a href="#" onclick="tampilkanMenuSiswa('jadwal')">Lihat semua jadwal</a>
-            </div>
-            <div class="card card-tugas">
-                <h4>Tugas Terdekat</h4>
-                <p><strong>Deadline: Besok</strong> - Mengerjakan Latihan Bab 3</p>
-                <a href="#" onclick="tampilkanMenuSiswa('tugas')">Lihat semua tugas</a>
-            </div>
-            <div class="card">
-                <h4>Info Sekolah</h4>
-                <p>Studi tur ke museum akan dilaksanakan minggu depan.</p>
-                <a href="#" onclick="tampilkanMenuSiswa('pengumuman')">Lihat semua info</a>
-            </div>
-        </div>
-        <div id="content-area"></div>
-    `;
-}
-
-function tampilkanDashboardGuru() {
-    const guru = data.users.gurus.find(g => g.id === currentUser.id);
-    const container = document.getElementById('dashboard-content');
-    document.getElementById('dashboard-title').textContent = `Dashboard Guru`;
-    container.innerHTML = `<p>Selamat datang, ${guru.nama}. Silakan pilih menu di bawah.</p>
-    <button onclick="tampilkanMenuGuru('absensi')">Kelola Absensi</button>
-    <button onclick="tampilkanMenuGuru('tugas')">Kelola Tugas</button>
-    <div id="content-area"></div>`;
-}
+// BAGIAN 3: FUNGSI DASHBOARD (YANG SUDAH DIPERBAIKI)
 
 function tampilkanDashboardAdmin() {
     const container = document.getElementById('dashboard-content');
-    document.getElementById('dashboard-title').textContent = `Dashboard Admin`;
-    
+    document.getElementById('dashboard-title').textContent = 'Dashboard Admin';
+
     const totalSiswa = data.users.siswas.length;
     const totalGuru = data.users.gurus.length;
 
     container.innerHTML = `
         <div class="stat-cards">
-            <div class="stat-card">
-                <h5>Total Siswa</h5>
-                <p>${totalSiswa}</p>
-            </div>
-            <div class="stat-card">
-                <h5>Total Guru</h5>
-                <p>${totalGuru}</p>
-            </div>
-            <div class="stat-card">
-                <h5>Kehadiran Hari Ini</h5>
-                <p>95%</p> </div>
+            <div class="stat-card"><h5>Total Siswa</h5><p>${totalSiswa}</p></div>
+            <div class="stat-card"><h5>Total Guru</h5><p>${totalGuru}</p></div>
+            <div class="stat-card"><h5>Kehadiran Hari Ini</h5><p>95%</p></div>
         </div>
         <hr>
         <button onclick="tampilkanManajemen('guru')">Manajemen Guru</button>
         <button onclick="tampilkanManajemen('siswa')">Manajemen Siswa</button>
         <button onclick="tampilkanManajemen('kelas')">Manajemen Kelas</button>
-        <div id="content-area"></div>`;
+        <div id="content-area"></div>
+    `;
 }
 
-// FUNGSI MENU DAN KONTEN
+function tampilkanDashboardGuru() {
+    const container = document.getElementById('dashboard-content');
+    document.getElementById('dashboard-title').textContent = `Dashboard Guru`;
+    container.innerHTML = `
+        <p>Selamat datang, ${currentUser.nama}.</p>
+        <button onclick="tampilkanMenuGuru('jadwal')">Lihat Jadwal</button>
+        <button onclick="tampilkanMenuGuru('absensi')">Kelola Absensi</button>
+        <button onclick="tampilkanMenuGuru('tugas')">Kelola Tugas</button>
+        <div id="content-area"></div>
+    `;
+}
+
+function tampilkanDashboardSiswa() {
+    const container = document.getElementById('dashboard-content');
+    document.getElementById('dashboard-title').textContent = `Dashboard Siswa`;
+    container.innerHTML = `
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3>Halo, ${currentUser.nama}!</h3>
+                <p>Selamat belajar hari ini.</p>
+            </div>
+            <div class="card card-tugas">
+                <h4>Tugas Terdekat</h4>
+                <p><strong>Deadline: Besok</strong> - Latihan Bab 1</p>
+                <a onclick="tampilkanMenuSiswa('tugas')">Lihat semua tugas</a>
+            </div>
+        </div>
+        <button onclick="tampilkanMenuSiswa('jadwal')">Jadwal Pelajaran</button>
+        <button onclick="tampilkanMenuSiswa('absensi')">Lakukan Absensi</button>
+        <button onclick="tampilkanMenuSiswa('tugas')">Tugas & Nilai</button>
+        <div id="content-area"></div>
+    `;
+}
+
+// BAGIAN 4: SEMUA FUNGSI MANAJEMEN DAN MENU (DIKEMBALIKAN)
+
 function tampilkanMenuSiswa(menu) {
     const container = document.getElementById('content-area');
-    if (menu === 'jadwal') {
-        container.innerHTML = '<h2>Jadwal Pelajaran Anda</h2><p>Ini adalah daftar jadwal...</p>';
-    } else if (menu === 'tugas') {
-        container.innerHTML = '<h2>Daftar Tugas Anda</h2><p>Ini adalah daftar tugas...</p>';
-    } else if (menu === 'pengumuman') {
-        container.innerHTML = '<h2>Pengumuman</h2><p>Tidak ada pengumuman baru.</p>';
-    }
+    if(menu === 'jadwal') container.innerHTML = "<h2>Jadwal Anda...</h2>";
+    if(menu === 'absensi') container.innerHTML = "<h2>Absensi Anda...</h2>";
+    if(menu === 'tugas') container.innerHTML = "<h2>Tugas Anda...</h2>";
 }
 
 function tampilkanMenuGuru(menu) {
     const container = document.getElementById('content-area');
-    if (menu === 'absensi') {
-        container.innerHTML = '<h2>Kelola Absensi</h2><p>Pilih kelas untuk mengelola absensi.</p>';
-    } else if (menu === 'tugas') {
-        container.innerHTML = '<h2>Kelola Tugas</h2><p>Pilih kelas untuk mengelola tugas.</p>';
-    }
+    if(menu === 'jadwal') container.innerHTML = "<h2>Jadwal Mengajar Anda...</h2>";
+    if(menu === 'absensi') container.innerHTML = "<h2>Kelola Absensi Siswa...</h2>";
+    if(menu === 'tugas') container.innerHTML = "<h2>Kelola Tugas Siswa...</h2>";
 }
 
 function tampilkanManajemen(jenis) {
     const container = document.getElementById('content-area');
-    if (jenis === 'guru') {
-        tampilkanManajemenGuru(container);
-    } // Tambahkan untuk siswa dan kelas
+    if (jenis === 'guru') tampilkanManajemenGuru(container);
+    if (jenis === 'siswa') container.innerHTML = "<h2>Manajemen Siswa...</h2>";
+    if (jenis === 'kelas') container.innerHTML = "<h2>Manajemen Kelas...</h2>";
 }
 
 function tampilkanManajemenGuru(container) {
@@ -285,22 +288,26 @@ function hapusJadwalGuru(guruId, jadwalIndex) {
 
 function gantiPassword(role, id) {
     const newPassword = prompt("Masukkan password baru:");
-    if (newPassword) {
-        const user = data.users[`${role}s`].find(u => u.id === id);
+    if (newPassword && newPassword.trim() !== "") {
+        const userList = (role === 'guru') ? data.users.gurus : data.users.siswas;
+        const user = userList.find(u => u.id === id);
         if (user) {
             user.password = newPassword;
             showToast("Password berhasil diubah.", "success");
-            tampilkanManajemenGuru(document.getElementById('content-area'));
+            tampilkanManajemen('guru'); // Refresh tampilan
         }
+    } else if (newPassword !== null) {
+        showToast("Password tidak boleh kosong.", "error");
     }
 }
 
-// FUNGSI-FUNGSI BARU (Toast & Dark Mode)
+
+// BAGIAN 5: FUNGSI NOTIFIKASI TOAST (BARU)
 
 function showToast(message, type = 'success') {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
-    toast.className = `toast ${type}`; // 'success' atau 'error'
+    toast.className = `toast ${type}`;
     toast.textContent = message;
 
     container.appendChild(toast);
@@ -314,24 +321,3 @@ function showToast(message, type = 'success') {
         toast.addEventListener('transitionend', () => toast.remove());
     }, 3000);
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    const themeToggle = document.getElementById('theme-toggle');
-    if (!themeToggle) return;
-
-    if (localStorage.getItem('theme') === 'dark') {
-        document.body.classList.add('dark-mode');
-        themeToggle.textContent = '🌙';
-    }
-
-    themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-        if (document.body.classList.contains('dark-mode')) {
-            themeToggle.textContent = '🌙';
-            localStorage.setItem('theme', 'dark');
-        } else {
-            themeToggle.textContent = '☀️';
-            localStorage.setItem('theme', 'light');
-        }
-    });
-});
