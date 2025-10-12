@@ -3,12 +3,12 @@ const data = {
     users: {
         admins: [{ username: "admin", password: "admin123" }],
         gurus: [
-            { id: 1, nama: "Budi Santoso", password: "guru1", jadwal: [ { id_kelas: 1, hari: 4, jam: 9, nama_kelas: "Kelas 10A" }, { id_kelas: 2, hari: 4, jam: 10, nama_kelas: "Kelas 11B" } ] },
+            { id: 1, nama: "Budi Santoso", password: "guru1", jadwal: [ { id_kelas: 1, hari: 0, jam: 7, nama_kelas: "Kelas 10A" }, { id_kelas: 2, hari: 1, jam: 9, nama_kelas: "Kelas 11B" } ] },
             { id: 2, nama: "Anisa Putri", password: "guru2", jadwal: [{ id_kelas: 2, hari: 2, jam: 10, nama_kelas: "Kelas 11B" }] }
         ],
         siswas: [
-            { id: 101, nama: "Agus", password: "siswa1", id_kelas: 1 }, { id: 102, nama: "Citra", password: "siswa2", id_kelas: 1 },
-            { id: 201, nama: "Dewi", password: "siswa3", id_kelas: 2 }, { id: 202, nama: "Eko", password: "siswa4", id_kelas: 2 }
+            { id: 101, nama: "Agus", password: "siswa1", id_kelas: 1, pr: "" }, { id: 102, nama: "Citra", password: "siswa2", id_kelas: 1, pr: "Baca Bab 3." },
+            { id: 201, nama: "Dewi", password: "siswa3", id_kelas: 2, pr: "" }, { id: 202, nama: "Eko", password: "siswa4", id_kelas: 2, pr: "" }
         ]
     },
     kelas: [
@@ -34,20 +34,13 @@ const jamOptions = [7, 8, 9, 10, 11, 12, 13, 14, 15];
 
 // BAGIAN 2: LOGIKA UTAMA
 document.addEventListener('DOMContentLoaded', () => {
-    // Cek apakah ada di halaman index.html atau main.html
-    const tombolBuka = document.getElementById('tombol-buka');
-    if (tombolBuka) {
-        tombolBuka.onclick = () => window.location.href = 'main.html';
-        document.getElementById('kata-harian').textContent = "Pendidikan adalah senjata paling ampuh yang bisa kamu gunakan untuk mengubah dunia.";
-    } else {
-        // Cek tema dari localStorage
+    const isMainPage = document.getElementById('view-role-selection');
+    if (isMainPage) {
         if (localStorage.getItem('theme') === 'dark') {
             document.body.classList.add('dark-mode');
             const themeToggle = document.getElementById('theme-toggle');
-            if (themeToggle) themeToggle.textContent = '🌙';
+            if(themeToggle) themeToggle.textContent = '🌙';
         }
-
-        // Cek user dari sessionStorage
         if (sessionStorage.getItem('currentUser')) {
             currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
             showDashboard();
@@ -55,8 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
             populateInitialDropdowns();
             showView('view-role-selection');
         }
-        
-        // Setup Event Listener untuk tombol tema
         const themeToggle = document.getElementById('theme-toggle');
         if (themeToggle) {
             themeToggle.addEventListener('click', () => {
@@ -70,6 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
+    } else {
+        document.getElementById('tombol-buka').onclick = () => window.location.href = 'main.html';
+        document.getElementById('kata-harian').textContent = "Pendidikan adalah senjata paling ampuh yang bisa kamu gunakan untuk mengubah dunia.";
     }
 });
 
@@ -88,11 +82,13 @@ function showLogin(role) {
 
 function populateInitialDropdowns() {
     const guruSelect = document.getElementById('guru-select-nama');
-    data.users.gurus.forEach(guru => guruSelect.innerHTML += `<option value="${guru.id}">${guru.nama}</option>`);
+    if (guruSelect) data.users.gurus.forEach(guru => guruSelect.innerHTML += `<option value="${guru.id}">${guru.nama}</option>`);
     
     const kelasSelect = document.getElementById('siswa-select-kelas');
-    data.kelas.forEach(kelas => kelasSelect.innerHTML += `<option value="${kelas.id}">${kelas.nama}</option>`);
-    populateSiswaDropdown();
+    if(kelasSelect) {
+        data.kelas.forEach(kelas => kelasSelect.innerHTML += `<option value="${kelas.id}">${kelas.nama}</option>`);
+        populateSiswaDropdown();
+    }
 }
 
 function populateSiswaDropdown() {
@@ -108,7 +104,6 @@ function login() {
     const role = currentUser.role;
     let user;
     let password;
-
     if (role === 'admin') {
         const username = document.getElementById('admin-user').value;
         password = document.getElementById('admin-pass').value;
@@ -122,7 +117,6 @@ function login() {
         password = document.getElementById('siswa-pass').value;
         user = data.users.siswas.find(u => u.id == id && u.password === password);
     }
-
     if (user) {
         currentUser = { ...currentUser, ...user };
         sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
@@ -149,8 +143,7 @@ function showDashboard() {
 
 function tampilkanDashboardAdmin() {
     const container = document.getElementById('dashboard-content');
-    document.getElementById('dashboard-title').textContent = 'Dashboard Admin';
-
+    document.getElementById('dashboard-title').textContent = `Dashboard Admin`;
     const totalSiswa = data.users.siswas.length;
     const totalGuru = data.users.gurus.length;
 
@@ -195,20 +188,59 @@ function tampilkanDashboardSiswa() {
                 <a onclick="tampilkanMenuSiswa('tugas')">Lihat semua tugas</a>
             </div>
         </div>
-        <button onclick="tampilkanMenuSiswa('jadwal')">Jadwal Pelajaran</button>
+        <button onclick="tampilkanMenuSiswa('jadwal')">Jadwal & PR</button>
         <button onclick="tampilkanMenuSiswa('absensi')">Lakukan Absensi</button>
         <button onclick="tampilkanMenuSiswa('tugas')">Tugas & Nilai</button>
         <div id="content-area"></div>
     `;
 }
 
-// BAGIAN 4: SEMUA FUNGSI MANAJEMEN DAN MENU (DIKEMBALIKAN)
-
+// BAGIAN 4: SEMUA FUNGSI MENU DAN MANAJEMEN ASLI ANDA
 function tampilkanMenuSiswa(menu) {
     const container = document.getElementById('content-area');
-    if(menu === 'jadwal') container.innerHTML = "<h2>Jadwal Anda...</h2>";
-    if(menu === 'absensi') container.innerHTML = "<h2>Absensi Anda...</h2>";
-    if(menu === 'tugas') container.innerHTML = "<h2>Tugas Anda...</h2>";
+    if (menu === 'jadwal') {
+        const jadwalSiswa = [];
+        const kelasSiswa = data.kelas.find(k => k.id === currentUser.id_kelas);
+        data.users.gurus.forEach(guru => {
+            guru.jadwal.forEach(j => {
+                if (j.id_kelas === kelasSiswa.id) {
+                    jadwalSiswa.push({ ...j, guru: guru.nama });
+                }
+            });
+        });
+        let jadwalHTML = `<div class="jadwal-table"><h4>Jadwal Pelajaran ${kelasSiswa.nama}</h4><div class="jadwal-grid">`;
+        hariOptions.forEach((hari, index) => {
+            jadwalHTML += `<div class="jadwal-hari"><h5>${hari}</h5>`;
+            const jadwalPerHari = jadwalSiswa.filter(j => j.hari === index).sort((a,b) => a.jam - b.jam);
+            if (jadwalPerHari.length > 0) {
+                jadwalPerHari.forEach(j => {
+                    jadwalHTML += `<div class="jadwal-pelajaran"><span class="jam">${j.jam}:00</span>${j.nama_kelas} - ${j.guru}</div>`;
+                });
+            } else {
+                jadwalHTML += `<p class="text-muted">Tidak ada jadwal</p>`;
+            }
+            jadwalHTML += `</div>`;
+        });
+        jadwalHTML += `</div></div>`;
+        jadwalHTML += `<div class="pr-section"><h4>Catatan PR & Tugas</h4>
+            <textarea id="catatan-pr" placeholder="Tulis PR atau catatan penting di sini...">${currentUser.pr}</textarea>
+            <button onclick="simpanPR()">Simpan Catatan</button>
+        </div>`;
+        container.innerHTML = jadwalHTML;
+    } else if (menu === 'absensi') {
+        container.innerHTML = "<h2>Absensi Anda...</h2><p>Fitur absensi akan tersedia di sini.</p>";
+    } else if (menu === 'tugas') {
+        container.innerHTML = "<h2>Tugas & Nilai Anda...</h2><p>Daftar tugas dan nilai akan ditampilkan di sini.</p>";
+    }
+}
+
+function simpanPR() {
+    const catatan = document.getElementById('catatan-pr').value;
+    currentUser.pr = catatan;
+    const siswaDB = data.users.siswas.find(s => s.id === currentUser.id);
+    if (siswaDB) siswaDB.pr = catatan;
+    sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+    showToast("Catatan PR berhasil disimpan!", "success");
 }
 
 function tampilkanMenuGuru(menu) {
@@ -228,14 +260,8 @@ function tampilkanManajemen(jenis) {
 function tampilkanManajemenGuru(container) {
     container.innerHTML = "<h3>Manajemen Data Guru</h3>";
     const kelasOptions = data.kelas.map(k => `<option value="${k.id}">${k.nama}</option>`).join("");
-    
     data.users.gurus.forEach(guru => {
-        let jadwalHTML = `
-            <div class="form-container">
-                <h4>${guru.nama}</h4>
-                <p><strong>Password:</strong> ${guru.password} <button class="small-btn edit" onclick="gantiPassword('guru', ${guru.id})">Ganti</button></p>
-                <h5>Jadwal Mengajar:</h5>`;
-        
+        let jadwalHTML = `<div class="form-container"><h4>${guru.nama}</h4><p><strong>Password:</strong> ${guru.password} <button class="small-btn edit" onclick="gantiPassword('guru', ${guru.id})">Ganti</button></p><h5>Jadwal Mengajar:</h5>`;
         if (guru.jadwal.length > 0) {
             jadwalHTML += "<ul class='jadwal-list'>";
             guru.jadwal.forEach((j, index) => {
@@ -245,15 +271,7 @@ function tampilkanManajemenGuru(container) {
         } else {
             jadwalHTML += "<p>Belum ada jadwal yang diatur.</p>";
         }
-
-        jadwalHTML += `
-            <div class="jadwal-form">
-                <select id="jadwal-kelas-${guru.id}">${kelasOptions}</select>
-                <select id="jadwal-hari-${guru.id}">${hariOptions.map((h, i) => `<option value="${i}">${h}</option>`).join("")}</select>
-                <select id="jadwal-jam-${guru.id}">${jamOptions.map(j => `<option value="${j}">${j}:00</option>`).join("")}</select>
-                <button class="small-btn" onclick="tambahJadwalGuru(${guru.id})">+ Tambah Jadwal</button>
-            </div>`;
-        
+        jadwalHTML += `<div class="jadwal-form"><select id="jadwal-kelas-${guru.id}">${kelasOptions}</select><select id="jadwal-hari-${guru.id}">${hariOptions.map((h, i) => `<option value="${i}">${h}</option>`).join("")}</select><select id="jadwal-jam-${guru.id}">${jamOptions.map(j => `<option value="${j}">${j}:00</option>`).join("")}</select><button class="small-btn" onclick="tambahJadwalGuru(${guru.id})">+ Tambah Jadwal</button></div>`;
         jadwalHTML += "</div>";
         container.innerHTML += jadwalHTML;
     });
@@ -264,13 +282,11 @@ function tambahJadwalGuru(guruId) {
     const hari = parseInt(document.getElementById(`jadwal-hari-${guruId}`).value);
     const jam = parseInt(document.getElementById(`jadwal-jam-${guruId}`).value);
     const guru = data.users.gurus.find(g => g.id === guruId);
-    
     if (!guru) return;
     if (guru.jadwal.some(j => j.id_kelas === id_kelas && j.hari === hari && j.jam === jam)) {
         showToast("Jadwal ini sudah ada.", "error");
         return;
     }
-    
     const kelas = data.kelas.find(k => k.id === id_kelas);
     guru.jadwal.push({ id_kelas, hari, jam, nama_kelas: kelas.nama });
     showToast("Jadwal berhasil ditambahkan.", "success");
@@ -294,28 +310,23 @@ function gantiPassword(role, id) {
         if (user) {
             user.password = newPassword;
             showToast("Password berhasil diubah.", "success");
-            tampilkanManajemen('guru'); // Refresh tampilan
+            tampilkanManajemen('guru');
         }
     } else if (newPassword !== null) {
         showToast("Password tidak boleh kosong.", "error");
     }
 }
 
-
-// BAGIAN 5: FUNGSI NOTIFIKASI TOAST (BARU)
-
+// BAGIAN 5: FUNGSI BARU (TOAST & DARK MODE)
 function showToast(message, type = 'success') {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     toast.textContent = message;
-
     container.appendChild(toast);
-
     setTimeout(() => {
         toast.classList.add('show');
     }, 10);
-
     setTimeout(() => {
         toast.classList.remove('show');
         toast.addEventListener('transitionend', () => toast.remove());
