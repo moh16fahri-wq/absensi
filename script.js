@@ -139,14 +139,13 @@ function absen(status, id_kelas = null) {
         return alert("Anda sudah mengajukan absensi hari ini.");
     }
     const catatAbsensi = (keterangan = "", disetujui = true) => {
-        data.absensi.push({ id_user: currentUser.id, role: currentRole, nama: currentUser.nama, tanggal: today, status, keterangan, disetujui });
+        data.absensi.push({ id: Date.now(), id_user: currentUser.id, role: currentRole, nama: currentUser.nama, tanggal: today, status, keterangan, disetujui });
         if(status === 'izin' || status === 'sakit') {
             alert(`Pengajuan absen '${status}' berhasil dikirim dan menunggu persetujuan admin.`);
             data.users.admins.forEach(admin => createNotification(admin.username, 'admin', `Permintaan absen ${status} dari ${currentUser.nama}.`));
         } else {
              alert(`Absensi '${status}' berhasil!`);
         }
-       
         if (currentRole === 'siswa') { absensiHariIniSelesai = true; showDashboard(); }
         else if (currentRole === 'guru') { document.getElementById("container-absen-kelas").innerHTML = '<p style="color:green;"><strong>Absensi Anda telah tercatat.</strong></p>'; }
     };
