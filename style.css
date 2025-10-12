@@ -6,6 +6,9 @@
     --primary-color: #6a82fb;
     --primary-hover: #5468d6;
     --secondary-color: #fc5c7d;
+    --success-color: #2ecc71;
+    --danger-color: #e74c3c;
+    --edit-color: #f39c12;
     --light-bg: #f5f7fa;
     --text-color: #333;
     --border-color: #e0e6ed;
@@ -30,7 +33,7 @@ body {
     transition: background 0.5s ease-in-out;
 }
 
-/* --- Kontainer Utama dengan Efek Kaca (Glassmorphism) --- */
+/* --- Kontainer Utama (Glassmorphism) --- */
 .container {
     background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(10px);
@@ -46,10 +49,10 @@ body {
 }
 
 .dashboard {
-    max-width: 1000px;
+    max-width: 1100px;
 }
 
-/* --- Judul dengan Font Aesthetic --- */
+/* --- Tipografi --- */
 h1, h2, h3, h4, h5 {
     font-family: var(--font-heading);
     color: var(--text-color);
@@ -57,7 +60,7 @@ h1, h2, h3, h4, h5 {
     margin-bottom: 1.5rem;
 }
 
-/* --- Tombol Modern & Input Fields --- */
+/* --- Tombol & Input --- */
 button {
     font-family: var(--font-body);
     font-weight: 700;
@@ -81,39 +84,24 @@ button:hover {
 }
 
 .logout-button, .back-button {
-    width: auto;
-    padding: 10px 20px;
-    background: var(--white-color);
-    color: var(--primary-color);
-    border: 1px solid var(--border-color);
+    width: auto; padding: 10px 20px; background: var(--white-color); color: var(--primary-color); border: 1px solid var(--border-color);
 }
-.back-button { margin-bottom: 1.5rem; }
 
 input, select, textarea {
-    font-family: var(--font-body);
-    display: block;
-    width: 100%;
-    padding: 14px;
-    margin-bottom: 1rem;
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-    font-size: 1rem;
-    box-sizing: border-box;
-    background-color: rgba(255, 255, 255, 0.8);
+    font-family: var(--font-body); display: block; width: 100%; padding: 14px; margin-bottom: 1rem; border-radius: 12px;
+    border: 1px solid var(--border-color); font-size: 1rem; box-sizing: border-box; background-color: rgba(255, 255, 255, 0.8);
 }
 
 input:focus, select:focus, textarea:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(106, 130, 251, 0.1);
-    outline: none;
+    border-color: var(--primary-color); box-shadow: 0 0 0 4px rgba(106, 130, 251, 0.1); outline: none;
 }
 
 .small-btn { display: inline-block; width: auto; padding: 6px 14px; font-size: .8rem; margin: 0 4px; border-radius: 8px; font-weight: 600; }
-.small-btn.edit { background: #f5a623; }
-.small-btn.delete { background: #ff6b6b; }
+.small-btn.edit { background: var(--edit-color); }
+.small-btn.delete { background: var(--danger-color); }
 .hidden { display: none; }
 
-/* --- Tampilan Dashboard & Sections --- */
+/* --- Layout Dashboard --- */
 .header { display: flex; justify-content: space-between; align-items: center; }
 .dashboard-section { text-align: left; padding: 1.5rem; margin-bottom: 1.5rem; background: var(--white-color); border-radius: var(--border-radius); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 .announcement-card, .task-card { padding: 1rem; margin-bottom: 1rem; border-left: 5px solid var(--primary-color); background: var(--light-bg); border-radius: 8px; }
@@ -121,72 +109,76 @@ input:focus, select:focus, textarea:focus {
 /* --- Tabs --- */
 .tabs { display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 1.5rem; flex-wrap: wrap; }
 .tab-link {
-    background: transparent;
-    color: #888;
-    border: none;
-    padding: 14px 20px;
-    cursor: pointer;
-    margin-bottom: -1px;
-    width: auto;
-    font-weight: 600;
-    position: relative;
-    border-bottom: 2px solid transparent;
+    background: transparent; color: #888; border: none; padding: 14px 20px; cursor: pointer;
+    margin-bottom: -1px; width: auto; font-weight: 600; position: relative; border-bottom: 2px solid transparent;
 }
 .tab-link:hover { color: var(--primary-color); }
 .tab-link.active { color: var(--primary-color); border-bottom: 2px solid var(--primary-color); }
 
-/* --- Styling untuk Tabel --- */
-.table-container { overflow-x: auto; } /* Agar tabel bisa di-scroll di layar kecil */
+/* --- Tabel --- */
+.table-container { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; background-color: var(--white-color); border-radius: 8px; overflow: hidden; margin-top: 1.5rem; }
 table th, table td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); text-align: left; }
 table th { background-color: var(--light-bg); font-weight: 600; text-align: center; }
 table td { text-align: center; vertical-align: middle; }
 
-/* --- TAMBAHAN BARU: Gaya untuk Filter Rekap Absensi --- */
-.rekap-filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    align-items: flex-end; /* Menjajarkan item ke bawah */
-}
-.rekap-filters .filter-item {
-    flex: 1; /* Agar setiap item filter punya lebar yang sama */
-    min-width: 150px;
-}
-.rekap-filters label {
-    font-weight: 600;
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
-    display: block;
-}
-.rekap-filters select, .rekap-filters input, .rekap-filters button {
-    margin-bottom: 0;
-    width: 100%;
-}
-.rekap-actions {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1.5rem;
-}
-.rekap-actions button {
-    background: #2ecc71;
-    width: auto;
-}
+/* --- Filter Absensi --- */
+.rekap-filters { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; }
+.rekap-filters .filter-item { flex: 1; min-width: 150px; }
+.rekap-filters label { font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem; display: block; }
+.rekap-filters select, .rekap-filters input, .rekap-filters button { margin-bottom: 0; width: 100%; }
+.rekap-actions { display: flex; gap: 1rem; margin-top: 1.5rem; }
+.rekap-actions button { background: var(--success-color); width: auto; }
 .rekap-actions .export-btn { background: #3498db; }
 
-/* --- Gaya untuk fitur lain (tidak diubah) --- */
-.jadwal-guru-container { background-color: var(--light-bg); border-left: 4px solid var(--primary-color); }
-.jadwal-list { list-style-type: none; padding-left: 0; }
-.jadwal-item { display: flex; justify-content: space-between; align-items: center; background-color: var(--white-color); padding: 10px; border-radius: 8px; margin-bottom: 8px; }
-.jadwal-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; align-items: center; padding-top: 1rem; border-top: 1px solid var(--border-color); }
-.jadwal-form select, .jadwal-form button { margin-bottom: 0; }
-.upload-area { display: flex; align-items: center; gap: 10px; }
-.upload-area input[type="file"] { display: none; }
-.upload-area .file-label {
-    background-color: var(--white-color); color: var(--primary-color); padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: background-color 0.3s; margin-bottom: 0;
+/* --- TAMBAHAN BARU: Manajemen Data & Jadwal Pelajaran --- */
+.manajemen-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
 }
-.upload-area .file-label:hover { background-color: #eee; }
-.background-preview { width: 60px; height: 40px; border-radius: 8px; background-color: var(--border-color); background-size: cover; background-position: center; border: 1px solid var(--border-color); }
-.tampilan-item { display: grid; grid-template-columns: 1fr 2fr; align-items: center; gap: 15px; padding: 1rem 0; border-bottom: 1px solid var(--border-color); }
-.tampilan-item:last-child { border-bottom: none; }
-.tampilan-item label { font-weight: 600; text-align: left;}
+.manajemen-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    padding: 1.5rem;
+    background-color: var(--light-bg);
+    border-radius: 12px;
+    margin-top: 1rem;
+}
+.jadwal-pelajaran-controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: flex-end;
+}
+.jadwal-pelajaran-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+.jadwal-hari {
+    background-color: var(--light-bg);
+    padding: 1rem;
+    border-radius: 12px;
+}
+.jadwal-sesi {
+    background-color: var(--white-color);
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+}
+.sesi-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+.sesi-kosong {
+    text-align: center;
+    color: #aaa;
+    font-style: italic;
+    margin-top: 1rem;
+}
