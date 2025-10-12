@@ -1,83 +1,154 @@
-/* --- Import Font --- */
+/* --- Import Font dari versi baru --- */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Nunito:wght@400;600;700&display=swap');
 
-/* --- Variabel Warna Aesthetic --- */
+/* --- Variabel Warna Aesthetic dari versi baru --- */
 :root {
-    --primary-color: #6a82fb; --primary-hover: #5468d6; --secondary-color: #fc5c7d;
-    --success-color: #2ecc71; --danger-color: #e74c3c; --edit-color: #f39c12;
-    --light-bg: #f5f7fa; --text-color: #333; --border-color: #e0e6ed;
-    --white-color: #ffffff; --shadow: 0 8px 32px rgba(106, 130, 251, 0.15);
-    --border-radius: 16px; --font-heading: 'Playfair Display', serif; --font-body: 'Nunito', sans-serif;
+    --primary-color: #6a82fb;
+    --primary-hover: #5468d6;
+    --secondary-color: #fc5c7d;
+    --success-color: #7ED321;
+    --danger-color: #D0021B;
+    --edit-color: #F5A623;
+    --light-bg: #f5f7fa;
+    --text-color: #333;
+    --border-color: #e0e6ed;
+    --white-color: #ffffff;
+    --shadow: 0 8px 32px rgba(106, 130, 251, 0.15);
+    --border-radius: 16px;
+    --font-heading: 'Playfair Display', serif;
+    --font-body: 'Nunito', sans-serif;
 }
 
 /* --- Tampilan Dasar --- */
 body {
-    font-family: var(--font-body); background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
-    display: flex; justify-content: center; align-items: flex-start; /* Ubah ke flex-start */
-    min-height: 100vh; margin: 0; padding: 40px 0; /* Tambah padding atas bawah */
-    color: var(--text-color); transition: background 0.5s ease-in-out;
+    font-family: var(--font-body);
+    background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px 0;
+    color: var(--text-color);
+    transition: background 0.5s ease-in-out;
 }
 
-/* --- Kontainer Utama (Glassmorphism) --- */
+/* --- Kontainer Utama dengan Efek Kaca (Glassmorphism) --- */
 .container {
-    background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px);
-    padding: 2.5rem; border-radius: var(--border-radius); box-shadow: var(--shadow);
-    text-align: center; width: 90%; max-width: 550px;
-    transition: all .4s ease-in-out; border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 2.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    text-align: center;
+    width: 90%;
+    max-width: 550px;
+    transition: all .4s ease-in-out;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
-.dashboard { max-width: 1100px; }
 
-/* --- Tipografi --- */
-h1, h2, h3, h4, h5 { font-family: var(--font-heading); color: var(--text-color); margin-top: 0; margin-bottom: 1.5rem; }
+.dashboard {
+    max-width: 1000px;
+    text-align: left;
+}
 
-/* --- Tombol & Input --- */
+/* --- Judul dengan Font Aesthetic --- */
+h1, h2, h3, h4, h5 {
+    font-family: var(--font-heading);
+    color: var(--text-color);
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+}
+
+h1 { font-size: 2.2rem; }
+.quote { font-size: 1rem; margin: 1.5rem 0; font-style: italic; }
+
+/* --- Tombol dan Input --- */
+button, input, select, textarea {
+    font-family: var(--font-body);
+    display: block;
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 1.2rem;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: all 0.3s;
+}
+
 button {
-    font-family: var(--font-body); font-weight: 700; font-size: 1rem; display: block;
-    width: 100%; padding: 14px; margin-bottom: 1rem; border-radius: 12px; border: none;
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-    color: var(--white-color); cursor: pointer; transition: all .3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    letter-spacing: 0.5px;
 }
-button:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
-.logout-button, .back-button { width: auto; padding: 10px 20px; background: var(--white-color); color: var(--primary-color); border: 1px solid var(--border-color); }
-input, select, textarea {
-    font-family: var(--font-body); display: block; width: 100%; padding: 14px; margin-bottom: 1rem; border-radius: 12px;
-    border: 1px solid var(--border-color); font-size: 1rem; box-sizing: border-box; background-color: rgba(255, 255, 255, 0.8);
-}
-input:focus, select:focus, textarea:focus { border-color: var(--primary-color); box-shadow: 0 0 0 4px rgba(106, 130, 251, 0.1); outline: none; }
-.small-btn { display: inline-block; width: auto; padding: 6px 14px; font-size: .8rem; margin: 0 4px; border-radius: 8px; font-weight: 600; }
-.small-btn.edit { background: var(--edit-color); }
-.small-btn.delete { background: var(--danger-color); }
-.hidden { display: none; }
+button:hover { background-color: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.back-button { background-color: transparent; color: var(--text-color); }
+.logout-button { width: auto; position: absolute; top: 2.5rem; right: 2.5rem; padding: 10px 18px; }
+.small-btn { width: auto; padding: 5px 10px; font-size: 0.8rem; margin: 0 5px; }
+.delete { background-color: var(--danger-color); }
+.edit { background-color: var(--edit-color); }
 
-/* --- Layout Dashboard & Tabs --- */
-.header { display: flex; justify-content: space-between; align-items: center; }
-.dashboard-section { text-align: left; padding: 1.5rem; margin-bottom: 1.5rem; background: var(--white-color); border-radius: var(--border-radius); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-.tabs { display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 1.5rem; flex-wrap: wrap; }
+/* --- Layout Khusus --- */
+.hidden { display: none; }
+.header { display: flex; justify-content: space-between; align-items: center; position: relative; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
+.dashboard-section { margin-top: 1.5rem; padding: 1.5rem; background: var(--white-color); border-radius: var(--border-radius); }
+.filter-group { display: flex; gap: 1rem; margin-bottom: 1rem; align-items: center; }
+
+/* --- Tabs --- */
+.tabs { display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 1.5rem; }
 .tab-link {
-    background: transparent; color: #888; border: none; padding: 14px 20px; cursor: pointer;
-    margin-bottom: -1px; width: auto; font-weight: 600; position: relative; border-bottom: 2px solid transparent;
+    background: none; color: var(--text-color); border: none; padding: 1rem 1.5rem; cursor: pointer;
+    margin-bottom: -1px; border-bottom: 3px solid transparent; border-radius: 0;
 }
-.tab-link:hover { color: var(--primary-color); }
-.tab-link.active { color: var(--primary-color); border-bottom: 2px solid var(--primary-color); }
+.tab-link.active { border-bottom: 3px solid var(--primary-color); font-weight: bold; }
+.tab-content { animation: fadeIn 0.5s; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 /* --- Tabel --- */
-.table-container { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; background-color: var(--white-color); border-radius: 8px; overflow: hidden; margin-top: 1.5rem; }
-table th, table td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); text-align: center; vertical-align: middle; }
-table th { background-color: var(--light-bg); font-weight: 600; }
+table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
+th { background-color: var(--light-bg); }
 
-/* --- TAMBAHAN BARU: Dasbor Siswa & Guru --- */
-.jadwal-pelajaran-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; }
-.jadwal-hari { background-color: var(--light-bg); padding: 1rem; border-radius: 12px; }
-.jadwal-sesi { background-color: var(--white-color); padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 8px; border-left: 4px solid var(--primary-color); }
-.sesi-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-.sesi-kosong { text-align: center; color: #aaa; font-style: italic; margin-top: 1rem; }
-.catatan-pr { width: 100%; min-height: 60px; font-size: 0.9rem; padding: 8px; margin-top: 8px; border-radius: 8px; border: 1px solid var(--border-color); }
-.form-container { padding: 1.5rem; background-color: var(--light-bg); border-radius: 12px; margin-top: 1rem; }
-.discussion-container { margin-top: 1.5rem; }
-.discussion-post { border-bottom: 1px solid var(--border-color); padding: 1rem 0; }
-.discussion-post:last-child { border-bottom: none; }
-.discussion-post strong { color: var(--primary-color); }
-.discussion-form { display: flex; gap: 1rem; margin-top: 1rem; }
-.discussion-form textarea { margin-bottom: 0; }
-.discussion-form button { width: auto; margin-bottom: 0; }
+/* --- Notifikasi (dari versi pertama) --- */
+.header-actions { display: flex; align-items: center; gap: 1rem; }
+#notification-bell { cursor: pointer; position: relative; font-size: 1.5rem; }
+.notification-badge {
+    position: absolute; top: -5px; right: -8px; background-color: var(--danger-color); color: white;
+    border-radius: 50%; width: 20px; height: 20px; font-size: 0.75rem; display: flex;
+    justify-content: center; align-items: center;
+}
+#notification-dropdown {
+    position: absolute; top: 60px; right: 0; background: var(--white-color);
+    border-radius: var(--border-radius); box-shadow: var(--shadow); width: 320px; max-height: 400px;
+    overflow-y: auto; text-align: left; z-index: 100;
+}
+.notif-item { padding: 1rem; border-bottom: 1px solid var(--border-color); cursor: pointer; }
+.notif-item.read p { color: #888; }
+
+/* --- Jadwal Siswa & Catatan PR (dari versi pertama) --- */
+.jadwal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+.jadwal-hari { background-color: var(--light-bg); padding: 1rem; border-radius: var(--border-radius); }
+.jadwal-hari h5 { text-align: center; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; }
+.jadwal-sesi { margin-bottom: 1rem; }
+.catatan-pr { width: 100%; min-height: 60px; font-size: 0.9rem; padding: 8px; margin-top: 8px; }
+
+/* Fitur Tampilan (dari versi kedua) */
+.tampilan-manager { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
+.tampilan-item label { font-weight: bold; margin-bottom: 0.5rem; display: block; }
+.upload-area { position: relative; }
+.background-preview {
+    width: 100%; height: 100px; border-radius: 8px; background-color: #eee;
+    background-size: cover; background-position: center; margin-bottom: 10px;
+}
+input[type="file"] { display: none; }
+.file-label {
+    background-color: var(--white-color); color: var(--primary-color); padding: 8px 12px;
+    border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer;
+    transition: background-color 0.3s; display: inline-block; width: auto; margin-bottom: 0;
+}
+.file-label:hover { background-color: #eee; }
