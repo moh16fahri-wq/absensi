@@ -11,12 +11,13 @@ const data = {
         ]
     },
     kelas: [
-        { id: 1, nama: "Kelas 10A", lokasi: { latitude: 0, longitude: 0 }, backgroundData: null },
-        { id: 2, nama: "Kelas 11B", lokasi: { latitude: 0, longitude: 0 }, backgroundData: null }
+        { id: 1, nama: "Kelas 10A", lokasi: { latitude: -7.983908, longitude: 112.621391 }, backgroundData: null },
+        { id: 2, nama: "Kelas 11B", lokasi: { latitude: -7.983500, longitude: 112.621800 }, backgroundData: null }
     ],
     absensi: [
         { id: 1, id_siswa: 101, tanggal: "2025-10-10", status: "Hadir" }, { id: 2, id_siswa: 102, tanggal: "2025-10-10", status: "Izin" },
-        { id: 3, id_siswa: 201, tanggal: "2025-10-11", status: "Hadir" }, { id: 4, id_siswa: 101, tanggal: "2025-10-11", status: "Sakit" }
+        { id: 3, id_siswa: 201, tanggal: "2025-10-11", status: "Hadir" }, { id: 4, id_siswa: 101, tanggal: "2025-10-11", status: "Sakit" },
+        { id: 5, id_siswa: 202, tanggal: "2025-10-11", status: "Alpa" }
     ],
     tugas: [
         { id: 1, id_kelas: 1, judul: "Rangkuman Sejarah", deadline: "2025-10-20", deskripsi: "Buat rangkuman Bab 3." },
@@ -29,17 +30,16 @@ const data = {
     ],
     catatanPR: [],
     diskusi: [
-        { id: 1, id_kelas: 1, id_user: 101, role: 'siswa', nama: 'Agus', pesan: 'Halo semua, jangan lupa PR Matematika ya!', waktu: '2025-10-09 10:30' },
-        { id: 2, id_kelas: 1, id_user: 1, role: 'guru', nama: 'Budi Santoso', pesan: 'Betul, Agus. Kerjakan halaman 50.', waktu: '2025-10-09 11:00' }
+        { id: 1, id_kelas: 1, id_user: 101, role: 'siswa', nama: 'Agus', pesan: 'Halo semua, jangan lupa PR Matematika ya!', waktu: '2025-10-09 10:30' }
     ]
 };
 
 // BAGIAN 2: STATE APLIKASI
 let currentUser = null, currentRole = null, absensiHariIniSelesai = false;
-let nextSiswaId = 203, nextGuruId = 3, nextKelasId = 3, nextAbsensiId = 5;
-let nextJadwalPelajaranId = 4, nextTugasId = 3, nextDiskusiId = 3;
+let nextSiswaId = 203, nextGuruId = 3, nextKelasId = 3, nextAbsensiId = 6;
+let nextJadwalPelajaranId = 4, nextTugasId = 3, nextDiskusiId = 2;
 
-// BAGIAN 3: FUNGSI UTAMA & LOGIN/LOGOUT (Tidak Berubah)
+// BAGIAN 3: FUNGSI UTAMA & LOGIN/LOGOUT
 document.addEventListener("DOMContentLoaded", () => { if (document.getElementById("tombol-buka")) { fetch('https://api.quotable.io/random?tags=inspirational|technology|education').then(response => response.json()).then(data => { document.getElementById('kata-harian').textContent = `"${data.content}" - ${data.author}`; }).catch(() => { document.getElementById('kata-harian').textContent = '"Pendidikan adalah senjata paling ampuh yang bisa kamu gunakan untuk mengubah dunia." - Nelson Mandela'; }); document.getElementById("tombol-buka").addEventListener("click", () => { window.location.href = "main.html"; }); } else { populateInitialDropdowns(); } });
 function populateInitialDropdowns() { const guruSelect = document.getElementById("guru-select-nama"); data.users.gurus.forEach(guru => { const option = document.createElement("option"); option.value = guru.id; option.textContent = guru.nama; guruSelect.appendChild(option); }); const kelasSelect = document.getElementById("siswa-select-kelas"); data.kelas.forEach(k => { const option = document.createElement("option"); option.value = k.id; option.textContent = k.nama; kelasSelect.appendChild(option); }); populateSiswaDropdown(); }
 function populateSiswaDropdown() { const kelasId = document.getElementById("siswa-select-kelas").value; const siswaSelect = document.getElementById("siswa-select-nama"); siswaSelect.innerHTML = ''; data.users.siswas.filter(s => s.id_kelas == kelasId).forEach(siswa => { const option = document.createElement("option"); option.value = siswa.id; option.textContent = siswa.nama; siswaSelect.appendChild(option); }); }
@@ -48,242 +48,32 @@ function showLogin(role) { currentRole = role; showView('view-login-form'); docu
 function login() { let user = null; if (currentRole === "admin") user = data.users.admins.find(u => u.username === document.getElementById("admin-user").value && u.password === document.getElementById("admin-pass").value); else if (currentRole === "guru") user = data.users.gurus.find(u => u.id == document.getElementById("guru-select-nama").value && u.password === document.getElementById("guru-pass").value); else if (currentRole === "siswa") user = data.users.siswas.find(u => u.id == document.getElementById("siswa-select-nama").value && u.password === document.getElementById("siswa-pass").value); if (user) { currentUser = user; alert("Login Berhasil!"); if (currentRole === 'siswa') { const kelasSiswa = data.kelas.find(k => k.id === currentUser.id_kelas); if (kelasSiswa && kelasSiswa.backgroundData) { document.body.style.backgroundImage = `url('${kelasSiswa.backgroundData}')`; document.body.style.backgroundSize = 'cover'; document.body.style.backgroundPosition = 'center'; } } showDashboard(); } else { alert("Login Gagal! Periksa kembali data Anda."); } }
 function logout() { currentUser = null; currentRole = null; absensiHariIniSelesai = false; document.body.style.backgroundImage = ''; showView("view-role-selection"); document.querySelectorAll("input").forEach(i => i.value = ""); }
 function showDashboard() { showView('view-dashboard'); const dashboardContent = document.getElementById('dashboard-content'); const dashboardTitle = document.getElementById('dashboard-title'); dashboardTitle.textContent = `Dashboard ${currentRole.charAt(0).toUpperCase() + currentRole.slice(1)}`; switch (currentRole) { case 'admin': dashboardContent.innerHTML = renderAdminDashboard(); openAdminTab({ currentTarget: document.querySelector('.tab-link.active') }, 'Analitik'); break; case 'guru': dashboardContent.innerHTML = renderGuruDashboard(); openGuruTab({ currentTarget: document.querySelector('.tab-link.active') }, 'Tugas'); break; case 'siswa': dashboardContent.innerHTML = renderSiswaDashboard(); openSiswaTab({ currentTarget: document.querySelector('.tab-link.active') }, 'Absensi'); break; } }
+function hitungJarak(lat1,lon1,lat2,lon2){const R=6371e3,φ1=lat1*Math.PI/180,φ2=lat2*Math.PI/180,Δφ=(lat2-lat1)*Math.PI/180,Δλ=(lon2-lon1)*Math.PI/180,a=Math.sin(Δφ/2)*Math.sin(Δφ/2)+Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)*Math.sin(Δλ/2),c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));return R*c}
 
-// BAGIAN 4: RENDER DASBOR SISWA (FUNGSIONAL)
-function renderSiswaDashboard() {
-    return `
-        <div class="header">
-            <h4>Selamat Datang, ${currentUser.nama}!</h4>
-        </div>
-        <div class="tabs">
-            <button class="tab-link active" onclick="openSiswaTab(event, 'Absensi')">✅ Absensi</button>
-            <button class="tab-link" onclick="openSiswaTab(event, 'Jadwal')">🗓️ Jadwal</button>
-            <button class="tab-link" onclick="openSiswaTab(event, 'Tugas')">📚 Tugas</button>
-            <button class="tab-link" onclick="openSiswaTab(event, 'Diskusi')">💬 Diskusi Kelas</button>
-        </div>
-        <div id="Absensi" class="tab-content"></div>
-        <div id="Jadwal" class="tab-content hidden"></div>
-        <div id="Tugas" class="tab-content hidden"></div>
-        <div id="Diskusi" class="tab-content hidden"></div>
-    `;
-}
-function openSiswaTab(evt, tabName) {
-    document.querySelectorAll(".tab-content").forEach(tc => tc.classList.add('hidden'));
-    document.querySelectorAll(".tab-link").forEach(tl => tl.classList.remove("active"));
-    document.getElementById(tabName).classList.remove("hidden");
-    evt.currentTarget.classList.add("active");
-    if(tabName === 'Absensi') renderAbsensiSiswa();
-    else if (tabName === 'Jadwal') renderJadwalSiswa();
-    else if (tabName === 'Tugas') renderTugasSiswa();
-    else if (tabName === 'Diskusi') renderDiskusi('siswa');
-}
-function renderAbsensiSiswa() {
-    document.getElementById('Absensi').innerHTML = `
-        <div class="dashboard-section">
-            <button onclick="lakukanAbsensi()">Lakukan Absensi Hari Ini</button>
-        </div>
-        <div class="dashboard-section">
-            <h5>📢 Pengumuman Terbaru</h5>
-            ${data.pengumuman.length > 0 ? data.pengumuman.map(p => `<div class="announcement-card"><strong>${p.judul}</strong><p>${p.isi}</p><small>${p.tanggal}</small></div>`).join('') : '<p>Tidak ada pengumuman.</p>'}
-        </div>`;
-}
-function renderJadwalSiswa() {
-    const container = document.getElementById('Jadwal');
-    const id_kelas = currentUser.id_kelas;
-    let html = '<h5>Jadwal Pelajaran & Catatan PR</h5><div class="jadwal-pelajaran-grid">';
-    const hariSekolah = [1, 2, 3, 4, 5]; // Senin - Jumat
-    const namaHari = ["", "Senin", "Selasa", "Rabu", "Kamis", "Jumat"];
-    hariSekolah.forEach(hari => {
-        const jadwalHari = data.jadwalPelajaran.filter(j => j.id_kelas == id_kelas && j.hari === hari).sort((a, b) => a.jam - b.jam);
-        html += `<div class="jadwal-hari"><h6>${namaHari[hari]}</h6>`;
-        if (jadwalHari.length > 0) {
-            jadwalHari.forEach(sesi => {
-                const guru = data.users.gurus.find(g => g.id === sesi.id_guru);
-                const catatan = data.catatanPR.find(c => c.id_siswa === currentUser.id && c.id_jadwal === sesi.id);
-                html += `
-                    <div class="jadwal-sesi">
-                        <strong>${sesi.mapel}</strong><br>
-                        <small>Jam ke-${sesi.jam} (${guru ? guru.nama : 'N/A'})</small>
-                        <textarea class="catatan-pr" placeholder="Tulis catatan PR di sini..." onblur="simpanCatatanPR(${sesi.id}, this.value)">${catatan ? catatan.catatan : ''}</textarea>
-                    </div>`;
-            });
-        } else { html += '<p class="sesi-kosong">Tidak ada jadwal</p>'; }
-        html += '</div>';
-    });
-    html += '</div>';
-    container.innerHTML = html;
-}
-function simpanCatatanPR(id_jadwal, catatanTeks) {
-    const catatanIndex = data.catatanPR.findIndex(c => c.id_siswa === currentUser.id && c.id_jadwal === id_jadwal);
-    if(catatanIndex > -1) {
-        if(catatanTeks) data.catatanPR[catatanIndex].catatan = catatanTeks;
-        else data.catatanPR.splice(catatanIndex, 1); // Hapus jika catatan kosong
-    } else if (catatanTeks) {
-        data.catatanPR.push({ id_siswa: currentUser.id, id_jadwal, catatan: catatanTeks });
-    }
-}
-function renderTugasSiswa() {
-    const tugasKelas = data.tugas.filter(t => t.id_kelas === currentUser.id_kelas);
-    document.getElementById('Tugas').innerHTML = `
-        <div class="dashboard-section">
-            <h5>📚 Tugas Anda</h5>
-            ${tugasKelas.length > 0 ? tugasKelas.map(t => `<div class="task-card"><strong>${t.judul}</strong><p>${t.deskripsi}</p><small>Deadline: ${t.deadline}</small></div>`).join('') : '<p>Tidak ada tugas untuk kelas Anda saat ini.</p>'}
-        </div>`;
-}
-function renderDiskusi(role) {
-    const id_kelas = (role === 'siswa') ? currentUser.id_kelas : document.getElementById('diskusi-kelas-guru').value;
-    const containerId = (role === 'siswa') ? 'Diskusi' : 'diskusi-guru-container';
-    const container = document.getElementById(containerId);
-    
-    if(!id_kelas && role === 'guru') { container.innerHTML = '<p>Pilih kelas untuk melihat diskusi.</p>'; return; }
+// BAGIAN 4: RENDER DASBOR SISWA
+function renderSiswaDashboard() { return ` <div class="header"> <h4>Selamat Datang, ${currentUser.nama}!</h4> </div> <div class="tabs"> <button class="tab-link active" onclick="openSiswaTab(event, 'Absensi')">✅ Absensi</button> <button class="tab-link" onclick="openSiswaTab(event, 'Jadwal')">🗓️ Jadwal</button> <button class="tab-link" onclick="openSiswaTab(event, 'Tugas')">📚 Tugas</button> <button class="tab-link" onclick="openSiswaTab(event, 'Diskusi')">💬 Diskusi Kelas</button> </div> <div id="Absensi" class="tab-content"></div> <div id="Jadwal" class="tab-content hidden"></div> <div id="Tugas" class="tab-content hidden"></div> <div id="Diskusi" class="tab-content hidden"></div> `; }
+function openSiswaTab(evt, tabName) { document.querySelectorAll(".tab-content").forEach(tc => tc.classList.add('hidden')); document.querySelectorAll(".tab-link").forEach(tl => tl.classList.remove("active")); document.getElementById(tabName).classList.remove("hidden"); evt.currentTarget.classList.add("active"); if(tabName === 'Absensi') renderAbsensiSiswa(); else if (tabName === 'Jadwal') renderJadwalSiswa(); else if (tabName === 'Tugas') renderTugasSiswa(); else if (tabName === 'Diskusi') renderDiskusi('siswa'); }
+function renderAbsensiSiswa() { document.getElementById('Absensi').innerHTML = ` <div class="dashboard-section"> <button onclick="lakukanAbsensi()">Lakukan Absensi Hari Ini</button> </div> <div class="dashboard-section"> <h5>📢 Pengumuman Terbaru</h5> ${data.pengumuman.length > 0 ? data.pengumuman.map(p => `<div class="announcement-card"><strong>${p.judul}</strong><p>${p.isi}</p><small>${p.tanggal}</small></div>`).join('') : '<p>Tidak ada pengumuman.</p>'} </div>`; }
+function lakukanAbsensi(){if(absensiHariIniSelesai)return void alert("Anda sudah melakukan absensi hari ini.");navigator.geolocation.getCurrentPosition(pos=>{const userLat=pos.coords.latitude,userLon=pos.coords.longitude,kelasSiswa=data.kelas.find(k=>k.id===currentUser.id_kelas),jarak=hitungJarak(userLat,userLon,kelasSiswa.lokasi.latitude,kelasSiswa.lokasi.longitude);if(jarak<=100){const tanggalHariIni=(new Date).toISOString().slice(0,10);data.absensi.push({id:nextAbsensiId++,id_siswa:currentUser.id,tanggal:tanggalHariIni,status:"Hadir"}),absensiHariIniSelesai=!0,alert("Absensi berhasil!")}else alert(`Absensi gagal. Anda berada ${jarak.toFixed(0)} meter dari lokasi kelas.`)},()=>{alert("Gagal mendapatkan lokasi. Pastikan GPS Anda aktif.")})}
+function renderJadwalSiswa() { const container = document.getElementById('Jadwal'); const id_kelas = currentUser.id_kelas; let html = '<h5>Jadwal Pelajaran & Catatan PR</h5><div class="jadwal-pelajaran-grid">'; const hariSekolah = [1, 2, 3, 4, 5]; const namaHari = ["", "Senin", "Selasa", "Rabu", "Kamis", "Jumat"]; hariSekolah.forEach(hari => { const jadwalHari = data.jadwalPelajaran.filter(j => j.id_kelas == id_kelas && j.hari === hari).sort((a, b) => a.jam - b.jam); html += `<div class="jadwal-hari"><h6>${namaHari[hari]}</h6>`; if (jadwalHari.length > 0) { jadwalHari.forEach(sesi => { const guru = data.users.gurus.find(g => g.id === sesi.id_guru); const catatan = data.catatanPR.find(c => c.id_siswa === currentUser.id && c.id_jadwal === sesi.id); html += ` <div class="jadwal-sesi"> <strong>${sesi.mapel}</strong><br> <small>Jam ke-${sesi.jam} (${guru ? guru.nama : 'N/A'})</small> <textarea class="catatan-pr" placeholder="Tulis catatan PR..." onblur="simpanCatatanPR(${sesi.id}, this.value)">${catatan ? catatan.catatan : ''}</textarea> </div>`; }); } else { html += '<p class="sesi-kosong">Tidak ada jadwal</p>'; } html += '</div>'; }); html += '</div>'; container.innerHTML = html; }
+function simpanCatatanPR(id_jadwal, catatanTeks) { const catatanIndex = data.catatanPR.findIndex(c => c.id_siswa === currentUser.id && c.id_jadwal === id_jadwal); if(catatanIndex > -1) { if(catatanTeks) data.catatanPR[catatanIndex].catatan = catatanTeks; else data.catatanPR.splice(catatanIndex, 1); } else if (catatanTeks) { data.catatanPR.push({ id_siswa: currentUser.id, id_jadwal, catatan: catatanTeks }); } }
+function renderTugasSiswa() { const tugasKelas = data.tugas.filter(t => t.id_kelas === currentUser.id_kelas); document.getElementById('Tugas').innerHTML = ` <div class="dashboard-section"> <h5>📚 Tugas Anda</h5> ${tugasKelas.length > 0 ? tugasKelas.map(t => `<div class="task-card"><strong>${t.judul}</strong><p>${t.deskripsi}</p><small>Deadline: ${t.deadline}</small></div>`).join('') : '<p>Tidak ada tugas untuk kelas Anda saat ini.</p>'} </div>`; }
 
-    const diskusiKelas = data.diskusi.filter(d => d.id_kelas == id_kelas);
-    let html = `<div class="discussion-container">`;
-    if(diskusiKelas.length > 0) {
-        diskusiKelas.forEach(p => {
-            html += `<div class="discussion-post"><p><strong>${p.nama}</strong> <small>(${p.role}) - ${p.waktu}</small></p><p>${p.pesan}</p></div>`;
-        });
-    } else { html += '<p>Belum ada pesan di diskusi ini. Mulailah percakapan!</p>'; }
-    
-    html += `
-        <div class="discussion-form">
-            <textarea id="pesan-diskusi-${role}" placeholder="Ketik pesan Anda..."></textarea>
-            <button onclick="kirimPesanDiskusi('${role}')">Kirim</button>
-        </div>
-    </div>`;
-    container.innerHTML = html;
-}
-function kirimPesanDiskusi(role) {
-    const pesan = document.getElementById(`pesan-diskusi-${role}`).value;
-    if(!pesan.trim()) return;
+// BAGIAN 5: RENDER DASBOR GURU
+function renderGuruDashboard() { return ` <div class="header"><h4>Selamat Datang, ${currentUser.nama}!</h4></div> <div class="tabs"> <button class="tab-link active" onclick="openGuruTab(event, 'Tugas')">📚 Manajemen Tugas</button> <button class="tab-link" onclick="openGuruTab(event, 'Absensi')">📊 Rekap Absensi</button> <button class="tab-link" onclick="openGuruTab(event, 'Diskusi')">💬 Diskusi Kelas</button> </div> <div id="Tugas" class="tab-content"></div> <div id="Absensi" class="tab-content hidden"></div> <div id="Diskusi" class="tab-content hidden"></div>`; }
+function openGuruTab(evt, tabName) { document.querySelectorAll(".tab-content").forEach(tc => tc.classList.add('hidden')); document.querySelectorAll(".tab-link").forEach(tl => tl.classList.remove("active")); document.getElementById(tabName).classList.remove("hidden"); evt.currentTarget.classList.add("active"); if(tabName === 'Tugas') renderTugasGuru(); else if (tabName === 'Absensi') renderAbsensiGuru(); else if (tabName === 'Diskusi') renderDiskusiGuru(); }
+function renderTugasGuru() { const container = document.getElementById('Tugas'); const kelasAjarIds = [...new Set(data.jadwalPelajaran.filter(j => j.id_guru === currentUser.id).map(j => j.id_kelas))]; const kelasAjarOptions = data.kelas.filter(k => kelasAjarIds.includes(k.id)).map(k => `<option value="${k.id}">${k.nama}</option>`).join(''); container.innerHTML = ` <div class="dashboard-section"> <h5>Buat atau Edit Tugas</h5> <div class="form-container" id="form-tugas-guru"> <input type="hidden" id="tugas-id"> <select id="tugas-kelas">${kelasAjarOptions}</select> <input type="text" id="tugas-judul" placeholder="Judul Tugas"> <input type="date" id="tugas-deadline"> <textarea id="tugas-deskripsi" placeholder="Deskripsi tugas..."></textarea> <button onclick="simpanTugasGuru()">Simpan Tugas</button> </div> </div> <div class="dashboard-section"> <h5>Daftar Tugas yang Diberikan</h5> <div class="table-container" id="tabel-tugas-guru"></div> </div> `; renderTabelTugasGuru(); }
+function renderTabelTugasGuru() { const container = document.getElementById('tabel-tugas-guru'); const tugasGuru = data.tugas.filter(t => { const jadwal = data.jadwalPelajaran.find(j => j.id_kelas === t.id_kelas); return jadwal && data.jadwalPelajaran.filter(j => j.id_guru === currentUser.id).map(j => j.id_kelas).includes(t.id_kelas); }); let html = `<table><thead><tr><th>Judul</th><th>Kelas</th><th>Deadline</th><th>Aksi</th></tr></thead><tbody>`; if(tugasGuru.length > 0) { tugasGuru.forEach(t => { const kelas = data.kelas.find(k => k.id === t.id_kelas); html += `<tr><td>${t.judul}</td><td>${kelas.nama}</td><td>${t.deadline}</td> <td><button class="small-btn edit" onclick="editTugasGuru(${t.id})">Edit</button> <button class="small-btn delete" onclick="hapusTugasGuru(${t.id})">Hapus</button></td></tr>`; }); } else { html += '<tr><td colspan="4">Anda belum memberikan tugas.</td></tr>'; } html += '</tbody></table>'; container.innerHTML = html; }
+function simpanTugasGuru() { const id = document.getElementById('tugas-id').value; const id_kelas = parseInt(document.getElementById('tugas-kelas').value); const judul = document.getElementById('tugas-judul').value; const deadline = document.getElementById('tugas-deadline').value; const deskripsi = document.getElementById('tugas-deskripsi').value; if(!id_kelas || !judul || !deadline || !deskripsi) return alert("Semua field harus diisi!"); if(id) { const tugas = data.tugas.find(t => t.id == id); tugas.id_kelas = id_kelas; tugas.judul = judul; tugas.deadline = deadline; tugas.deskripsi = deskripsi; } else { data.tugas.push({ id: nextTugasId++, id_kelas, judul, deadline, deskripsi }); } alert(`Tugas berhasil ${id ? 'diperbarui' : 'disimpan'}!`); renderTugasGuru(); }
+function editTugasGuru(id) { const tugas = data.tugas.find(t => t.id === id); document.getElementById('tugas-id').value = tugas.id; document.getElementById('tugas-kelas').value = tugas.id_kelas; document.getElementById('tugas-judul').value = tugas.judul; document.getElementById('tugas-deadline').value = tugas.deadline; document.getElementById('tugas-deskripsi').value = tugas.deskripsi; window.scrollTo(0, 0); }
+function hapusTugasGuru(id) { if(confirm("Yakin ingin menghapus tugas ini?")) { data.tugas = data.tugas.filter(t => t.id !== id); renderTabelTugasGuru(); } }
+function renderAbsensiGuru() { const guruId = currentUser.id; const kelasAjarIds = [...new Set(data.jadwalPelajaran.filter(j => j.id_guru === guruId).map(j => j.id_kelas))]; const kelasAjar = data.kelas.filter(k => kelasAjarIds.includes(k.id)); document.getElementById('Absensi').innerHTML = ` <div class="dashboard-section"> <h5>Rekap Absensi Siswa di Kelas Anda</h5> <select id="kelas-rekap-guru" onchange="tampilkanRekapAbsensiGuru(this.value)"> <option value="">Pilih Kelas</option> ${kelasAjar.map(k => `<option value="${k.id}">${k.nama}</option>`).join('')} </select> <div class="table-container" id="rekap-absensi-guru-container"></div> </div>`; }
+function tampilkanRekapAbsensiGuru(id_kelas) { const container = document.getElementById('rekap-absensi-guru-container'); if (!id_kelas) { container.innerHTML = ''; return; } const siswasDiKelas = data.users.siswas.filter(s => s.id_kelas == id_kelas); const absensiKelas = data.absensi.filter(a => siswasDiKelas.some(s => s.id === a.id_siswa)); let html = ` <table style="margin-top: 1rem;"> <thead><tr><th>Nama Siswa</th><th>Tanggal</th><th>Status</th></tr></thead> <tbody> `; if (absensiKelas.length > 0) { absensiKelas.forEach(a => { const siswa = data.users.siswas.find(s => s.id === a.id_siswa); html += `<tr><td>${siswa.nama}</td><td>${a.tanggal}</td><td>${a.status}</td></tr>`; }); } else { html += `<tr><td colspan="3">Belum ada data absensi untuk kelas ini.</td></tr>`; } html += `</tbody></table>`; container.innerHTML = html; }
+function renderDiskusiGuru() { const container = document.getElementById('Diskusi'); const kelasAjarIds = [...new Set(data.jadwalPelajaran.filter(j => j.id_guru === currentUser.id).map(j => j.id_kelas))]; const kelasAjarOptions = data.kelas.filter(k => kelasAjarIds.includes(k.id)).map(k => `<option value="${k.id}">${k.nama}</option>`).join(''); container.innerHTML = ` <div class="dashboard-section"> <h5>Diskusi Kelas</h5> <select id="diskusi-kelas-guru" onchange="renderDiskusi('guru')"> <option value="">Pilih Kelas</option> ${kelasAjarOptions} </select> <div id="diskusi-guru-container" style="margin-top: 1rem;"></div> </div> `; }
+function renderDiskusi(role) { const id_kelas = (role === 'siswa') ? currentUser.id_kelas : document.getElementById('diskusi-kelas-guru').value; const containerId = (role === 'siswa') ? 'Diskusi' : 'diskusi-guru-container'; const container = document.getElementById(containerId); if(!id_kelas && role === 'guru') { container.innerHTML = '<p>Pilih kelas untuk melihat diskusi.</p>'; return; } const diskusiKelas = data.diskusi.filter(d => d.id_kelas == id_kelas); let html = `<div class="discussion-container">`; if(diskusiKelas.length > 0) { diskusiKelas.forEach(p => { html += `<div class="discussion-post"><p><strong>${p.nama}</strong> <small>(${p.role}) - ${p.waktu}</small></p><p>${p.pesan}</p></div>`; }); } else { html += '<p>Belum ada pesan di diskusi ini. Mulailah percakapan!</p>'; } html += ` <div class="discussion-form"> <textarea id="pesan-diskusi-${role}" placeholder="Ketik pesan Anda..."></textarea> <button onclick="kirimPesanDiskusi('${role}')">Kirim</button> </div> </div>`; container.innerHTML = html; }
+function kirimPesanDiskusi(role) { const pesan = document.getElementById(`pesan-diskusi-${role}`).value; if(!pesan.trim()) return; const id_kelas = (role === 'siswa') ? currentUser.id_kelas : parseInt(document.getElementById('diskusi-kelas-guru').value); data.diskusi.push({ id: nextDiskusiId++, id_kelas: id_kelas, id_user: currentUser.id, role: role, nama: currentUser.nama, pesan: pesan, waktu: new Date().toLocaleString('id-ID') }); renderDiskusi(role); }
 
-    const id_kelas = (role === 'siswa') ? currentUser.id_kelas : parseInt(document.getElementById('diskusi-kelas-guru').value);
-    
-    data.diskusi.push({
-        id: nextDiskusiId++, id_kelas: id_kelas, id_user: currentUser.id, role: role,
-        nama: currentUser.nama, pesan: pesan, waktu: new Date().toLocaleString('id-ID')
-    });
-
-    renderDiskusi(role); // Refresh
-}
-
-// BAGIAN 5: RENDER DASBOR GURU (FUNGSIONAL)
-function renderGuruDashboard() {
-    return `
-        <div class="header"><h4>Selamat Datang, ${currentUser.nama}!</h4></div>
-        <div class="tabs">
-            <button class="tab-link active" onclick="openGuruTab(event, 'Tugas')">📚 Manajemen Tugas</button>
-            <button class="tab-link" onclick="openGuruTab(event, 'Absensi')">📊 Rekap Absensi</button>
-            <button class="tab-link" onclick="openGuruTab(event, 'Diskusi')">💬 Diskusi Kelas</button>
-        </div>
-        <div id="Tugas" class="tab-content"></div>
-        <div id="Absensi" class="tab-content hidden"></div>
-        <div id="Diskusi" class="tab-content hidden"></div>`;
-}
-function openGuruTab(evt, tabName) {
-    document.querySelectorAll(".tab-content").forEach(tc => tc.classList.add('hidden'));
-    document.querySelectorAll(".tab-link").forEach(tl => tl.classList.remove("active"));
-    document.getElementById(tabName).classList.remove("hidden");
-    evt.currentTarget.classList.add("active");
-    if(tabName === 'Tugas') renderTugasGuru();
-    else if (tabName === 'Absensi') renderAbsensiGuru();
-    else if (tabName === 'Diskusi') renderDiskusiGuru();
-}
-function renderTugasGuru() {
-    const container = document.getElementById('Tugas');
-    const kelasAjarIds = [...new Set(data.jadwalPelajaran.filter(j => j.id_guru === currentUser.id).map(j => j.id_kelas))];
-    const kelasAjarOptions = data.kelas.filter(k => kelasAjarIds.includes(k.id)).map(k => `<option value="${k.id}">${k.nama}</option>`).join('');
-
-    container.innerHTML = `
-        <div class="dashboard-section">
-            <h5>Buat atau Edit Tugas</h5>
-            <div class="form-container" id="form-tugas-guru">
-                <input type="hidden" id="tugas-id">
-                <select id="tugas-kelas">${kelasAjarOptions}</select>
-                <input type="text" id="tugas-judul" placeholder="Judul Tugas">
-                <input type="date" id="tugas-deadline">
-                <textarea id="tugas-deskripsi" placeholder="Deskripsi tugas..."></textarea>
-                <button onclick="simpanTugasGuru()">Simpan Tugas</button>
-            </div>
-        </div>
-        <div class="dashboard-section">
-            <h5>Daftar Tugas yang Diberikan</h5>
-            <div class="table-container" id="tabel-tugas-guru"></div>
-        </div>
-    `;
-    renderTabelTugasGuru();
-}
-function renderTabelTugasGuru() {
-    const container = document.getElementById('tabel-tugas-guru');
-    const tugasGuru = data.tugas.filter(t => {
-        const jadwal = data.jadwalPelajaran.find(j => j.id_kelas === t.id_kelas);
-        return jadwal && jadwal.id_guru === currentUser.id;
-    });
-    let html = `<table><thead><tr><th>Judul</th><th>Kelas</th><th>Deadline</th><th>Aksi</th></tr></thead><tbody>`;
-    if(tugasGuru.length > 0) {
-        tugasGuru.forEach(t => {
-            const kelas = data.kelas.find(k => k.id === t.id_kelas);
-            html += `<tr><td>${t.judul}</td><td>${kelas.nama}</td><td>${t.deadline}</td>
-            <td><button class="small-btn edit" onclick="editTugasGuru(${t.id})">Edit</button>
-            <button class="small-btn delete" onclick="hapusTugasGuru(${t.id})">Hapus</button></td></tr>`;
-        });
-    } else { html += '<tr><td colspan="4">Anda belum memberikan tugas.</td></tr>'; }
-    html += '</tbody></table>';
-    container.innerHTML = html;
-}
-function simpanTugasGuru() {
-    const id = document.getElementById('tugas-id').value;
-    const id_kelas = parseInt(document.getElementById('tugas-kelas').value);
-    const judul = document.getElementById('tugas-judul').value;
-    const deadline = document.getElementById('tugas-deadline').value;
-    const deskripsi = document.getElementById('tugas-deskripsi').value;
-
-    if(!id_kelas || !judul || !deadline || !deskripsi) return alert("Semua field harus diisi!");
-
-    if(id) { // Edit
-        const tugas = data.tugas.find(t => t.id == id);
-        tugas.id_kelas = id_kelas; tugas.judul = judul; tugas.deadline = deadline; tugas.deskripsi = deskripsi;
-    } else { // Tambah
-        data.tugas.push({ id: nextTugasId++, id_kelas, judul, deadline, deskripsi });
-    }
-    alert(`Tugas berhasil ${id ? 'diperbarui' : 'disimpan'}!`);
-    renderTugasGuru();
-}
-function editTugasGuru(id) {
-    const tugas = data.tugas.find(t => t.id === id);
-    document.getElementById('tugas-id').value = tugas.id;
-    document.getElementById('tugas-kelas').value = tugas.id_kelas;
-    document.getElementById('tugas-judul').value = tugas.judul;
-    document.getElementById('tugas-deadline').value = tugas.deadline;
-    document.getElementById('tugas-deskripsi').value = tugas.deskripsi;
-    window.scrollTo(0, 0);
-}
-function hapusTugasGuru(id) {
-    if(confirm("Yakin ingin menghapus tugas ini?")) {
-        data.tugas = data.tugas.filter(t => t.id !== id);
-        renderTabelTugasGuru();
-    }
-}
-function renderAbsensiGuru() { document.getElementById('Absensi').innerHTML = renderGuruDashboard(); }
-function renderDiskusiGuru() {
-    const container = document.getElementById('Diskusi');
-    const kelasAjarIds = [...new Set(data.jadwalPelajaran.filter(j => j.id_guru === currentUser.id).map(j => j.id_kelas))];
-    const kelasAjarOptions = data.kelas.filter(k => kelasAjarIds.includes(k.id)).map(k => `<option value="${k.id}">${k.nama}</option>`).join('');
-
-    container.innerHTML = `
-        <div class="dashboard-section">
-            <h5>Diskusi Kelas</h5>
-            <select id="diskusi-kelas-guru" onchange="renderDiskusi('guru')">
-                <option value="">Pilih Kelas</option>
-                ${kelasAjarOptions}
-            </select>
-            <div id="diskusi-guru-container" style="margin-top: 1rem;"></div>
-        </div>
-    `;
-}
-
-// BAGIAN 6: SEMUA FUNGSI ADMIN (Tidak Berubah, tetap fungsional)
-// ... (Kode untuk semua fungsi admin dari script sebelumnya diletakkan di sini)
+// BAGIAN 6: FUNGSI ADMIN LENGKAP
 function renderAdminDashboard() { return ` <div class="tabs"> <button class="tab-link active" onclick="openAdminTab(event, 'Analitik')">📈 Analitik</button> <button class="tab-link" onclick="openAdminTab(event, 'Absensi')">📊 Rekap Absensi</button> <button class="tab-link" onclick="openAdminTab(event, 'Manajemen')">⚙️ Manajemen Data</button> <button class="tab-link" onclick="openAdminTab(event, 'JadwalPelajaran')">📚 Jadwal Pelajaran</button> <button class="tab-link" onclick="openAdminTab(event, 'Pengumuman')">📢 Pengumuman</button> <button class="tab-link" onclick="openAdminTab(event, 'Tampilan')">🎨 Tampilan</button> </div> <div id="Analitik" class="tab-content"></div> <div id="Absensi" class="tab-content"></div> <div id="Manajemen" class="tab-content"></div> <div id="JadwalPelajaran" class="tab-content"></div> <div id="Pengumuman" class="tab-content"></div> <div id="Tampilan" class="tab-content"></div>`; }
 function openAdminTab(evt, tabName) { document.querySelectorAll(".tab-content").forEach(tc => tc.style.display = "none"); document.querySelectorAll(".tab-link").forEach(tl => tl.className = tl.className.replace(" active", "")); document.getElementById(tabName).style.display = "block"; evt.currentTarget.className += " active"; switch(tabName) { case 'Analitik': renderAdminAnalitik(); break; case 'Absensi': renderAdminAbsensi(); break; case 'Manajemen': renderAdminManajemen(); break; case 'JadwalPelajaran': renderAdminManajemenJadwal(); break; case 'Pengumuman': renderAdminPengumuman(); break; case 'Tampilan': renderAdminTampilan(); break; } }
 function renderAdminAnalitik(){document.getElementById("Analitik").innerHTML=`<div class="dashboard-section"><h5>Analitik Dashboard</h5><p>Total Siswa: ${data.users.siswas.length}</p><p>Total Guru: ${data.users.gurus.length}</p><p>Total Kelas: ${data.kelas.length}</p></div>`}
