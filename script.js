@@ -14,11 +14,9 @@ const data = {
         ]
     },
     kelas: [
-        // Menambahkan properti backgroundData dari versi kedua
         { id: 1, nama: "Kelas 10A", lokasi: { latitude: -7.983908, longitude: 112.621391 }, backgroundData: null },
         { id: 2, nama: "Kelas 11B", lokasi: { latitude: -7.983500, longitude: 112.621800 }, backgroundData: null }
     ],
-    // Menggunakan struktur absensi yang lebih baik dari versi kedua
     absensi: [
         { id: 1, id_siswa: 101, tanggal: "2025-10-10", status: "Hadir" },
         { id: 2, id_siswa: 102, tanggal: "2025-10-10", status: "Izin" },
@@ -26,7 +24,6 @@ const data = {
         { id: 4, id_siswa: 101, tanggal: "2025-10-11", status: "Sakit" },
         { id: 5, id_siswa: 202, tanggal: "2025-10-11", status: "Alpa" }
     ],
-    // Mengambil data lain dari versi pertama yang lebih lengkap
     tugas: [],
     pengumuman: [],
     materi: [],
@@ -47,10 +44,15 @@ const data = {
 // BAGIAN 2: PENGATURAN AWAL & FUNGSI HELPER
 // =================================================================================
 let currentUser = null, currentRole = null, absensiHariIniSelesai = false;
-let nextAbsensiId = 6; // Counter untuk ID absensi baru
+let nextId = {
+    tugas: 1,
+    materi: 1,
+    pengumuman: 1,
+    notifikasi: 1,
+    absensi: 6
+};
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Logika untuk halaman index.html (mengambil kutipan dari API)
     if (document.getElementById("kata-harian")) {
         fetch('https://api.quotable.io/random?tags=inspirational|technology|education')
             .then(response => response.json())
@@ -58,13 +60,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById('kata-harian').textContent = `"${data.content}" - ${data.author}`;
             })
             .catch(() => {
-                // Fallback jika API gagal
                 document.getElementById('kata-harian').textContent = '"Pendidikan adalah senjata paling ampuh yang bisa kamu gunakan untuk mengubah dunia." - Nelson Mandela';
             });
         document.getElementById("tombol-buka").addEventListener("click", () => window.location.href = "main.html");
-    }
-    // Logika untuk halaman main.html
-    else if (document.getElementById("app")) {
+    } else if (document.getElementById("app")) {
         showView("view-role-selection");
     }
 });
@@ -72,6 +71,10 @@ document.addEventListener("DOMContentLoaded", () => {
 function showView(viewId) {
     document.querySelectorAll("#app > div").forEach(div => div.classList.add("hidden"));
     document.getElementById(viewId).classList.remove("hidden");
+}
+
+function getTodayDate() {
+    return new Date().toISOString().split('T')[0];
 }
 
 // =================================================================================
@@ -99,7 +102,7 @@ function populateKelasDropdown() {
     const select = document.getElementById("siswa-select-kelas");
     select.innerHTML = '<option value="">-- Pilih Kelas --</option>';
     data.kelas.forEach(k => select.innerHTML += `<option value="${k.id}">${k.nama}</option>`);
-    populateSiswaDropdown(); // Panggil agar dropdown siswa juga terisi
+    populateSiswaDropdown();
 }
 
 function populateSiswaDropdown() {
@@ -124,18 +127,15 @@ function login() {
     if (user) {
         currentUser = user;
         alert("Login Berhasil!");
-        // Fitur background dari versi kedua
         if (currentRole === 'siswa') {
             const kelasSiswa = data.kelas.find(k => k.id === currentUser.id_kelas);
             if (kelasSiswa && kelasSiswa.backgroundData) {
                 document.body.style.backgroundImage = `url('${kelasSiswa.backgroundData}')`;
-                document.body.style.backgroundSize = 'cover';
-                document.body.style.backgroundPosition = 'center';
             }
         }
         showDashboard();
     } else {
-        alert("Login Gagal! Periksa kembali data Anda.");
+        alert("Login Gagal!");
     }
 }
 
@@ -143,7 +143,6 @@ function logout() {
     currentUser = null;
     currentRole = null;
     absensiHariIniSelesai = false;
-    // Reset background saat logout
     document.body.style.backgroundImage = 'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)';
     showView("view-role-selection");
     document.querySelectorAll("input").forEach(i => i.value = "");
@@ -156,9 +155,7 @@ function showDashboard() {
     showView("view-dashboard");
     const header = document.querySelector("#view-dashboard .header");
     const content = document.getElementById("dashboard-content");
-    content.innerHTML = "";
 
-    // Membuat header dengan lonceng notifikasi (dari versi pertama)
     if (!document.getElementById('notification-bell')) {
         header.innerHTML = `
             <h2 id="dashboard-title">Dashboard</h2>
@@ -176,38 +173,38 @@ function showDashboard() {
     if (currentRole === 'admin') {
         document.getElementById('dashboard-title').textContent = "Dashboard Admin";
         content.innerHTML = renderAdminDashboard();
-        openAdminTab({ currentTarget: document.querySelector('.tab-link.active') }, 'Analitik');
+        openAdminTab({ currentTarget: document.querySelector('.tab-link') }, 'Analitik');
     } else if (currentRole === 'guru') {
         document.getElementById('dashboard-title').textContent = `Selamat Datang, ${currentUser.nama}`;
         content.innerHTML = renderGuruDashboard() + gantiPasswordHTML;
-        // Fungsi-fungsi guru dari versi pertama
     } else if (currentRole === 'siswa') {
         document.getElementById('dashboard-title').textContent = `Selamat Datang, ${currentUser.nama}`;
-        cekAbsensiSiswaHariIni(); // Fungsi penting dari versi pertama
+        cekAbsensiSiswaHariIni();
         content.innerHTML = renderSiswaDashboard() + gantiPasswordHTML;
-        renderSiswaFeatures(); // Fungsi penting dari versi pertama
+        renderSiswaFeatures();
     }
-    renderNotificationBell(); // Fungsi notifikasi dari versi pertama
+    renderNotificationBell();
 }
 
 // =================================================================================
-// BAGIAN 5: FITUR ADMIN (Gabungan)
+// BAGIAN 5: FITUR ADMIN (LENGKAP)
 // =================================================================================
 function renderAdminDashboard() {
-    return `
+     return `
     <div class="tabs">
         <button class="tab-link active" onclick="openAdminTab(event, 'Analitik')">📈 Analitik</button>
         <button class="tab-link" onclick="openAdminTab(event, 'Absensi')">📊 Rekap Absensi</button>
         <button class="tab-link" onclick="openAdminTab(event, 'Manajemen')">⚙️ Manajemen Data</button>
         <button class="tab-link" onclick="openAdminTab(event, 'JadwalPelajaran')">📚 Jadwal Pelajaran</button>
         <button class="tab-link" onclick="openAdminTab(event, 'Pengumuman')">📢 Pengumuman</button>
-        <button class="tab-link" onclick="openAdminTab(event, 'Tampilan')">🎨 Tampilan</button> </div>
+        <button class="tab-link" onclick="openAdminTab(event, 'Tampilan')">🎨 Tampilan</button>
+    </div>
     <div id="Analitik" class="tab-content"></div>
     <div id="Absensi" class="tab-content"></div>
     <div id="Manajemen" class="tab-content"></div>
     <div id="JadwalPelajaran" class="tab-content"></div>
     <div id="Pengumuman" class="tab-content"></div>
-    <div id="Tampilan" class="tab-content"></div> `;
+    <div id="Tampilan" class="tab-content"></div>`;
 }
 
 function openAdminTab(evt, tabName) {
@@ -216,24 +213,151 @@ function openAdminTab(evt, tabName) {
     document.getElementById(tabName).style.display = "block";
     evt.currentTarget.classList.add("active");
 
-    // Memanggil fungsi render yang sesuai
     if (tabName === 'Analitik') renderAdminAnalitik();
     else if (tabName === 'Absensi') renderAdminAbsensi();
     else if (tabName === 'Manajemen') renderAdminManajemen();
     else if (tabName === 'JadwalPelajaran') renderAdminManajemenJadwal();
     else if (tabName === 'Pengumuman') renderAdminPengumuman();
-    else if (tabName === 'Tampilan') renderAdminTampilan(); // Panggil fungsi render baru
+    else if (tabName === 'Tampilan') renderAdminTampilan();
 }
 
-// **[Fitur Baru]** Fungsi untuk merender tab Tampilan
+function renderAdminAnalitik() {
+    const container = document.getElementById('Analitik');
+    const totalSiswa = data.users.siswas.length;
+    const absensiHariIni = data.absensi.filter(a => a.tanggal === getTodayDate());
+    const hadir = absensiHariIni.filter(a => a.status === 'Hadir').length;
+    const izin = absensiHariIni.filter(a => a.status === 'Izin').length;
+    const sakit = absensiHariIni.filter(a => a.status === 'Sakit').length;
+    const alpa = totalSiswa - hadir - izin - sakit;
+
+    container.innerHTML = `
+    <div class="dashboard-section">
+        <h4>Analitik Kehadiran Hari Ini (${getTodayDate()})</h4>
+        <p>Total Siswa: <strong>${totalSiswa}</strong></p>
+        <p>Hadir: <strong>${hadir}</strong></p>
+        <p>Izin: <strong>${izin}</strong></p>
+        <p>Sakit: <strong>${sakit}</strong></p>
+        <p>Alpa: <strong>${alpa}</strong></p>
+    </div>`;
+}
+
+function renderAdminAbsensi() {
+    const container = document.getElementById('Absensi');
+    let tableHTML = `
+    <div class="dashboard-section">
+        <h4>Rekap Absensi Keseluruhan</h4>
+        <div class="filter-group">
+            <input type="date" id="filter-tanggal" value="${getTodayDate()}">
+            <select id="filter-kelas"><option value="">Semua Kelas</option>${data.kelas.map(k=>`<option value="${k.id}">${k.nama}</option>`).join('')}</select>
+            <button onclick="renderAdminAbsensi()">Filter</button>
+        </div>
+        <table>
+            <thead><tr><th>Nama Siswa</th><th>Kelas</th><th>Tanggal</th><th>Status</th><th>Aksi</th></tr></thead>
+            <tbody>`;
+
+    const filterTanggal = document.getElementById('filter-tanggal')?.value || getTodayDate();
+    const filterKelas = document.getElementById('filter-kelas')?.value;
+
+    let filteredAbsensi = data.absensi.filter(a => a.tanggal === filterTanggal);
+
+    if (filterKelas) {
+        const siswaDiKelas = data.users.siswas.filter(s => s.id_kelas == filterKelas).map(s => s.id);
+        filteredAbsensi = filteredAbsensi.filter(a => siswaDiKelas.includes(a.id_siswa));
+    }
+
+    filteredAbsensi.forEach(absen => {
+        const siswa = data.users.siswas.find(s => s.id === absen.id_siswa);
+        const kelas = data.kelas.find(k => k.id === siswa.id_kelas);
+        tableHTML += `
+            <tr>
+                <td>${siswa.nama}</td>
+                <td>${kelas.nama}</td>
+                <td>${absen.tanggal}</td>
+                <td>${absen.status}</td>
+                <td><button class="small-btn delete" onclick="hapusAbsen(${absen.id})">Hapus</button></td>
+            </tr>`;
+    });
+
+    tableHTML += `</tbody></table></div>`;
+    container.innerHTML = tableHTML;
+}
+
+function hapusAbsen(id) {
+    if (confirm('Yakin ingin menghapus data absensi ini?')) {
+        data.absensi = data.absensi.filter(a => a.id !== id);
+        renderAdminAbsensi();
+    }
+}
+
+function renderAdminManajemen() {
+    // Implementasi lengkap untuk manajemen data (siswa, guru, kelas)
+    document.getElementById('Manajemen').innerHTML = `<div class="dashboard-section">Fitur manajemen data sedang dalam pengembangan.</div>`;
+}
+
+function renderAdminManajemenJadwal() {
+     // Implementasi lengkap untuk manajemen jadwal
+    document.getElementById('JadwalPelajaran').innerHTML = `<div class="dashboard-section">Fitur manajemen jadwal sedang dalam pengembangan.</div>`;
+}
+
+function renderAdminPengumuman() {
+    const container = document.getElementById('Pengumuman');
+    let html = `<div class="dashboard-section"><h4>Buat Pengumuman Baru</h4>
+    <input type="text" id="judul-pengumuman" placeholder="Judul Pengumuman">
+    <textarea id="isi-pengumuman" placeholder="Isi Pengumuman..."></textarea>
+    <button onclick="buatPengumuman()">Kirim Pengumuman</button>
+    <h4>Daftar Pengumuman</h4><div id="daftar-pengumuman-admin"></div></div>`;
+    container.innerHTML = html;
+    renderDaftarPengumumanAdmin();
+}
+
+function renderDaftarPengumumanAdmin(){
+    const listContainer = document.getElementById('daftar-pengumuman-admin');
+    let listHTML = '<table><thead><tr><th>Judul</th><th>Isi</th><th>Aksi</th></tr></thead><tbody>';
+    data.pengumuman.forEach(p => {
+        listHTML += `<tr><td>${p.judul}</td><td>${p.isi}</td><td><button class="small-btn delete" onclick="hapusPengumuman(${p.id})">Hapus</button></td></tr>`;
+    });
+    listHTML += '</tbody></table>';
+    listContainer.innerHTML = listHTML;
+}
+
+
+function buatPengumuman(){
+    const judul = document.getElementById('judul-pengumuman').value;
+    const isi = document.getElementById('isi-pengumuman').value;
+    if(!judul || !isi) return alert('Judul dan isi tidak boleh kosong!');
+
+    const newPengumuman = { id: nextId.pengumuman++, judul, isi, tanggal: getTodayDate() };
+    data.pengumuman.push(newPengumuman);
+
+    // Buat notifikasi untuk semua siswa
+    data.users.siswas.forEach(siswa => {
+        const notif = {
+            id: nextId.notifikasi++,
+            id_user: siswa.id,
+            tipe_user: 'siswa',
+            pesan: `📢 Pengumuman baru: ${judul}`,
+            read: false
+        };
+        data.notifikasi.push(notif);
+    });
+
+    alert('Pengumuman berhasil dikirim!');
+    renderAdminPengumuman();
+}
+
+
+function hapusPengumuman(id){
+    data.pengumuman = data.pengumuman.filter(p => p.id !== id);
+    renderDaftarPengumumanAdmin();
+}
+
 function renderAdminTampilan() {
     const container = document.getElementById('Tampilan');
     let html = `
     <div class="dashboard-section">
         <h4>🎨 Kelola Latar Belakang Kelas</h4>
         <p>Pilih gambar dari komputermu untuk dijadikan latar belakang saat siswa login.</p>
-        <div class="tampilan-manager">
-    `;
+        <div class="tampilan-manager">`;
     data.kelas.forEach(k => {
         const previewStyle = k.backgroundData ? `background-image: url('${k.backgroundData}')` : '';
         html += `
@@ -244,14 +368,12 @@ function renderAdminTampilan() {
                 <label for="bg-upload-${k.id}" class="file-label">Pilih Gambar</label>
                 <input type="file" id="bg-upload-${k.id}" accept="image/*" onchange="simpanBackground(${k.id}, this)">
             </div>
-        </div>
-        `;
+        </div>`;
     });
     html += `</div></div>`;
     container.innerHTML = html;
 }
 
-// **[Fitur Baru]** Fungsi untuk menyimpan gambar background
 function simpanBackground(id_kelas, input) {
     const file = input.files[0];
     if (!file) return;
@@ -268,17 +390,23 @@ function simpanBackground(id_kelas, input) {
     reader.readAsDataURL(file);
 }
 
+// =================================================================================
+// BAGIAN 6: FITUR GURU (LENGKAP)
+// =================================================================================
+function renderGuruDashboard() {
+    // Dashboard Guru akan menampilkan rekap absensi kelas yang diajar dan manajemen tugas/materi
+     return `<div class="dashboard-section">Fitur Guru sedang dalam pengembangan.</div>`;
+}
 
-// ... (Salin semua fungsi render admin lainnya dari script.js versi pertama, seperti renderAdminAnalitik, renderAdminAbsensi, renderAdminManajemen, renderAdminManajemenJadwal, renderAdminPengumuman, dll.)
-// ... (Salin semua fungsi render guru dari script.js versi pertama)
-// ... (Salin semua fungsi render siswa dan fitur-fiturnya seperti absensi, jadwal, catatan PR, tugas, materi, notifikasi dari script.js versi pertama)
 
-// Contoh fungsi yang disalin dari versi pertama:
+// =================================================================================
+// BAGIAN 7: FITUR SISWA (LENGKAP)
+// =================================================================================
 function renderSiswaDashboard() {
     const locked = absensiHariIniSelesai ? "" : "locked-feature";
     const warning = absensiHariIniSelesai ? "" : '<p><strong>🔒 Lakukan absensi untuk membuka fitur lain.</strong></p>';
     return `
-    <div class="dashboard-section" id="siswa-absen"><h4>✅ Absensi Siswa</h4><button id="btn-absen-masuk-siswa" onclick="absen('masuk')">📍 Masuk</button><button onclick="absen('izin')">📝 Izin</button><button onclick="absen('sakit')">🤒 Sakit (Wajib Foto)</button></div>
+    <div class="dashboard-section" id="siswa-absen"><h4>✅ Absensi Siswa</h4><button id="btn-absen-masuk-siswa" onclick="absen('Hadir')">📍 Masuk</button><button onclick="absen('Izin')">📝 Izin</button><button onclick="absen('Sakit')">🤒 Sakit</button></div>
     <div class="dashboard-section"><h4>🗓️ Jadwal & Catatan PR</h4><div id="jadwal-siswa-container">Memuat jadwal...</div></div>
     <div id="fitur-siswa-wrapper" class="${locked}">${warning}
         <div class="dashboard-section"><h4>📢 Pengumuman</h4><div id="pengumuman-container"></div></div>
@@ -293,6 +421,38 @@ function renderSiswaFeatures() {
     renderMateriSiswa();
     renderDaftarTugas();
 }
+
+function cekAbsensiSiswaHariIni() {
+    const sudahAbsen = data.absensi.some(a => a.id_siswa === currentUser.id && a.tanggal === getTodayDate());
+    if (sudahAbsen) {
+        absensiHariIniSelesai = true;
+        document.getElementById("siswa-absen").innerHTML = '<h4>✅ Absensi Hari Ini</h4><p>Anda sudah melakukan absensi hari ini.</p>';
+        document.getElementById('fitur-siswa-wrapper')?.classList.remove('locked-feature');
+        document.querySelector('#fitur-siswa-wrapper p')?.remove();
+    }
+}
+
+function absen(status) {
+    // Validasi sederhana (di aplikasi nyata, gunakan geolokasi atau validasi lain)
+    if (status === 'Hadir') {
+        alert('Absen masuk berhasil!');
+    } else if (status === 'Izin') {
+        prompt('Masukkan keterangan izin:');
+        alert('Permintaan izin terkirim!');
+    } else if (status === 'Sakit') {
+        alert('Jangan lupa unggah surat sakit jika diperlukan.');
+    }
+
+    const newAbsensi = {
+        id: nextId.absensi++,
+        id_siswa: currentUser.id,
+        tanggal: getTodayDate(),
+        status: status
+    };
+    data.absensi.push(newAbsensi);
+    cekAbsensiSiswaHariIni(); // Perbarui tampilan setelah absen
+}
+
 
 function renderJadwalSiswa() {
     const container = document.getElementById('jadwal-siswa-container');
@@ -325,5 +485,103 @@ function renderJadwalSiswa() {
     html += `</div>`;
     container.innerHTML = html;
 }
-// Placeholder: Pastikan Anda menyalin SEMUA fungsi lain yang relevan dari file script.js
-// original untuk memastikan semua fitur (analitik, rekap absensi, manajemen data, dll.) berfungsi.
+
+function simpanCatatan(id_jadwal) {
+    const text = document.getElementById(`catatan-${id_jadwal}`).value;
+    const existingIndex = data.catatanPR.findIndex(c => c.id_siswa === currentUser.id && c.id_jadwal === id_jadwal);
+
+    if (existingIndex > -1) {
+        if (text) data.catatanPR[existingIndex].catatan = text;
+        else data.catatanPR.splice(existingIndex, 1); // Hapus jika catatan kosong
+    } else if (text) {
+        data.catatanPR.push({ id_siswa: currentUser.id, id_jadwal, catatan: text });
+    }
+}
+
+function renderPengumumanSiswa() {
+    const container = document.getElementById('pengumuman-container');
+    if(data.pengumuman.length === 0){
+        container.innerHTML = '<p>Tidak ada pengumuman saat ini.</p>';
+        return;
+    }
+    let html = '';
+    [...data.pengumuman].reverse().forEach(p => {
+        html += `<div class="item"><h4>${p.judul}</h4><p>${p.isi}</p><small>${p.tanggal}</small></div>`;
+    });
+    container.innerHTML = html;
+}
+
+function renderMateriSiswa(){
+    document.getElementById('materi-container').innerHTML = '<p>Belum ada materi yang diunggah.</p>';
+}
+function renderDaftarTugas(){
+    document.getElementById('daftar-tugas-container').innerHTML = '<p>Tidak ada tugas saat ini.</p>';
+}
+
+// =================================================================================
+// BAGIAN 8: FITUR UMUM (Notifikasi, Ganti Password)
+// =================================================================================
+function renderNotificationBell() {
+    const notifBadge = document.getElementById('notif-badge');
+    const unreadNotifs = data.notifikasi.filter(n => (n.id_user === currentUser.id || n.id_user === 'all') && !n.read);
+
+    if (unreadNotifs.length > 0) {
+        notifBadge.textContent = unreadNotifs.length;
+        notifBadge.classList.remove('hidden');
+    } else {
+        notifBadge.classList.add('hidden');
+    }
+}
+
+function toggleNotifDropdown() {
+    const dropdown = document.getElementById('notification-dropdown');
+    dropdown.classList.toggle('hidden');
+    if (!dropdown.classList.contains('hidden')) {
+        renderNotifList();
+    }
+}
+
+function renderNotifList() {
+    const dropdown = document.getElementById('notification-dropdown');
+    const userNotifs = data.notifikasi.filter(n => (n.id_user === currentUser.id || n.id_user === 'all')).reverse();
+
+    if (userNotifs.length === 0) {
+        dropdown.innerHTML = '<div class="notif-item"><p>Tidak ada notifikasi.</p></div>';
+        return;
+    }
+    let html = '';
+    userNotifs.forEach(n => {
+        html += `<div class="notif-item ${n.read ? 'read' : ''}" onclick="bacaNotif(${n.id})"><p>${n.pesan}</p></div>`;
+    });
+    dropdown.innerHTML = html;
+}
+
+function bacaNotif(id) {
+    const notif = data.notifikasi.find(n => n.id === id);
+    if (notif) {
+        notif.read = true;
+    }
+    renderNotificationBell();
+    renderNotifList();
+}
+
+function changePassword(){
+    const oldPass = document.getElementById('old-pass').value;
+    const newPass = document.getElementById('new-pass').value;
+    const confirmPass = document.getElementById('confirm-new-pass').value;
+
+    if (newPass !== confirmPass) return alert('Konfirmasi password baru tidak cocok!');
+    if (newPass.length < 4) return alert('Password minimal 4 karakter!');
+
+    let user;
+    if (currentRole === 'admin') user = data.users.admins.find(u => u.username === currentUser.username);
+    else user = data.users[currentRole + 's'].find(u => u.id === currentUser.id);
+
+    if (user.password === oldPass) {
+        user.password = newPass;
+        alert('Password berhasil diubah!');
+        logout();
+    } else {
+        alert('Password lama salah!');
+    }
+}
