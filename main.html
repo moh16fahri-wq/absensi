@@ -13,13 +13,12 @@
     <div id="app">
         <div id="view-role-selection" class="container">
             <h2>Masuk Sebagai:</h2>
-            <button onclick="showLogin('admin')">👑 Admin</button>
+            <button onclick="showLogin('admin')">🎓 Admin</button>
             <button onclick="showLogin('guru')">👩‍🏫 Guru</button>
-            <button onclick="showLogin('siswa')">🎓 Siswa</button>
+            <button onclick="showLogin('siswa')">🎒 Siswa</button>
         </div>
-
         <div id="view-login-form" class="container hidden">
-            <button class="back-button" onclick="showView('view-role-selection')">‹ Kembali</button>
+            <button class="back-button" onclick="showView('view-role-selection')">← Kembali</button>
             <h3 id="login-title">Login</h3>
             <div id="form-admin" class="hidden">
                 <input type="text" id="admin-user" placeholder="Username Admin" autocomplete="username">
@@ -38,21 +37,14 @@
                 <button onclick="login()">Login</button>
             </div>
         </div>
-
         <div id="view-dashboard" class="container dashboard hidden">
              <div class="header">
                 <h2 id="dashboard-title">Dashboard</h2>
-                <div>
-                    <button id="theme-toggle">☀️</button> 
-                    <button class="logout-button" onclick="logout()">Logout</button>
-                </div>
+                <button class="logout-button" onclick="logout()">Logout 🚪</button>
             </div>
             <div id="dashboard-content"></div>
         </div>
     </div>
-    
     <script src="script.js"></script>
-
-    <div id="toast-container"></div>
 </body>
 </html>
