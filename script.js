@@ -1,334 +1,63 @@
-// BAGIAN 1: DATABASE SIMULASI
-const data = {
-    users: {
-        admins: [{ username: "admin", password: "admin123" }],
-        gurus: [
-            { id: 1, nama: "Budi Santoso", password: "guru1", jadwal: [ { id_kelas: 1, hari: 0, jam: 7, nama_kelas: "Kelas 10A" }, { id_kelas: 2, hari: 1, jam: 9, nama_kelas: "Kelas 11B" } ] },
-            { id: 2, nama: "Anisa Putri", password: "guru2", jadwal: [{ id_kelas: 2, hari: 2, jam: 10, nama_kelas: "Kelas 11B" }] }
-        ],
-        siswas: [
-            { id: 101, nama: "Agus", password: "siswa1", id_kelas: 1, pr: "" }, { id: 102, nama: "Citra", password: "siswa2", id_kelas: 1, pr: "Baca Bab 3." },
-            { id: 201, nama: "Dewi", password: "siswa3", id_kelas: 2, pr: "" }, { id: 202, nama: "Eko", password: "siswa4", id_kelas: 2, pr: "" }
-        ]
-    },
-    kelas: [
-        { id: 1, nama: "Kelas 10A", lokasi: { latitude: -7.983908, longitude: 112.621391 } },
-        { id: 2, nama: "Kelas 11B", lokasi: { latitude: -7.983908, longitude: 112.621391 } }
-    ],
-    absensi: [
-        { id_siswa: 101, tanggal: "2023-10-26", status: "hadir" },
-        { id_siswa: 102, tanggal: "2023-10-26", status: "izin" }
-    ],
-    tugas: [
-        { id: 1, judul: "Latihan Bab 1", deskripsi: "Kerjakan soal hal 10.", id_kelas: 1 },
-        { id: 2, judul: "Presentasi Kelompok", deskripsi: "Buat presentasi tentang sejarah.", id_kelas: 2 }
-    ],
-    pengumpulan: [
-        { id_tugas: 1, id_siswa: 101, file: "agus_bab1.pdf", nilai: 85 },
-        { id_tugas: 1, id_siswa: 102, file: "citra_bab1.pdf", nilai: 90 }
-    ]
-};
-let currentUser = null;
-const hariOptions = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"];
-const jamOptions = [7, 8, 9, 10, 11, 12, 13, 14, 15];
-
-// BAGIAN 2: LOGIKA UTAMA
-document.addEventListener('DOMContentLoaded', () => {
-    const isMainPage = document.getElementById('view-role-selection');
-    if (isMainPage) {
-        if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark-mode');
-            const themeToggle = document.getElementById('theme-toggle');
-            if(themeToggle) themeToggle.textContent = '🌙';
-        }
-        if (sessionStorage.getItem('currentUser')) {
-            currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
-            showDashboard();
-        } else {
-            populateInitialDropdowns();
-            showView('view-role-selection');
-        }
-        const themeToggle = document.getElementById('theme-toggle');
-        if (themeToggle) {
-            themeToggle.addEventListener('click', () => {
-                document.body.classList.toggle('dark-mode');
-                if (document.body.classList.contains('dark-mode')) {
-                    themeToggle.textContent = '🌙';
-                    localStorage.setItem('theme', 'dark');
-                } else {
-                    themeToggle.textContent = '☀️';
-                    localStorage.setItem('theme', 'light');
-                }
-            });
-        }
-    } else {
-        document.getElementById('tombol-buka').onclick = () => window.location.href = 'main.html';
-        document.getElementById('kata-harian').textContent = "Pendidikan adalah senjata paling ampuh yang bisa kamu gunakan untuk mengubah dunia.";
-    }
-});
-
-function showView(viewId) {
-    document.querySelectorAll('.container').forEach(view => view.classList.add('hidden'));
-    document.getElementById(viewId).classList.remove('hidden');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+:root {
+    --primary-color: #4A90E2; --primary-hover: #357ABD; --secondary-color: #50E3C2;
+    --success-color: #7ED321; --danger-color: #D0021B; --edit-color: #F5A623;
+    --light-bg: #F7F9FC; --text-color: #4A4A4A; --border-color: #E4E9F2;
+    --shadow: 0 10px 25px rgba(74, 144, 226, .1); --border-radius: 12px;
 }
+body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #E0E7FF, #F3E8FF); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; color: var(--text-color); }
+.container { background-color: #fff; padding: 2.5rem; border-radius: var(--border-radius); box-shadow: var(--shadow); text-align: center; width: 90%; max-width: 500px; transition: all .4s; border-top: 5px solid var(--primary-color); }
+.dashboard { max-width: 950px; } /* Perlebar sedikit untuk jadwal */
+h1, h2, h3, h4, h5 { color: #333; }
+button, input, select, textarea { font-family: 'Poppins', sans-serif; display: block; width: 100%; padding: 12px; margin-bottom: 1rem; border-radius: 8px; border: 1px solid var(--border-color); font-size: 1rem; box-sizing: border-box; }
+button { background-color: var(--primary-color); color: white; border: none; cursor: pointer; font-weight: 600; transition: background-color .3s, transform .2s; }
+button:hover { background-color: var(--primary-hover); transform: translateY(-2px); }
+.small-btn { display: inline-block; width: auto; padding: 5px 12px; font-size: .8rem; margin: 0 4px; }
+.small-btn.delete { background-color: var(--danger-color); }
+.hidden { display: none; }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+.dashboard-section { text-align: left; padding: 1.5rem; margin-bottom: 1.5rem; background: var(--light-bg); border-radius: var(--border-radius); }
+.task-card, .announcement-card { background: #fff; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+.locked-feature { opacity: .5; pointer-events: none; }
+table { width: 100%; border-collapse: collapse; }
+table th, table td { padding: 10px; border: 1px solid var(--border-color); text-align: center; }
+table th { background-color: var(--light-bg); }
+.tabs { display: flex; border-bottom: 2px solid var(--border-color); margin-bottom: 1.5rem; flex-wrap: wrap; }
+.tab-link { background: transparent; color: var(--text-color); border: none; padding: 12px 18px; cursor: pointer; margin-bottom: -2px; border-bottom: 3px solid transparent; border-radius: 0; width: auto; }
+.tab-link.active { color: var(--primary-color); border-bottom: 3px solid var(--primary-color); font-weight: 600; }
+.header-actions { display: flex; align-items: center; gap: 15px; position: relative; }
+.logout-button { width: auto; padding: 8px 15px; margin: 0; }
+#notification-bell { font-size: 1.5rem; cursor: pointer; position: relative; }
+#notif-badge { position: absolute; top: -5px; right: -10px; background-color: var(--danger-color); color: #fff; border-radius: 50%; padding: 2px 6px; font-size: .7rem; }
+#notification-dropdown { position: absolute; top: 120%; right: 0; background: #fff; border-radius: var(--border-radius); box-shadow: var(--shadow); width: 320px; max-height: 400px; overflow-y: auto; text-align: left; z-index: 100; }
+.notif-item { padding: 1rem; border-bottom: 1px solid var(--border-color); cursor: pointer; }
+.notif-item.read p { color: #888; }
+.notif-time { font-size: 0.75rem; color: #999; }
+.discussion-container { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color); }
+.discussion-form { display: flex; gap: 10px; align-items: center; }
+.discussion-form textarea { min-height: 40px; margin: 0; }
+.discussion-form button { width: auto; margin: 0; }
+.jadwal-guru-container { border-left: 5px solid var(--edit-color); }
+.jadwal-list { list-style-type: none; padding-left: 0; margin-bottom: 1rem; }
+.jadwal-item { display: flex; justify-content: space-between; align-items: center; background-color: var(--light-bg); padding: 10px; border-radius: 8px; margin-bottom: 8px; }
+.jadwal-form { display: grid; grid-template-columns: 2fr 2fr 1fr auto; gap: 10px; align-items: center; padding-top: 1rem; border-top: 1px solid var(--border-color); }
+.jadwal-form select, .jadwal-form button { margin-bottom: 0; }
+.form-container { background: #fff; padding: 1rem; border-radius: 8px; margin-top: 1rem; border: 1px solid var(--border-color); }
 
-function showLogin(role) {
-    currentUser = { role };
-    document.querySelectorAll('#view-login-form > div').forEach(form => form.classList.add('hidden'));
-    document.getElementById(`form-${role}`).classList.remove('hidden');
-    document.getElementById('login-title').textContent = `Login ${role.charAt(0).toUpperCase() + role.slice(1)}`;
-    showView('view-login-form');
-}
-
-function populateInitialDropdowns() {
-    const guruSelect = document.getElementById('guru-select-nama');
-    if (guruSelect) data.users.gurus.forEach(guru => guruSelect.innerHTML += `<option value="${guru.id}">${guru.nama}</option>`);
-    
-    const kelasSelect = document.getElementById('siswa-select-kelas');
-    if(kelasSelect) {
-        data.kelas.forEach(kelas => kelasSelect.innerHTML += `<option value="${kelas.id}">${kelas.nama}</option>`);
-        populateSiswaDropdown();
-    }
-}
-
-function populateSiswaDropdown() {
-    const kelasId = document.getElementById('siswa-select-kelas').value;
-    const siswaSelect = document.getElementById('siswa-select-nama');
-    siswaSelect.innerHTML = "";
-    data.users.siswas.filter(s => s.id_kelas == kelasId).forEach(siswa => {
-        siswaSelect.innerHTML += `<option value="${siswa.id}">${siswa.nama}</option>`;
-    });
-}
-
-function login() {
-    const role = currentUser.role;
-    let user;
-    let password;
-    if (role === 'admin') {
-        const username = document.getElementById('admin-user').value;
-        password = document.getElementById('admin-pass').value;
-        user = data.users.admins.find(u => u.username === username && u.password === password);
-    } else if (role === 'guru') {
-        const id = document.getElementById('guru-select-nama').value;
-        password = document.getElementById('guru-pass').value;
-        user = data.users.gurus.find(u => u.id == id && u.password === password);
-    } else if (role === 'siswa') {
-        const id = document.getElementById('siswa-select-nama').value;
-        password = document.getElementById('siswa-pass').value;
-        user = data.users.siswas.find(u => u.id == id && u.password === password);
-    }
-    if (user) {
-        currentUser = { ...currentUser, ...user };
-        sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
-        showDashboard();
-    } else {
-        showToast("Login gagal, periksa kembali data Anda.", "error");
-    }
-}
-
-function logout() {
-    currentUser = null;
-    sessionStorage.removeItem('currentUser');
-    window.location.reload();
-}
-
-function showDashboard() {
-    showView('view-dashboard');
-    if (currentUser.role === 'admin') tampilkanDashboardAdmin();
-    else if (currentUser.role === 'guru') tampilkanDashboardGuru();
-    else if (currentUser.role === 'siswa') tampilkanDashboardSiswa();
-}
-
-// BAGIAN 3: FUNGSI DASHBOARD (YANG SUDAH DIPERBAIKI)
-
-function tampilkanDashboardAdmin() {
-    const container = document.getElementById('dashboard-content');
-    document.getElementById('dashboard-title').textContent = `Dashboard Admin`;
-    const totalSiswa = data.users.siswas.length;
-    const totalGuru = data.users.gurus.length;
-
-    container.innerHTML = `
-        <div class="stat-cards">
-            <div class="stat-card"><h5>Total Siswa</h5><p>${totalSiswa}</p></div>
-            <div class="stat-card"><h5>Total Guru</h5><p>${totalGuru}</p></div>
-            <div class="stat-card"><h5>Kehadiran Hari Ini</h5><p>95%</p></div>
-        </div>
-        <hr>
-        <button onclick="tampilkanManajemen('guru')">Manajemen Guru</button>
-        <button onclick="tampilkanManajemen('siswa')">Manajemen Siswa</button>
-        <button onclick="tampilkanManajemen('kelas')">Manajemen Kelas</button>
-        <div id="content-area"></div>
-    `;
-}
-
-function tampilkanDashboardGuru() {
-    const container = document.getElementById('dashboard-content');
-    document.getElementById('dashboard-title').textContent = `Dashboard Guru`;
-    container.innerHTML = `
-        <p>Selamat datang, ${currentUser.nama}.</p>
-        <button onclick="tampilkanMenuGuru('jadwal')">Lihat Jadwal</button>
-        <button onclick="tampilkanMenuGuru('absensi')">Kelola Absensi</button>
-        <button onclick="tampilkanMenuGuru('tugas')">Kelola Tugas</button>
-        <div id="content-area"></div>
-    `;
-}
-
-function tampilkanDashboardSiswa() {
-    const container = document.getElementById('dashboard-content');
-    document.getElementById('dashboard-title').textContent = `Dashboard Siswa`;
-    container.innerHTML = `
-        <div class="dashboard-grid">
-            <div class="card">
-                <h3>Halo, ${currentUser.nama}!</h3>
-                <p>Selamat belajar hari ini.</p>
-            </div>
-            <div class="card card-tugas">
-                <h4>Tugas Terdekat</h4>
-                <p><strong>Deadline: Besok</strong> - Latihan Bab 1</p>
-                <a onclick="tampilkanMenuSiswa('tugas')">Lihat semua tugas</a>
-            </div>
-        </div>
-        <button onclick="tampilkanMenuSiswa('jadwal')">Jadwal & PR</button>
-        <button onclick="tampilkanMenuSiswa('absensi')">Lakukan Absensi</button>
-        <button onclick="tampilkanMenuSiswa('tugas')">Tugas & Nilai</button>
-        <div id="content-area"></div>
-    `;
-}
-
-// BAGIAN 4: SEMUA FUNGSI MENU DAN MANAJEMEN ASLI ANDA
-function tampilkanMenuSiswa(menu) {
-    const container = document.getElementById('content-area');
-    if (menu === 'jadwal') {
-        const jadwalSiswa = [];
-        const kelasSiswa = data.kelas.find(k => k.id === currentUser.id_kelas);
-        data.users.gurus.forEach(guru => {
-            guru.jadwal.forEach(j => {
-                if (j.id_kelas === kelasSiswa.id) {
-                    jadwalSiswa.push({ ...j, guru: guru.nama });
-                }
-            });
-        });
-        let jadwalHTML = `<div class="jadwal-table"><h4>Jadwal Pelajaran ${kelasSiswa.nama}</h4><div class="jadwal-grid">`;
-        hariOptions.forEach((hari, index) => {
-            jadwalHTML += `<div class="jadwal-hari"><h5>${hari}</h5>`;
-            const jadwalPerHari = jadwalSiswa.filter(j => j.hari === index).sort((a,b) => a.jam - b.jam);
-            if (jadwalPerHari.length > 0) {
-                jadwalPerHari.forEach(j => {
-                    jadwalHTML += `<div class="jadwal-pelajaran"><span class="jam">${j.jam}:00</span>${j.nama_kelas} - ${j.guru}</div>`;
-                });
-            } else {
-                jadwalHTML += `<p class="text-muted">Tidak ada jadwal</p>`;
-            }
-            jadwalHTML += `</div>`;
-        });
-        jadwalHTML += `</div></div>`;
-        jadwalHTML += `<div class="pr-section"><h4>Catatan PR & Tugas</h4>
-            <textarea id="catatan-pr" placeholder="Tulis PR atau catatan penting di sini...">${currentUser.pr}</textarea>
-            <button onclick="simpanPR()">Simpan Catatan</button>
-        </div>`;
-        container.innerHTML = jadwalHTML;
-    } else if (menu === 'absensi') {
-        container.innerHTML = "<h2>Absensi Anda...</h2><p>Fitur absensi akan tersedia di sini.</p>";
-    } else if (menu === 'tugas') {
-        container.innerHTML = "<h2>Tugas & Nilai Anda...</h2><p>Daftar tugas dan nilai akan ditampilkan di sini.</p>";
-    }
-}
-
-function simpanPR() {
-    const catatan = document.getElementById('catatan-pr').value;
-    currentUser.pr = catatan;
-    const siswaDB = data.users.siswas.find(s => s.id === currentUser.id);
-    if (siswaDB) siswaDB.pr = catatan;
-    sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
-    showToast("Catatan PR berhasil disimpan!", "success");
-}
-
-function tampilkanMenuGuru(menu) {
-    const container = document.getElementById('content-area');
-    if(menu === 'jadwal') container.innerHTML = "<h2>Jadwal Mengajar Anda...</h2>";
-    if(menu === 'absensi') container.innerHTML = "<h2>Kelola Absensi Siswa...</h2>";
-    if(menu === 'tugas') container.innerHTML = "<h2>Kelola Tugas Siswa...</h2>";
-}
-
-function tampilkanManajemen(jenis) {
-    const container = document.getElementById('content-area');
-    if (jenis === 'guru') tampilkanManajemenGuru(container);
-    if (jenis === 'siswa') container.innerHTML = "<h2>Manajemen Siswa...</h2>";
-    if (jenis === 'kelas') container.innerHTML = "<h2>Manajemen Kelas...</h2>";
-}
-
-function tampilkanManajemenGuru(container) {
-    container.innerHTML = "<h3>Manajemen Data Guru</h3>";
-    const kelasOptions = data.kelas.map(k => `<option value="${k.id}">${k.nama}</option>`).join("");
-    data.users.gurus.forEach(guru => {
-        let jadwalHTML = `<div class="form-container"><h4>${guru.nama}</h4><p><strong>Password:</strong> ${guru.password} <button class="small-btn edit" onclick="gantiPassword('guru', ${guru.id})">Ganti</button></p><h5>Jadwal Mengajar:</h5>`;
-        if (guru.jadwal.length > 0) {
-            jadwalHTML += "<ul class='jadwal-list'>";
-            guru.jadwal.forEach((j, index) => {
-                jadwalHTML += `<li class="jadwal-item"><span>${j.nama_kelas} - ${hariOptions[j.hari]}, Jam ${j.jam}:00</span><button class="small-btn delete" onclick="hapusJadwalGuru(${guru.id}, ${index})">Hapus</button></li>`;
-            });
-            jadwalHTML += "</ul>";
-        } else {
-            jadwalHTML += "<p>Belum ada jadwal yang diatur.</p>";
-        }
-        jadwalHTML += `<div class="jadwal-form"><select id="jadwal-kelas-${guru.id}">${kelasOptions}</select><select id="jadwal-hari-${guru.id}">${hariOptions.map((h, i) => `<option value="${i}">${h}</option>`).join("")}</select><select id="jadwal-jam-${guru.id}">${jamOptions.map(j => `<option value="${j}">${j}:00</option>`).join("")}</select><button class="small-btn" onclick="tambahJadwalGuru(${guru.id})">+ Tambah Jadwal</button></div>`;
-        jadwalHTML += "</div>";
-        container.innerHTML += jadwalHTML;
-    });
-}
-
-function tambahJadwalGuru(guruId) {
-    const id_kelas = parseInt(document.getElementById(`jadwal-kelas-${guruId}`).value);
-    const hari = parseInt(document.getElementById(`jadwal-hari-${guruId}`).value);
-    const jam = parseInt(document.getElementById(`jadwal-jam-${guruId}`).value);
-    const guru = data.users.gurus.find(g => g.id === guruId);
-    if (!guru) return;
-    if (guru.jadwal.some(j => j.id_kelas === id_kelas && j.hari === hari && j.jam === jam)) {
-        showToast("Jadwal ini sudah ada.", "error");
-        return;
-    }
-    const kelas = data.kelas.find(k => k.id === id_kelas);
-    guru.jadwal.push({ id_kelas, hari, jam, nama_kelas: kelas.nama });
-    showToast("Jadwal berhasil ditambahkan.", "success");
-    tampilkanManajemenGuru(document.getElementById('content-area'));
-}
-
-function hapusJadwalGuru(guruId, jadwalIndex) {
-    const guru = data.users.gurus.find(g => g.id === guruId);
-    if (guru) {
-        guru.jadwal.splice(jadwalIndex, 1);
-        showToast("Jadwal berhasil dihapus.", "success");
-        tampilkanManajemenGuru(document.getElementById('content-area'));
-    }
-}
-
-function gantiPassword(role, id) {
-    const newPassword = prompt("Masukkan password baru:");
-    if (newPassword && newPassword.trim() !== "") {
-        const userList = (role === 'guru') ? data.users.gurus : data.users.siswas;
-        const user = userList.find(u => u.id === id);
-        if (user) {
-            user.password = newPassword;
-            showToast("Password berhasil diubah.", "success");
-            tampilkanManajemen('guru');
-        }
-    } else if (newPassword !== null) {
-        showToast("Password tidak boleh kosong.", "error");
-    }
-}
-
-// BAGIAN 5: FUNGSI BARU (TOAST & DARK MODE)
-function showToast(message, type = 'success') {
-    const container = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.textContent = message;
-    container.appendChild(toast);
-    setTimeout(() => {
-        toast.classList.add('show');
-    }, 10);
-    setTimeout(() => {
-        toast.classList.remove('show');
-        toast.addEventListener('transitionend', () => toast.remove());
-    }, 3000);
+/* --- GAYA BARU UNTUK JADWAL PELAJARAN & CATATAN PR --- */
+.jadwal-table { margin-bottom: 1.5rem; }
+.jadwal-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; } /* 5 kolom untuk 5 hari */
+.jadwal-hari { background-color: #fff; padding: 1rem; border-radius: var(--border-radius); }
+.jadwal-hari h5 { margin-top: 0; text-align: center; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; }
+.jadwal-sesi { margin-bottom: 1rem; }
+.sesi-info { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem; }
+.sesi-info span { font-size: 0.8rem; color: #777; }
+.sesi-kosong { text-align: center; color: #aaa; font-size: 0.9rem; margin-top: 1rem; }
+.catatan-pr {
+    width: 100%;
+    min-height: 80px;
+    font-size: 0.9rem;
+    padding: 8px;
+    margin-top: 4px;
+    transition: border-color 0.3s;
 }
