@@ -13,23 +13,27 @@
     <div id="app">
         <div id="view-role-selection" class="container">
             <h2>Masuk Sebagai:</h2>
-            <button onclick="showLogin('admin')">🎓 Admin</button>
+            <button onclick="showLogin('admin')">👤 Admin</button>
             <button onclick="showLogin('guru')">👩‍🏫 Guru</button>
-            <button onclick="showLogin('siswa')">🎒 Siswa</button>
+            <button onclick="showLogin('siswa')">🎓 Siswa</button>
         </div>
+
         <div id="view-login-form" class="container hidden">
-            <button class="back-button" onclick="showView('view-role-selection')">← Kembali</button>
+            <button class="back-button" onclick="showView('view-role-selection')">« Kembali</button>
             <h3 id="login-title">Login</h3>
+            
             <div id="form-admin" class="hidden">
                 <input type="text" id="admin-user" placeholder="Username Admin" autocomplete="username">
                 <input type="password" id="admin-pass" placeholder="Password" autocomplete="current-password">
                 <button onclick="login()">Login</button>
             </div>
+            
             <div id="form-guru" class="hidden">
                 <select id="guru-select-nama"></select>
                 <input type="password" id="guru-pass" placeholder="Password" autocomplete="current-password">
                 <button onclick="login()">Login</button>
             </div>
+
             <div id="form-siswa" class="hidden">
                 <select id="siswa-select-kelas" onchange="populateSiswaDropdown()"></select>
                 <select id="siswa-select-nama"></select>
@@ -37,12 +41,13 @@
                 <button onclick="login()">Login</button>
             </div>
         </div>
+
         <div id="view-dashboard" class="container dashboard hidden">
              <div class="header">
                 <h2 id="dashboard-title">Dashboard</h2>
-                <button class="logout-button" onclick="logout()">Logout 🚪</button>
-            </div>
-            <div id="dashboard-content"></div>
+                </div>
+            <div id="dashboard-content">
+                </div>
         </div>
     </div>
     <script src="script.js"></script>
