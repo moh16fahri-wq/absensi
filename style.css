@@ -7,7 +7,7 @@
 }
 body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #E0E7FF, #F3E8FF); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; color: var(--text-color); }
 .container { background-color: #fff; padding: 2.5rem; border-radius: var(--border-radius); box-shadow: var(--shadow); text-align: center; width: 90%; max-width: 500px; transition: all .4s; border-top: 5px solid var(--primary-color); }
-.dashboard { max-width: 950px; } /* Perlebar sedikit untuk jadwal */
+.dashboard { max-width: 950px; }
 h1, h2, h3, h4, h5 { color: #333; }
 button, input, select, textarea { font-family: 'Poppins', sans-serif; display: block; width: 100%; padding: 12px; margin-bottom: 1rem; border-radius: 8px; border: 1px solid var(--border-color); font-size: 1rem; box-sizing: border-box; }
 button { background-color: var(--primary-color); color: white; border: none; cursor: pointer; font-weight: 600; transition: background-color .3s, transform .2s; }
@@ -26,7 +26,185 @@ table th { background-color: var(--light-bg); }
 .tab-link { background: transparent; color: var(--text-color); border: none; padding: 12px 18px; cursor: pointer; margin-bottom: -2px; border-bottom: 3px solid transparent; border-radius: 0; width: auto; }
 .tab-link.active { color: var(--primary-color); border-bottom: 3px solid var(--primary-color); font-weight: 600; }
 .header-actions { display: flex; align-items: center; gap: 15px; position: relative; }
-.logout-button { width: auto; padding: 8px 15px; margin: 0; }
+
+/* STYLING PROFIL MENU */
+.profil-menu {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    background-color: var(--light-bg);
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+}
+
+.profil-menu:hover {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.profil-icon {
+    width: 35px;
+    height: 35px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: white;
+}
+
+.profil-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.profil-menu:hover .profil-name {
+    color: white;
+}
+
+/* STYLING PROFIL POPUP */
+#profil-popup {
+    position: absolute;
+    top: 120%;
+    right: 0;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    width: 320px;
+    padding: 1.5rem;
+    z-index: 1000;
+    text-align: left;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.profil-header {
+    text-align: center;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 1rem;
+}
+
+.profil-avatar {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin: 0 auto 0.5rem;
+    color: white;
+}
+
+.profil-header h4 {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 1.1rem;
+}
+
+.profil-info {
+    margin-bottom: 1rem;
+}
+
+.profil-info p {
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.profil-info strong {
+    color: #333;
+}
+
+.profil-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.profil-btn {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+    font-size: 0.9rem;
+}
+
+.ganti-pass-btn {
+    background-color: var(--edit-color);
+    color: white;
+}
+
+.ganti-pass-btn:hover {
+    background-color: #e09516;
+    transform: translateY(-2px);
+}
+
+.logout-btn {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.logout-btn:hover {
+    background-color: #b00118;
+    transform: translateY(-2px);
+}
+
+#ganti-password-section {
+    margin-top: 1rem;
+    padding-top: 1rem;
+}
+
+#ganti-password-section h5 {
+    margin-bottom: 0.8rem;
+    color: #333;
+    font-size: 1rem;
+}
+
+#ganti-password-section input {
+    margin-bottom: 0.8rem;
+    padding: 10px;
+}
+
+#ganti-password-section button {
+    background-color: var(--success-color);
+    margin-top: 0.5rem;
+}
+
+#ganti-password-section button:hover {
+    background-color: #6bc41e;
+}
+
+#ganti-password-section hr {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin-bottom: 1rem;
+}
+
 #notification-bell { font-size: 1.5rem; cursor: pointer; position: relative; }
 #notif-badge { position: absolute; top: -5px; right: -10px; background-color: var(--danger-color); color: #fff; border-radius: 50%; padding: 2px 6px; font-size: .7rem; }
 #notification-dropdown { position: absolute; top: 120%; right: 0; background: #fff; border-radius: var(--border-radius); box-shadow: var(--shadow); width: 320px; max-height: 400px; overflow-y: auto; text-align: left; z-index: 100; }
@@ -46,7 +224,7 @@ table th { background-color: var(--light-bg); }
 
 /* --- GAYA BARU UNTUK JADWAL PELAJARAN & CATATAN PR --- */
 .jadwal-table { margin-bottom: 1.5rem; }
-.jadwal-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; } /* 5 kolom untuk 5 hari */
+.jadwal-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; }
 .jadwal-hari { background-color: #fff; padding: 1rem; border-radius: var(--border-radius); }
 .jadwal-hari h5 { margin-top: 0; text-align: center; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; }
 .jadwal-sesi { margin-bottom: 1rem; }
@@ -60,4 +238,20 @@ table th { background-color: var(--light-bg); }
     padding: 8px;
     margin-top: 4px;
     transition: border-color 0.3s;
+}
+
+/* Responsive untuk mobile */
+@media (max-width: 768px) {
+    .profil-name {
+        display: none;
+    }
+    
+    #profil-popup {
+        width: 280px;
+        right: -10px;
+    }
+    
+    .jadwal-grid {
+        grid-template-columns: 1fr;
+    }
 }
