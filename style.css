@@ -240,6 +240,43 @@ table th { background-color: var(--light-bg); }
     transition: border-color 0.3s;
 }
 
+/* === STYLING SHOW/HIDE PASSWORD === */
+.password-wrapper {
+    position: relative;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.password-wrapper input {
+    padding-right: 45px;
+    margin-bottom: 0;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    color: #888;
+    font-size: 1.2rem;
+    width: auto;
+    margin: 0;
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-password:hover {
+    color: var(--primary-color);
+    background: none;
+    transform: translateY(-50%) scale(1.1);
+}
+
 /* Responsive untuk mobile */
 @media (max-width: 768px) {
     .profil-name {
