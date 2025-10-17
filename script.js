@@ -38,6 +38,20 @@ const data = {
     diskusi: []
 };
 
+// FUNGSI TOGGLE PASSWORD VISIBILITY
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const button = input.nextElementSibling;
+    
+    if (input.type === "password") {
+        input.type = "text";
+        button.textContent = "🙈"; // Mata tertutup
+    } else {
+        input.type = "password";
+        button.textContent = "👁️"; // Mata terbuka
+    }
+}
+
 // VARIABEL GLOBAL
 let currentUser = null;
 let currentRole = null;
@@ -160,7 +174,7 @@ function renderProfilPopup() {
         const namaKelas = data.kelas.find(k => k.id === currentUser.id_kelas)?.nama || '-';
         dataProfil = `<div class="profil-info"><p><strong>Nama:</strong> ${currentUser.nama}</p><p><strong>NIS:</strong> ${currentUser.nis || '-'}</p><p><strong>Kelas:</strong> ${namaKelas}</p></div>`;
     }
-    return `<div class="profil-header"><div class="profil-avatar">👤</div><h4>${currentUser.nama || currentUser.username}</h4></div>${dataProfil}<div class="profil-actions"><button class="profil-btn ganti-pass-btn" onclick="showGantiPassword()">🔒 Ganti Password</button><button class="profil-btn logout-btn" onclick="logout()">🚪 Logout</button></div><div id="ganti-password-section" class="hidden"><hr><h5>Ganti Password</h5><input type="password" id="old-pass-popup" placeholder="Password Lama"><input type="password" id="new-pass-popup" placeholder="Password Baru"><input type="password" id="confirm-new-pass-popup" placeholder="Konfirmasi Password"><button onclick="changePasswordFromPopup()">Simpan Password</button></div>`;
+    return `<div class="profil-header"><div class="profil-avatar">👤</div><h4>${currentUser.nama || currentUser.username}</h4></div>${dataProfil}<div class="profil-actions"><button class="profil-btn ganti-pass-btn" onclick="showGantiPassword()">🔒 Ganti Password</button><button class="profil-btn logout-btn" onclick="logout()">🚪 Logout</button></div><div id="ganti-password-section" class="hidden"><hr><h5>Ganti Password</h5><div class="password-wrapper"><input type="password" id="old-pass-popup" placeholder="Password Lama"><button type="button" class="toggle-password" onclick="togglePassword('old-pass-popup')">👁️</button></div><div class="password-wrapper"><input type="password" id="new-pass-popup" placeholder="Password Baru"><button type="button" class="toggle-password" onclick="togglePassword('new-pass-popup')">👁️</button></div><div class="password-wrapper"><input type="password" id="confirm-new-pass-popup" placeholder="Konfirmasi Password"><button type="button" class="toggle-password" onclick="togglePassword('confirm-new-pass-popup')">👁️</button></div><button onclick="changePasswordFromPopup()">Simpan Password</button></div>`;
 }
 
 function showGantiPassword() {
