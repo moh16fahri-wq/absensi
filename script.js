@@ -323,3 +323,64 @@ function markNotifAsRead(notifId) {
     renderNotificationBell();
     renderNotifList();
 }
+
+// TUGAS
+function renderDaftarTugas() {
+    const container = document.getElementById("daftar-tugas-container");
+    const notif = document.getElementById("notif-tugas");
+    const tugasSiswa = data.tugas.filter(t => t.id_kelas === currentUser.id_kelas);
+    notif.textContent = tugasSiswa.length;
+    if (tugasSiswa.length === 0) { container.innerHTML = "<p>🎉 Hore, tidak ada tugas saat ini!</p>"; return; }
+    let html = "";
+    tugasSiswa.forEach(t => {
+        const submission = t.submissions ? t.submissions.find(s => s.id_siswa === currentUser.id) : null;
+        const submissionHTML = submission ? `<div class="submission-status"><p style="color:green;"><strong>✓ Anda sudah mengumpulkan.</strong></p>${submission.nilai !== null ? `<p class="grade-display"><strong>Nilai: ${submission.nilai}</strong></p><p class="feedback-display"><em>Feedback: ${submission.feedback}</em></p>` : `<p>Menunggu penilaian...</p>`}</div>` : `<label>Kirim Jawaban:</label><input type="file" id="submit-file-${t.id}"><button onclick="submitTugas(${t.id})">Kirim</button>`;
+        html += `<div class="task-card"><div class="task-header"><span><strong>${t.judul}</strong> - ${t.nama_guru}</span><span class="task-deadline">Deadline: ${t.deadline}</span></div><p>${t.deskripsi}</p><p>File: <em>${t.file}</em></p>${submissionHTML}${renderDiskusi(t.id)}</div>`;
+    });
+    container.innerHTML = html;
+}
+
+function submitTugas(id_tugas) {
+    const file = document.getElementById(`submit-file-${id_tugas}`).files[0];
+    if (!file) return alert("Pilih file!");
+    const tugas = data.tugas.find(t => t.id === id_tugas);
+    if (tugas) {
+        tugas.submissions.push({ id_siswa: currentUser.id, nama_siswa: currentUser.nama, file: file.name, timestamp: new Date().toLocaleString("id-ID"), nilai: null, feedback: "" });
+        createNotification(tugas.id_guru, "guru", `Siswa '${currentUser.nama}' mengumpulkan tugas '${tugas.judul}'.`);
+        alert(`Jawaban berhasil dikirim!`);
+        renderDaftarTugas();
+    }
+}
+
+function renderTugasSubmissions() {
+    const container = document.getElementById("submission-container");
+    const tugasGuru = data.tugas.filter(t => t.id_guru === currentUser.id);
+    if (tugasGuru.length === 0) { container.innerHTML = "<p>Anda belum mengirim tugas apapun.</p>"; return; }
+    let html = "";
+    tugasGuru.forEach(t => {
+        html += `<div class="task-card"><h5>Tugas: ${t.judul} (Kelas: ${data.kelas.find(k => k.id === t.id_kelas).nama})</h5>`;
+        if (t.submissions && t.submissions.length > 0) {
+            html += "<ul class='submission-list'>";
+            t.submissions.forEach(sub => {
+                const submissionDetailHTML = `<strong>${sub.nama_siswa}</strong> mengumpulkan file: <em>${sub.file}</em><div class="grading-container">${sub.nilai !== null ? `<p class="grade-display"><strong>Nilai: ${sub.nilai}</strong></p><p class="feedback-display"><em>Feedback: ${sub.feedback}</em></p>` : `<input type="number" id="nilai-${t.id}-${sub.id_siswa}" placeholder="Nilai"><input type="text" id="feedback-${t.id}-${sub.id_siswa}" placeholder="Umpan Balik"><button class="small-btn" onclick="simpanNilai(${t.id}, ${sub.id_siswa})">Simpan</button>`}</div>`;
+                html += `<li>${submissionDetailHTML}</li>`;
+            });
+            html += "</ul>";
+        } else { html += "<p>Belum ada siswa yang mengumpulkan.</p>"; }
+        html += renderDiskusi(t.id) + `</div>`;
+    });
+    container.innerHTML = html;
+}
+
+function simpanNilai(id_tugas, id_siswa) {
+    const nilai = document.getElementById(`nilai-${id_tugas}-${id_siswa}`).value;
+    const feedback = document.getElementById(`feedback-${id_tugas}-${id_siswa}`).value;
+    if (nilai === "" || nilai < 0 || nilai > 100) return alert("Nilai harus 0-100.");
+    const tugas = data.tugas.find(t => t.id === id_tugas);
+    const submission = tugas.submissions.find(s => s.id_siswa === id_siswa);
+    submission.nilai = parseInt(nilai);
+    submission.feedback = feedback || "Tidak ada feedback.";
+    createNotification(id_siswa, "siswa", `Tugas '${tugas.judul}' Anda telah dinilai.`);
+    alert("Nilai berhasil disimpan!");
+    renderTugasSubmissions();
+}
