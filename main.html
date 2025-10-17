@@ -22,18 +22,27 @@
             <h3 id="login-title">Login</h3>
             <div id="form-admin" class="hidden">
                 <input type="text" id="admin-user" placeholder="Username Admin" autocomplete="username">
-                <input type="password" id="admin-pass" placeholder="Password" autocomplete="current-password">
+                <div class="password-wrapper">
+                    <input type="password" id="admin-pass" placeholder="Password" autocomplete="current-password">
+                    <button type="button" class="toggle-password" onclick="togglePassword('admin-pass')">👁️</button>
+                </div>
                 <button onclick="login()">Login</button>
             </div>
             <div id="form-guru" class="hidden">
                 <select id="guru-select-nama"></select>
-                <input type="password" id="guru-pass" placeholder="Password" autocomplete="current-password">
+                <div class="password-wrapper">
+                    <input type="password" id="guru-pass" placeholder="Password" autocomplete="current-password">
+                    <button type="button" class="toggle-password" onclick="togglePassword('guru-pass')">👁️</button>
+                </div>
                 <button onclick="login()">Login</button>
             </div>
             <div id="form-siswa" class="hidden">
                 <select id="siswa-select-kelas" onchange="populateSiswaDropdown()"></select>
                 <select id="siswa-select-nama"></select>
-                <input type="password" id="siswa-pass" placeholder="Password" autocomplete="current-password">
+                <div class="password-wrapper">
+                    <input type="password" id="siswa-pass" placeholder="Password" autocomplete="current-password">
+                    <button type="button" class="toggle-password" onclick="togglePassword('siswa-pass')">👁️</button>
+                </div>
                 <button onclick="login()">Login</button>
             </div>
         </div>
