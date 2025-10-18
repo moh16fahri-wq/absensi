@@ -1,4 +1,4 @@
-// ========== APLIKASI SEKOLAH DIGITAL - LENGKAP ==========
+// ========== APLIKASI SEKOLAH DIGITAL - DENGAN JURNAL MENGAJAR ==========
 
 // BAGIAN 1: DATABASE SIMULASI
 const data = {
@@ -24,6 +24,7 @@ const data = {
     pengumuman: [], 
     materi: [], 
     notifikasi: [],
+    jurnal: [], // Data jurnal mengajar
     jadwalPelajaran: {
         1: [
             { id: 1672531200000, hari: 1, jamMulai: '08:00', jamSelesai: '09:30', mataPelajaran: 'Matematika' },
@@ -45,10 +46,10 @@ function togglePassword(inputId) {
     
     if (input.type === "password") {
         input.type = "text";
-        button.textContent = "🙈"; // Mata tertutup
+        button.textContent = "🙈";
     } else {
         input.type = "password";
-        button.textContent = "👁️"; // Mata terbuka
+        button.textContent = "👁️";
     }
 }
 
@@ -56,6 +57,7 @@ function togglePassword(inputId) {
 let currentUser = null;
 let currentRole = null;
 let absensiHariIniSelesai = false;
+let activeJurnalId = null; // ID jurnal yang sedang aktif
 
 // INISIALISASI
 document.addEventListener("DOMContentLoaded", () => {
@@ -63,6 +65,8 @@ document.addEventListener("DOMContentLoaded", () => {
         setupHalamanAwal();
     } else if (document.getElementById("app")) {
         showView("view-role-selection");
+        // Cek jurnal yang expired setiap 1 menit
+        setInterval(checkExpiredJurnals, 60000);
     }
 });
 
@@ -83,6 +87,33 @@ function getNomorMinggu(date) {
     d.setUTCDate(d.getUTCDate() + 4 - dayNum);
     const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
     return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+}
+
+// FUNGSI CEK JURNAL EXPIRED
+function checkExpiredJurnals() {
+    const now = new Date();
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+    
+    data.jurnal.forEach(jurnal => {
+        if (jurnal.status === 'aktif') {
+            const [jamSelesai, menitSelesai] = jurnal.jamSelesai.split(':').map(Number);
+            const endTime = jamSelesai * 60 + menitSelesai;
+            
+            // Jika waktu sudah lewat dan jurnal masih aktif
+            if (currentTime > endTime) {
+                // Auto-approve semua absensi yang belum di-approve
+                jurnal.daftarAbsensi.forEach(absen => {
+                    if (absen.statusApproval === 'pending') {
+                        absen.statusApproval = 'approved';
+                        absen.approvedAt = new Date().toLocaleString("id-ID");
+                        absen.approvedBy = 'System (Auto)';
+                    }
+                });
+                jurnal.status = 'selesai';
+                jurnal.selesaiAt = new Date().toLocaleString("id-ID");
+            }
+        }
+    });
 }
 
 // LOGIN & LOGOUT
@@ -153,6 +184,7 @@ function logout() {
     currentUser = null;
     currentRole = null;
     absensiHariIniSelesai = false;
+    activeJurnalId = null;
     showView("view-role-selection");
     document.querySelectorAll("input").forEach(i => i.value = "");
 }
@@ -228,7 +260,7 @@ function showDashboard() {
 }
 
 function renderAdminDashboard() {
-    return `<div class="tabs"><button class="tab-link active" onclick="openAdminTab(event, 'Analitik')">📈 Analitik</button><button class="tab-link" onclick="openAdminTab(event, 'Absensi')">📊 Rekap Absensi</button><button class="tab-link" onclick="openAdminTab(event, 'Manajemen')">⚙️ Manajemen Data</button><button class="tab-link" onclick="openAdminTab(event, 'JadwalGuru')">🗓️ Jadwal Guru</button><button class="tab-link" onclick="openAdminTab(event, 'JadwalPelajaran')">📚 Jadwal Pelajaran</button><button class="tab-link" onclick="openAdminTab(event, 'Pengumuman')">📢 Pengumuman</button></div><div id="Analitik" class="tab-content" style="display:block;"></div><div id="Absensi" class="tab-content"></div><div id="Manajemen" class="tab-content"></div><div id="JadwalGuru" class="tab-content"></div><div id="JadwalPelajaran" class="tab-content"></div><div id="Pengumuman" class="tab-content"></div>`;
+    return `<div class="tabs"><button class="tab-link active" onclick="openAdminTab(event, 'Analitik')">📈 Analitik</button><button class="tab-link" onclick="openAdminTab(event, 'Absensi')">📊 Rekap Absensi</button><button class="tab-link" onclick="openAdminTab(event, 'Jurnal')">📝 Jurnal Mengajar</button><button class="tab-link" onclick="openAdminTab(event, 'Manajemen')">⚙️ Manajemen Data</button><button class="tab-link" onclick="openAdminTab(event, 'JadwalGuru')">🗓️ Jadwal Guru</button><button class="tab-link" onclick="openAdminTab(event, 'JadwalPelajaran')">📚 Jadwal Pelajaran</button><button class="tab-link" onclick="openAdminTab(event, 'Pengumuman')">📢 Pengumuman</button></div><div id="Analitik" class="tab-content" style="display:block;"></div><div id="Absensi" class="tab-content"></div><div id="Jurnal" class="tab-content"></div><div id="Manajemen" class="tab-content"></div><div id="JadwalGuru" class="tab-content"></div><div id="JadwalPelajaran" class="tab-content"></div><div id="Pengumuman" class="tab-content"></div>`;
 }
 
 function openAdminTab(evt, tabName) {
@@ -238,6 +270,7 @@ function openAdminTab(evt, tabName) {
     evt.currentTarget.className += " active";
     if (tabName === 'Analitik') renderAdminAnalitik();
     else if (tabName === 'Absensi') renderAdminAbsensi();
+    else if (tabName === 'Jurnal') renderAdminJurnal();
     else if (tabName === 'Manajemen') renderAdminManajemen();
     else if (tabName === 'JadwalGuru') renderAdminJadwal();
     else if (tabName === 'JadwalPelajaran') renderAdminManajemenJadwal();
@@ -245,7 +278,7 @@ function openAdminTab(evt, tabName) {
 }
 
 function renderGuruDashboard() {
-    return `<div class="dashboard-section" id="guru-absen"><h4>🗓️ Absensi & Jadwal</h4><p id="info-absen-guru">Mengecek jadwal...</p><button id="btn-mulai-ajar" onclick="mulaiAjar()" disabled>Mulai Ajar</button><div id="container-absen-kelas" style="margin-top: 1rem;"></div></div><div class="dashboard-section" id="guru-tugas"><h4>📤 Manajemen Tugas</h4><div class="form-container"><h5>Buat Tugas Baru</h5><select id="tugas-kelas">${data.kelas.map(k => `<option value="${k.id}">${k.nama}</option>`).join("")}</select><input type="text" id="tugas-judul" placeholder="Judul Tugas"><textarea id="tugas-deskripsi" placeholder="Deskripsi tugas..."></textarea><input type="date" id="tugas-deadline"><label>Upload File (Simulasi):</label><input type="file" id="tugas-file"><button onclick="buatTugas()">Kirim Tugas</button></div><div id="submission-container"></div></div><div class="dashboard-section"><h4>📚 Unggah Materi</h4><select id="materi-kelas">${data.kelas.map(k => `<option value="${k.id}">${k.nama}</option>`).join("")}</select><input type="text" id="materi-judul" placeholder="Judul Materi"><textarea id="materi-deskripsi" placeholder="Deskripsi..."></textarea><label>Upload File (Simulasi):</label><input type="file" id="materi-file"><button onclick="unggahMateri()">Unggah</button></div><div class="dashboard-section"><h4>📢 Buat Pengumuman</h4><input type="text" id="pengumuman-judul" placeholder="Judul"><textarea id="pengumuman-isi" placeholder="Isi..."></textarea><button onclick="buatPengumuman()">Kirim</button></div>`;
+    return `<div class="dashboard-section" id="guru-absen"><h4>🗓️ Jurnal & Absensi Mengajar</h4><p id="info-absen-guru">Mengecek jadwal...</p><button id="btn-mulai-ajar" onclick="mulaiAjar()" disabled>Mulai Mengajar</button><div id="container-jurnal-kelas" style="margin-top: 1rem;"></div></div><div class="dashboard-section" id="guru-tugas"><h4>📤 Manajemen Tugas</h4><div class="form-container"><h5>Buat Tugas Baru</h5><select id="tugas-kelas">${data.kelas.map(k => `<option value="${k.id}">${k.nama}</option>`).join("")}</select><input type="text" id="tugas-judul" placeholder="Judul Tugas"><textarea id="tugas-deskripsi" placeholder="Deskripsi tugas..."></textarea><input type="date" id="tugas-deadline"><label>Upload File (Simulasi):</label><input type="file" id="tugas-file"><button onclick="buatTugas()">Kirim Tugas</button></div><div id="submission-container"></div></div><div class="dashboard-section"><h4>📚 Unggah Materi</h4><select id="materi-kelas">${data.kelas.map(k => `<option value="${k.id}">${k.nama}</option>`).join("")}</select><input type="text" id="materi-judul" placeholder="Judul Materi"><textarea id="materi-deskripsi" placeholder="Deskripsi..."></textarea><label>Upload File (Simulasi):</label><input type="file" id="materi-file"><button onclick="unggahMateri()">Unggah</button></div>`;
 }
 
 function renderSiswaDashboard() {
@@ -369,7 +402,7 @@ function prosesAbsensi(status, fotoNama = null) {
 }
 
 function hitungJarak(lat1, lon1, lat2, lon2) {
-    const R = 6371000; // Radius bumi dalam meter
+    const R = 6371000;
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
     const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
@@ -377,6 +410,443 @@ function hitungJarak(lat1, lon1, lat2, lon2) {
               Math.sin(dLon/2) * Math.sin(dLon/2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     return R * c;
+}
+
+// ========== FITUR JURNAL MENGAJAR ==========
+
+function cekJadwalMengajar() {
+    const infoText = document.getElementById("info-absen-guru");
+    const btnMulai = document.getElementById("btn-mulai-ajar");
+    
+    const now = new Date();
+    const hariIni = now.getDay();
+    const jamSekarang = now.getHours();
+    
+    const jadwalHariIni = currentUser.jadwal.filter(j => j.hari === hariIni);
+    
+    if (jadwalHariIni.length === 0) {
+        infoText.textContent = "Tidak ada jadwal mengajar hari ini.";
+        return;
+    }
+    
+    const jadwalAktif = jadwalHariIni.find(j => j.jam === jamSekarang);
+    
+    if (jadwalAktif) {
+        // Cek apakah sudah ada jurnal aktif
+        const jurnalAktif = data.jurnal.find(j => 
+            j.id_guru === currentUser.id && 
+            j.id_kelas === jadwalAktif.id_kelas && 
+            j.status === 'aktif' &&
+            j.tanggal === new Date().toLocaleDateString("id-ID")
+        );
+        
+        if (jurnalAktif) {
+            infoText.innerHTML = `<strong style="color: var(--success-color);">✅ Sedang Mengajar:</strong> ${jadwalAktif.nama_kelas} (Jam ${jadwalAktif.jam}:00)`;
+            btnMulai.disabled = true;
+            btnMulai.textContent = "Mengajar Berlangsung";
+            activeJurnalId = jurnalAktif.id;
+            renderJurnalAktif();
+        } else {
+            infoText.innerHTML = `<strong>Jadwal Aktif:</strong> ${jadwalAktif.nama_kelas} (Jam ${jadwalAktif.jam}:00)`;
+            btnMulai.disabled = false;
+            btnMulai.setAttribute('data-kelas-id', jadwalAktif.id_kelas);
+            btnMulai.setAttribute('data-jam-mulai', `${jadwalAktif.jam}:00`);
+            btnMulai.setAttribute('data-jam-selesai', `${jadwalAktif.jam + 1}:30`);
+        }
+    } else {
+        infoText.innerHTML = `<strong>Jadwal Hari Ini:</strong><br>`;
+        jadwalHariIni.forEach(j => {
+            infoText.innerHTML += `${j.nama_kelas} - Jam ${j.jam}:00<br>`;
+        });
+    }
+}
+
+function mulaiAjar() {
+    const kelasId = parseInt(document.getElementById("btn-mulai-ajar").getAttribute('data-kelas-id'));
+    const jamMulai = document.getElementById("btn-mulai-ajar").getAttribute('data-jam-mulai');
+    const jamSelesai = document.getElementById("btn-mulai-ajar").getAttribute('data-jam-selesai');
+    const kelas = data.kelas.find(k => k.id === kelasId);
+    const today = new Date().toLocaleDateString("id-ID");
+    
+    // Buat jurnal baru
+    const jurnalId = Date.now();
+    const siswaDiKelas = data.users.siswas.filter(s => s.id_kelas === kelasId);
+    
+    // Ambil data absensi siswa hari ini
+    const daftarAbsensi = siswaDiKelas.map(siswa => {
+        const absensi = data.absensi.find(a => a.id_siswa === siswa.id && a.tanggal === today);
+        return {
+            id_siswa: siswa.id,
+            nama_siswa: siswa.nama,
+            status: absensi ? absensi.status : 'alpha',
+            statusApproval: 'pending',
+            approvedAt: null,
+            approvedBy: null,
+            keterangan: ''
+        };
+    });
+    
+    const jurnal = {
+        id: jurnalId,
+        id_guru: currentUser.id,
+        nama_guru: currentUser.nama,
+        id_kelas: kelasId,
+        nama_kelas: kelas.nama,
+        tanggal: today,
+        jamMulai: jamMulai,
+        jamSelesai: jamSelesai,
+        materiAjar: '',
+        kendala: '',
+        catatan: '',
+        status: 'aktif',
+        createdAt: new Date().toLocaleString("id-ID"),
+        selesaiAt: null,
+        daftarAbsensi: daftarAbsensi
+    };
+    
+    data.jurnal.push(jurnal);
+    activeJurnalId = jurnalId;
+    
+    alert(`Jurnal mengajar ${kelas.nama} telah dimulai!`);
+    showDashboard();
+}
+
+function renderJurnalAktif() {
+    const container = document.getElementById("container-jurnal-kelas");
+    const jurnal = data.jurnal.find(j => j.id === activeJurnalId);
+    
+    if (!jurnal) {
+        container.innerHTML = '';
+        return;
+    }
+    
+    let html = `
+        <div class="form-container">
+            <h5>📝 Jurnal Mengajar - ${jurnal.nama_kelas}</h5>
+            <p><strong>Tanggal:</strong> ${jurnal.tanggal} | <strong>Waktu:</strong> ${jurnal.jamMulai} - ${jurnal.jamSelesai}</p>
+            
+            <label><strong>Materi yang Diajarkan:</strong></label>
+            <textarea id="jurnal-materi" placeholder="Isi materi yang diajarkan...">${jurnal.materiAjar}</textarea>
+            
+            <label><strong>Kendala (Opsional):</strong></label>
+            <textarea id="jurnal-kendala" placeholder="Tuliskan kendala jika ada...">${jurnal.kendala}</textarea>
+            
+            <label><strong>Catatan Tambahan (Opsional):</strong></label>
+            <textarea id="jurnal-catatan" placeholder="Catatan tambahan...">${jurnal.catatan}</textarea>
+            
+            <button onclick="simpanJurnal()">💾 Simpan Jurnal</button>
+        </div>
+        
+        <div class="dashboard-section" style="margin-top: 1rem;">
+            <h5>✅ Daftar Absensi Siswa - Approval</h5>
+            <table>
+                <tr>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>Status</th>
+                    <th>Approval</th>
+                    <th>Aksi</th>
+                </tr>
+    `;
+    
+    jurnal.daftarAbsensi.forEach((absen, index) => {
+        const statusColor = absen.status === 'masuk' ? 'green' : absen.status === 'izin' ? 'orange' : absen.status === 'sakit' ? 'blue' : 'red';
+        const approvalBadge = absen.statusApproval === 'approved' 
+            ? `<span style="color: green; font-weight: 600;">✓ Disetujui</span>` 
+            : `<span style="color: orange; font-weight: 600;">⏳ Pending</span>`;
+        
+        const aksiBtn = absen.statusApproval === 'pending' 
+            ? `<button class="small-btn" onclick="approveAbsensi(${index})">✓ Approve</button>
+               <button class="small-btn delete" onclick="rejectAbsensi(${index})">✗ Alpha</button>`
+            : `<span style="color: var(--text-secondary); font-size: 0.85rem;">${absen.approvedAt}</span>`;
+        
+        html += `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${absen.nama_siswa}</td>
+                <td><strong style="color: ${statusColor};">${absen.status.toUpperCase()}</strong></td>
+                <td>${approvalBadge}</td>
+                <td>${aksiBtn}</td>
+            </tr>
+        `;
+    });
+    
+    html += `
+            </table>
+            <button onclick="selesaiMengajar()" style="margin-top: 1rem; background: var(--success-color);">✓ Selesai Mengajar</button>
+        </div>
+    `;
+    
+    container.innerHTML = html;
+}
+
+function simpanJurnal() {
+    const jurnal = data.jurnal.find(j => j.id === activeJurnalId);
+    if (!jurnal) return;
+    
+    jurnal.materiAjar = document.getElementById('jurnal-materi').value;
+    jurnal.kendala = document.getElementById('jurnal-kendala').value;
+    jurnal.catatan = document.getElementById('jurnal-catatan').value;
+    
+    alert('Jurnal berhasil disimpan!');
+}
+
+function approveAbsensi(index) {
+    const jurnal = data.jurnal.find(j => j.id === activeJurnalId);
+    if (!jurnal) return;
+    
+    jurnal.daftarAbsensi[index].statusApproval = 'approved';
+    jurnal.daftarAbsensi[index].approvedAt = new Date().toLocaleString("id-ID");
+    jurnal.daftarAbsensi[index].approvedBy = currentUser.nama;
+    
+    renderJurnalAktif();
+}
+
+function rejectAbsensi(index) {
+    const jurnal = data.jurnal.find(j => j.id === activeJurnalId);
+    if (!jurnal) return;
+    
+    if (confirm('Yakin menolak dan mengubah status menjadi ALPHA?')) {
+        jurnal.daftarAbsensi[index].status = 'alpha';
+        jurnal.daftarAbsensi[index].statusApproval = 'approved';
+        jurnal.daftarAbsensi[index].approvedAt = new Date().toLocaleString("id-ID");
+        jurnal.daftarAbsensi[index].approvedBy = currentUser.nama;
+        jurnal.daftarAbsensi[index].keterangan = 'Ditolak oleh guru';
+        
+        renderJurnalAktif();
+    }
+}
+
+function selesaiMengajar() {
+    const jurnal = data.jurnal.find(j => j.id === activeJurnalId);
+    if (!jurnal) return;
+    
+    if (!jurnal.materiAjar.trim()) {
+        return alert('Materi ajar harus diisi sebelum menyelesaikan jurnal!');
+    }
+    
+    // Auto-approve semua yang masih pending
+    jurnal.daftarAbsensi.forEach(absen => {
+        if (absen.statusApproval === 'pending') {
+            absen.statusApproval = 'approved';
+            absen.approvedAt = new Date().toLocaleString("id-ID");
+            absen.approvedBy = currentUser.nama;
+        }
+    });
+    
+    jurnal.status = 'selesai';
+    jurnal.selesaiAt = new Date().toLocaleString("id-ID");
+    activeJurnalId = null;
+    
+    alert('Jurnal mengajar telah selesai dan disimpan!');
+    showDashboard();
+}
+
+// ========== ADMIN JURNAL ==========
+
+function renderAdminJurnal() {
+    const container = document.getElementById("Jurnal");
+    const jurnalList = [...data.jurnal].reverse();
+    
+    let html = `
+        <div class="dashboard-section">
+            <h4>📝 Daftar Jurnal Mengajar</h4>
+    `;
+    
+    if (jurnalList.length === 0) {
+        html += '<p>Belum ada jurnal mengajar.</p>';
+    } else {
+        jurnalList.forEach(jurnal => {
+            const statusBadge = jurnal.status === 'aktif' 
+                ? '<span style="background: var(--warning-color); color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem;">⚡ Sedang Berlangsung</span>'
+                : '<span style="background: var(--success-color); color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem;">✓ Selesai</span>';
+            
+            const hadir = jurnal.daftarAbsensi.filter(a => a.status === 'masuk' && a.statusApproval === 'approved').length;
+            const izin = jurnal.daftarAbsensi.filter(a => a.status === 'izin' && a.statusApproval === 'approved').length;
+            const sakit = jurnal.daftarAbsensi.filter(a => a.status === 'sakit' && a.statusApproval === 'approved').length;
+            const alpha = jurnal.daftarAbsensi.filter(a => a.status === 'alpha').length;
+            
+            html += `
+                <div class="task-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <div>
+                            <h5 style="margin: 0;">${jurnal.nama_kelas} - ${jurnal.nama_guru}</h5>
+                            <small style="color: var(--text-secondary);">${jurnal.tanggal} | ${jurnal.jamMulai} - ${jurnal.jamSelesai}</small>
+                        </div>
+                        ${statusBadge}
+                    </div>
+                    
+                    <div style="background: var(--light-bg); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <p><strong>Materi:</strong> ${jurnal.materiAjar || '<em>Belum diisi</em>'}</p>
+                        ${jurnal.kendala ? `<p><strong>Kendala:</strong> ${jurnal.kendala}</p>` : ''}
+                        ${jurnal.catatan ? `<p><strong>Catatan:</strong> ${jurnal.catatan}</p>` : ''}
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 1rem;">
+                        <div style="text-align: center; background: #dcfce7; padding: 0.5rem; border-radius: 6px;">
+                            <strong style="color: #16a34a; font-size: 1.5rem;">${hadir}</strong>
+                            <p style="margin: 0; font-size: 0.85rem; color: #16a34a;">Hadir</p>
+                        </div>
+                        <div style="text-align: center; background: #fed7aa; padding: 0.5rem; border-radius: 6px;">
+                            <strong style="color: #ea580c; font-size: 1.5rem;">${izin}</strong>
+                            <p style="margin: 0; font-size: 0.85rem; color: #ea580c;">Izin</p>
+                        </div>
+                        <div style="text-align: center; background: #dbeafe; padding: 0.5rem; border-radius: 6px;">
+                            <strong style="color: #2563eb; font-size: 1.5rem;">${sakit}</strong>
+                            <p style="margin: 0; font-size: 0.85rem; color: #2563eb;">Sakit</p>
+                        </div>
+                        <div style="text-align: center; background: #fee2e2; padding: 0.5rem; border-radius: 6px;">
+                            <strong style="color: #dc2626; font-size: 1.5rem;">${alpha}</strong>
+                            <p style="margin: 0; font-size: 0.85rem; color: #dc2626;">Alpha</p>
+                        </div>
+                    </div>
+                    
+                    <button class="small-btn" onclick="lihatDetailJurnal(${jurnal.id})">👁️ Detail</button>
+                    <button class="small-btn" onclick="editJurnalAdmin(${jurnal.id})" style="background: var(--edit-color);">✏️ Edit</button>
+                </div>
+            `;
+        });
+    }
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function lihatDetailJurnal(jurnalId) {
+    const jurnal = data.jurnal.find(j => j.id === jurnalId);
+    if (!jurnal) return;
+    
+    let html = `
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;" onclick="this.remove()">
+            <div style="background: white; padding: 2rem; border-radius: 16px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto;" onclick="event.stopPropagation()">
+                <h4>Detail Jurnal - ${jurnal.nama_kelas}</h4>
+                <p><strong>Guru:</strong> ${jurnal.nama_guru}</p>
+                <p><strong>Tanggal:</strong> ${jurnal.tanggal} | <strong>Waktu:</strong> ${jurnal.jamMulai} - ${jurnal.jamSelesai}</p>
+                <p><strong>Status:</strong> ${jurnal.status === 'aktif' ? '⚡ Berlangsung' : '✓ Selesai'}</p>
+                
+                <div style="background: var(--light-bg); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                    <p><strong>Materi:</strong> ${jurnal.materiAjar}</p>
+                    ${jurnal.kendala ? `<p><strong>Kendala:</strong> ${jurnal.kendala}</p>` : ''}
+                    ${jurnal.catatan ? `<p><strong>Catatan:</strong> ${jurnal.catatan}</p>` : ''}
+                </div>
+                
+                <h5>Daftar Absensi:</h5>
+                <table style="width: 100%;">
+                    <tr>
+                        <th>No</th>
+                        <th>Nama</th>
+                        <th>Status</th>
+                        <th>Approval</th>
+                    </tr>
+    `;
+    
+    jurnal.daftarAbsensi.forEach((absen, index) => {
+        const statusColor = absen.status === 'masuk' ? 'green' : absen.status === 'izin' ? 'orange' : absen.status === 'sakit' ? 'blue' : 'red';
+        html += `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${absen.nama_siswa}</td>
+                <td style="color: ${statusColor}; font-weight: 600;">${absen.status.toUpperCase()}</td>
+                <td>${absen.statusApproval === 'approved' ? '✓' : '⏳'}</td>
+            </tr>
+        `;
+    });
+    
+    html += `
+                </table>
+                <button onclick="this.closest('div[style*=fixed]').remove()" style="margin-top: 1rem; width: 100%;">Tutup</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function editJurnalAdmin(jurnalId) {
+    const jurnal = data.jurnal.find(j => j.id === jurnalId);
+    if (!jurnal) return;
+    
+    let html = `
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;" onclick="this.remove()">
+            <div style="background: white; padding: 2rem; border-radius: 16px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto;" onclick="event.stopPropagation()">
+                <h4>Edit Jurnal - ${jurnal.nama_kelas}</h4>
+                <p><strong>Guru:</strong> ${jurnal.nama_guru} | <strong>Tanggal:</strong> ${jurnal.tanggal}</p>
+                
+                <label><strong>Materi:</strong></label>
+                <textarea id="edit-materi" style="width: 100%; min-height: 100px; margin-bottom: 1rem;">${jurnal.materiAjar}</textarea>
+                
+                <label><strong>Kendala:</strong></label>
+                <textarea id="edit-kendala" style="width: 100%; min-height: 80px; margin-bottom: 1rem;">${jurnal.kendala}</textarea>
+                
+                <label><strong>Catatan:</strong></label>
+                <textarea id="edit-catatan" style="width: 100%; min-height: 80px; margin-bottom: 1rem;">${jurnal.catatan}</textarea>
+                
+                <h5>Edit Absensi:</h5>
+                <table style="width: 100%; margin-bottom: 1rem;">
+                    <tr>
+                        <th>Nama</th>
+                        <th>Status</th>
+                        <th>Approval</th>
+                    </tr>
+    `;
+    
+    jurnal.daftarAbsensi.forEach((absen, index) => {
+        html += `
+            <tr>
+                <td>${absen.nama_siswa}</td>
+                <td>
+                    <select id="edit-status-${index}" style="width: 100%;">
+                        <option value="masuk" ${absen.status === 'masuk' ? 'selected' : ''}>Masuk</option>
+                        <option value="izin" ${absen.status === 'izin' ? 'selected' : ''}>Izin</option>
+                        <option value="sakit" ${absen.status === 'sakit' ? 'selected' : ''}>Sakit</option>
+                        <option value="alpha" ${absen.status === 'alpha' ? 'selected' : ''}>Alpha</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="edit-approval-${index}" style="width: 100%;">
+                        <option value="approved" ${absen.statusApproval === 'approved' ? 'selected' : ''}>Approved</option>
+                        <option value="pending" ${absen.statusApproval === 'pending' ? 'selected' : ''}>Pending</option>
+                    </select>
+                </td>
+            </tr>
+        `;
+    });
+    
+    html += `
+                </table>
+                <button onclick="simpanEditJurnal(${jurnalId})" style="width: 100%; margin-bottom: 0.5rem; background: var(--success-color);">💾 Simpan Perubahan</button>
+                <button onclick="this.closest('div[style*=fixed]').remove()" style="width: 100%;">Batal</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function simpanEditJurnal(jurnalId) {
+    const jurnal = data.jurnal.find(j => j.id === jurnalId);
+    if (!jurnal) return;
+    
+    jurnal.materiAjar = document.getElementById('edit-materi').value;
+    jurnal.kendala = document.getElementById('edit-kendala').value;
+    jurnal.catatan = document.getElementById('edit-catatan').value;
+    
+    jurnal.daftarAbsensi.forEach((absen, index) => {
+        const newStatus = document.getElementById(`edit-status-${index}`).value;
+        const newApproval = document.getElementById(`edit-approval-${index}`).value;
+        
+        absen.status = newStatus;
+        absen.statusApproval = newApproval;
+        
+        if (newApproval === 'approved' && !absen.approvedAt) {
+            absen.approvedAt = new Date().toLocaleString("id-ID");
+            absen.approvedBy = 'Admin';
+        }
+    });
+    
+    alert('Jurnal berhasil diperbarui!');
+    document.querySelector('div[style*="position: fixed"]').remove();
+    renderAdminJurnal();
 }
 
 // NOTIFIKASI
@@ -432,25 +902,6 @@ function renderPengumumanSiswa() {
         html += `<div class="announcement-card"><h5>${p.judul}</h5><p>${p.isi}</p><small>oleh ${p.nama_guru} - ${p.tanggal}</small></div>`;
     });
     container.innerHTML = html;
-}
-
-function buatPengumuman() {
-    const judul = document.getElementById("pengumuman-judul").value;
-    const isi = document.getElementById("pengumuman-isi").value;
-    if (!judul || !isi) return alert("Judul dan isi harus diisi!");
-    
-    data.pengumuman.push({
-        id: Date.now(),
-        judul,
-        isi,
-        nama_guru: currentUser.nama,
-        tanggal: new Date().toLocaleDateString("id-ID")
-    });
-    
-    createNotification("semua", "siswa", `Pengumuman baru: ${judul}`);
-    alert("Pengumuman berhasil dibuat!");
-    document.getElementById("pengumuman-judul").value = "";
-    document.getElementById("pengumuman-isi").value = "";
 }
 
 // MATERI
@@ -646,57 +1097,6 @@ function kirimDiskusi(id_tugas) {
     } else if (currentRole === 'guru') {
         renderTugasSubmissions();
     }
-}
-
-// JADWAL MENGAJAR GURU
-function cekJadwalMengajar() {
-    const infoText = document.getElementById("info-absen-guru");
-    const btnMulai = document.getElementById("btn-mulai-ajar");
-    
-    const now = new Date();
-    const hariIni = now.getDay();
-    const jamSekarang = now.getHours();
-    
-    const jadwalHariIni = currentUser.jadwal.filter(j => j.hari === hariIni);
-    
-    if (jadwalHariIni.length === 0) {
-        infoText.textContent = "Tidak ada jadwal mengajar hari ini.";
-        return;
-    }
-    
-    const jadwalAktif = jadwalHariIni.find(j => j.jam === jamSekarang);
-    
-    if (jadwalAktif) {
-        infoText.innerHTML = `<strong>Jadwal Aktif:</strong> ${jadwalAktif.nama_kelas} (Jam ${jadwalAktif.jam}:00)`;
-        btnMulai.disabled = false;
-        btnMulai.setAttribute('data-kelas-id', jadwalAktif.id_kelas);
-    } else {
-        infoText.innerHTML = `<strong>Jadwal Hari Ini:</strong><br>`;
-        jadwalHariIni.forEach(j => {
-            infoText.innerHTML += `${j.nama_kelas} - Jam ${j.jam}:00<br>`;
-        });
-    }
-}
-
-function mulaiAjar() {
-    const kelasId = parseInt(document.getElementById("btn-mulai-ajar").getAttribute('data-kelas-id'));
-    const kelas = data.kelas.find(k => k.id === kelasId);
-    
-    const container = document.getElementById("container-absen-kelas");
-    const siswaDiKelas = data.users.siswas.filter(s => s.id_kelas === kelasId);
-    const today = new Date().toLocaleDateString("id-ID");
-    
-    let html = `<h5>Absensi ${kelas.nama}</h5><table><tr><th>Nama</th><th>Status</th></tr>`;
-    
-    siswaDiKelas.forEach(siswa => {
-        const absensi = data.absensi.find(a => a.id_siswa === siswa.id && a.tanggal === today);
-        const status = absensi ? absensi.status : "Belum absen";
-        const statusClass = status === "masuk" ? "style='color: green;'" : status === "Belum absen" ? "style='color: red;'" : "";
-        html += `<tr><td>${siswa.nama}</td><td ${statusClass}>${status}</td></tr>`;
-    });
-    
-    html += "</table>";
-    container.innerHTML = html;
 }
 
 // ADMIN FUNCTIONS
