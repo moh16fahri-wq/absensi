@@ -1,40 +1,12 @@
-/* =============================
-   STYLE.CSS - SMKN 1 GONDANG
-   ============================= */
+// ============================= // SCRIPT.JS - SMKN 1 GONDANG // =============================
 
-/* RESET SEDERHANA */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+// Toggle Menu Mobile const menuBtn = document.getElementById("menuBtn"); const mobileMenu = document.getElementById("mobileMenu");
 
-/* BODY */
-body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f4f4f4;
-  color: #333;
-}
+if (menuBtn) { menuBtn.addEventListener("click", () => { mobileMenu.classList.toggle("hidden"); }); }
 
-/* NAVBAR */
-header {
-  background: #ffffff;
-  border-bottom: 1px solid #e2e2e2;
-}
+// Smooth Scroll (optional) const links = document.querySelectorAll("a[href^='#']");
 
-header nav a {
-  font-weight: 500;
-  transition: 0.3s;
-}
-
-header nav a:hover {
-  color: #2563eb; /* biru */
-}
-
-/* HERO */
-.hero-custom {
-  background-image: url('https://source.unsplash.com/1600x900/?school,building');
-  background-size: cover;
+links.forEach(link => { link.addEventListener("click", function(e) { const target = document.querySelector(this.getAttribute("href")); if (target) { e.preventDefault(); window.scrollTo({ top: target.offsetTop - 60, behavior: "smooth" }); } }); });  background-size: cover;
   background-position: center;
   height: 380px;
   display: flex;
