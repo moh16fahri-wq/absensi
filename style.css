@@ -1,78 +1,270 @@
-/* =============================
-   STYLE.CSS - SMKN 1 GONDANG
-   ============================= */
+/* =====================================================
+   STYLE.CSS — Tema Estetik & Kekinian Untuk Website SMKN 1 GONDANG
+   ===================================================== */
 
-/* RESET SEDERHANA */
+/* ====== Global ====== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  scroll-behavior: smooth;
 }
 
-/* BODY */
 body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f4f4f4;
-  color: #333;
+  font-family: "Poppins", sans-serif;
+  background: #f5f6fa;
+  color: #222;
+  line-height: 1.6;
 }
 
-/* NAVBAR */
-header {
-  background: #ffffff;
-  border-bottom: 1px solid #e2e2e2;
+img {
+  width: 100%;
+  display: block;
+  border-radius: 14px;
 }
 
-header nav a {
+.container {
+  width: 92%;
+  max-width: 1250px;
+  margin: auto;
+}
+
+/* ====== Navbar Glassmorphism ====== */
+.nav-glass {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.55);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  z-index: 999;
+}
+
+.nav-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #000;
+}
+
+.brand-img {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.brand-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: -4px;
+}
+
+.brand-sub {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.nav-links a {
+  margin-left: 24px;
+  text-decoration: none;
+  color: #000;
   font-weight: 500;
+  transition: 0.2s;
+}
+
+.nav-links a:hover {
+  color: #0077ff;
+}
+
+.btn-outline {
+  padding: 6px 14px;
+  border: 1px solid #0077ff;
+  border-radius: 12px;
   transition: 0.3s;
 }
 
-header nav a:hover {
-  color: #2563eb; /* biru */
+.btn-outline:hover {
+  background: #0077ff;
+  color: white;
 }
 
-/* HERO */
-.hero-custom {
-  background-image: url('https://source.unsplash.com/1600x900/?school,building');
-  background-size: cover;
-  background-position: center;
-  height: 380px;
+/* ====== Hamburger Button ====== */
+.hamburger {
+  display: none;
+  font-size: 1.7rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* ====== HERO ====== */
+.hero {
+  background: url("https://source.unsplash.com/1600x900/?modern,school") center/cover;
+  height: 88vh;
+  padding-top: 140px;
+  color: white;
   display: flex;
   align-items: center;
-  color: white;
-  padding: 20px;
 }
 
-.hero-overlay {
-  background: rgba(0, 0, 0, 0.45);
-  padding: 20px;
-  border-radius: 10px;
+.hero-content h1 {
+  font-size: 2.8rem;
+  font-weight: 700;
   max-width: 600px;
 }
 
-/* CARD */
+.accent { color: #4da3ff; }
+
+.lead {
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 18px 0 28px;
+}
+
+.hero-actions a {
+  padding: 12px 26px;
+  margin-right: 12px;
+  border-radius: 14px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.btn-primary {
+  background: #0077ff;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #005fcc;
+}
+
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(4px);
+  color: white;
+}
+
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* ====== Cards Section ====== */
+.quick-cards {
+  margin: 80px 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 32px;
+}
+
 .card {
   background: white;
-  padding: 16px;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  border-radius: 18px;
+  overflow: hidden;
+  text-decoration: none;
+  color: #000;
+  transition: 0.3s;
 }
 
-/* GALERI */
-.gallery-img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+.card-body {
+  padding: 16px 22px 26px;
 }
 
-/* FOOTER */
-footer {
-  background: #111827;
-  padding: 20px;
-  text-align: center;
-  color: #ccc;
-  margin-top: 40px;
+.card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 6px;
 }
 
+.card-glow:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* ====== Announcements ====== */
+.announcements {
+  margin: 40px 0 80px;
+}
+
+.announcements h2 {
+  font-size: 1.9rem;
+  margin-bottom: 20px;
+}
+
+.ann-list {
+  display: grid;
+  gap: 20px;
+}
+
+.ann-item {
+  background: white;
+  padding: 22px;
+  border-radius: 16px;
+  border-left: 5px solid #0077ff;
+  transition: 0.3s;
+}
+
+.ann-item:hover {
+  transform: scale(1.02);
+}
+
+/* ====== CTA ====== */
+.cta-footer {
+  background: #0077ff;
+  color: white;
+  padding: 40px;
+  border-radius: 22px;
+  margin-bottom: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* ====== Footer ====== */
+.site-footer {
+  background: #0d0d0d;
+  padding: 30px 0;
+  color: #bbb;
+}
+
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* ====== Responsive ====== */
+@media (max-width: 900px) {
+  .nav-links {
+    position: fixed;
+    top: 70px;
+    right: -100%;
+    width: 60%;
+    height: 100vh;
+    background: white;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: 0.4s;
+  }
+
+  .nav-links.open {
+    right: 0;
+  }
+
+  .hamburger {
+    display: block;
+  }
+}
