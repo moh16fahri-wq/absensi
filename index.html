@@ -3,170 +3,113 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>SMK Negeri 1 Gondang - Official</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <style>
-    /* simple custom styles */
-    .hero{
-      background-image: url('https://source.unsplash.com/1600x900/?school,building');
-      background-size: cover;
-      background-position: center;
-    }
-  </style>
+  <title>SMK Negeri 1 Gondang — Beranda</title>
+  <meta name="description" content="Website resmi SMK Negeri 1 Gondang - Profil, Jurusan, PPDB, Galeri, Kontak." />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
-<body class="antialiased bg-gray-100 text-gray-800">
-  <!-- NAVBAR -->
-  <header class="bg-white shadow">
-    <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <img src="https://source.unsplash.com/80x80/?logo,school" alt="logo" class="w-12 h-12 rounded"/>
+<body>
+  <!-- NAVBAR (glass) -->
+  <header class="nav-glass">
+    <div class="container nav-inner">
+      <a class="brand" href="index.html">
+        <img src="https://source.unsplash.com/64x64/?school,logo" alt="logo" class="brand-img">
         <div>
-          <h1 class="font-bold text-lg">SMK Negeri 1 Gondang</h1>
-          <p class="text-sm text-gray-500">Gondang, Nganjuk — Jawa Timur</p>
+          <div class="brand-title">SMK Negeri 1 Gondang</div>
+          <div class="brand-sub">Gondang, Nganjuk — Jawa Timur</div>
         </div>
-      </div>
-      <nav class="space-x-4 hidden md:block">
-        <a href="#home" class="hover:text-blue-600">Home</a>
-        <a href="#profil" class="hover:text-blue-600">Profil</a>
-        <a href="#jurusan" class="hover:text-blue-600">Jurusan</a>
-        <a href="#ppdb" class="hover:text-blue-600">PPDB</a>
-        <a href="#kontak" class="hover:text-blue-600">Kontak</a>
+      </a>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="profil.html">Profil</a>
+        <a href="jurusan.html">Jurusan</a>
+        <a href="ppdb.html">PPDB</a>
+        <a href="galeri.html">Galeri</a>
+        <a href="kontak.html" class="btn-outline">Kontak</a>
       </nav>
-      <button class="md:hidden" id="menuBtn">Menu</button>
-    </div>
-    <!-- Mobile menu -->
-    <div id="mobileMenu" class="hidden bg-gray-50 px-4 py-2">
-      <a href="#home" class="block py-1">Home</a>
-      <a href="#profil" class="block py-1">Profil</a>
-      <a href="#jurusan" class="block py-1">Jurusan</a>
-      <a href="#ppdb" class="block py-1">PPDB</a>
-      <a href="#kontak" class="block py-1">Kontak</a>
+
+      <button id="menuBtn" class="hamburger" aria-label="menu">☰</button>
     </div>
   </header>
 
   <!-- HERO -->
-  <section id="home" class="hero h-64 md:h-96 flex items-center">
-    <div class="container mx-auto px-4 text-white">
-      <div class="bg-black bg-opacity-40 p-6 rounded">
-        <h2 class="text-3xl md:text-4xl font-extrabold">Selamat Datang di SMK Negeri 1 Gondang</h2>
-        <p class="mt-2 max-w-2xl">Sekolah Menengah Kejuruan berstandar kompetensi — Siap Kerja, Siap Berinovasi.</p>
-        <div class="mt-4">
-          <a href="#ppdb" class="bg-blue-600 px-4 py-2 rounded text-white">Daftar PPDB</a>
-          <a href="#profil" class="ml-2 bg-white text-gray-800 px-4 py-2 rounded">Lihat Profil</a>
-        </div>
+  <section class="hero">
+    <div class="hero-content container">
+      <h1>Selamat Datang di <span class="accent">SMK Negeri 1 Gondang</span></h1>
+      <p class="lead">Sekolah kejuruan dengan semangat siap kerja, inovatif, dan berkarakter. Temukan program keahlian dan informasi PPDB terbaru.</p>
+      <div class="hero-actions">
+        <a href="jurusan.html" class="btn-primary">Lihat Jurusan</a>
+        <a href="ppdb.html" class="btn-ghost">Daftar PPDB</a>
       </div>
     </div>
   </section>
 
-  <main class="container mx-auto px-4 py-8">
-    <!-- Pengumuman -->
-    <section class="mb-8">
-      <h3 class="text-2xl font-semibold mb-4">Pengumuman</h3>
-      <div class="grid md:grid-cols-3 gap-4">
-        <article class="bg-white p-4 rounded shadow">
-          <h4 class="font-bold">MPLS Tahun Ajaran 2025/2026</h4>
-          <p class="text-sm text-gray-600 mt-2">Masa Pengenalan Lingkungan Sekolah dilaksanakan 14-18 Juli 2025. Semua siswa baru wajib hadir.</p>
+  <main class="container">
+    <!-- Quick Cards -->
+    <section class="quick-cards">
+      <a href="profil.html" class="card card-glow">
+        <img src="https://source.unsplash.com/600x400/?school,building" alt="profil">
+        <div class="card-body">
+          <h3>Profil Sekolah</h3>
+          <p>Sejarah, visi & misi, struktur organisasi, dan sambutan kepala sekolah.</p>
+        </div>
+      </a>
+
+      <a href="jurusan.html" class="card card-glow">
+        <img src="https://source.unsplash.com/600x400/?workshop,students" alt="jurusan">
+        <div class="card-body">
+          <h3>Program Keahlian</h3>
+          <p>Teknik Kendaraan Ringan, Teknik Komputer & Jaringan, Agribisnis, dan lainnya.</p>
+        </div>
+      </a>
+
+      <a href="ppdb.html" class="card card-glow">
+        <img src="https://source.unsplash.com/600x400/?students,admission" alt="ppdb">
+        <div class="card-body">
+          <h3>PPDB</h3>
+          <p>Informasi jalur pendaftaran, persyaratan, serta formulir online.</p>
+        </div>
+      </a>
+    </section>
+
+    <!-- Announcement -->
+    <section class="announcements">
+      <h2>Pengumuman Terbaru</h2>
+      <div class="ann-list">
+        <article class="ann-item">
+          <h4>MPLS 2025</h4>
+          <p>Masa Pengenalan Lingkungan Sekolah akan dimulai 14 Juli 2025. Kehadiran semua siswa baru diwajibkan.</p>
         </article>
-        <article class="bg-white p-4 rounded shadow">
-          <h4 class="font-bold">Lomba LKS</h4>
-          <p class="text-sm text-gray-600 mt-2">SMKN 1 Gondang meraih juara di beberapa cabang LKS tingkat kabupaten.</p>
+        <article class="ann-item">
+          <h4>Open Recruitment Guru</h4>
+          <p>Sekolah membuka lowongan untuk tenaga pendidik TKJ. Cek persyaratan di halaman profil.</p>
         </article>
-        <article class="bg-white p-4 rounded shadow">
-          <h4 class="font-bold">Pengumuman PPDB</h4>
-          <p class="text-sm text-gray-600 mt-2">Jalur reguler dan prestasi dibuka. Persyaratan tertera di halaman PPDB.</p>
+        <article class="ann-item">
+          <h4>Prestasi LKS</h4>
+          <p>Tim TKR dan TKJ SMKN 1 Gondang meraih penghargaan di tingkat kabupaten.</p>
         </article>
       </div>
     </section>
 
-    <!-- Profil Sekolah -->
-    <section id="profil" class="mb-8">
-      <h3 class="text-2xl font-semibold mb-4">Profil Sekolah</h3>
-      <div class="bg-white rounded shadow p-6">
-        <div class="md:flex md:space-x-6">
-          <img src="https://source.unsplash.com/400x300/?school,indonesia" alt="gedung" class="w-full md:w-1/3 rounded"/>
-          <div class="mt-4 md:mt-0 md:flex-1">
-            <p><strong>Nama:</strong> SMK Negeri 1 Gondang</p>
-            <p><strong>Alamat:</strong> Jl. Raya Gondang-Lengkong, Gondang, Nganjuk, Jawa Timur</p>
-            <p class="mt-2">SMK ini memiliki beragam kompetensi keahlian seperti Teknik Kendaraan Ringan, Teknik Komputer dan Jaringan, Agribisnis, dan lain-lain. Fokus pada pembentukan karakter dan keterampilan siap pakai.</p>
-          </div>
-        </div>
+    <!-- Footer CTA -->
+    <section class="cta-footer">
+      <div>
+        <h3>Ingin bergabung di SMK Negeri 1 Gondang?</h3>
+        <p>Pelajari jurusan kami atau langsung daftar melalui halaman PPDB.</p>
       </div>
-    </section>
-
-    <!-- Jurusan -->
-    <section id="jurusan" class="mb-8">
-      <h3 class="text-2xl font-semibold mb-4">Program Keahlian</h3>
-      <div class="grid md:grid-cols-3 gap-4">
-        <div class="bg-white p-4 rounded shadow">
-          <h4 class="font-bold">Teknik Kendaraan Ringan (TKR)</h4>
-          <p class="text-sm text-gray-600 mt-2">Pembelajaran mekanik kendaraan ringan, bengkel praktik, dan prakerin di industri otomotif.</p>
-        </div>
-        <div class="bg-white p-4 rounded shadow">
-          <h4 class="font-bold">Teknik Komputer & Jaringan (TKJ)</h4>
-          <p class="text-sm text-gray-600 mt-2">Jaringan komputer, administrasi sistem, dan persiapan kompetisi LKS.</p>
-        </div>
-        <div class="bg-white p-4 rounded shadow">
-          <h4 class="font-bold">Agribisnis</h4>
-          <p class="text-sm text-gray-600 mt-2">Pertanian modern, agroindustri, dan pengolahan hasil pertanian.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Galeri -->
-    <section id="galeri" class="mb-8">
-      <h3 class="text-2xl font-semibold mb-4">Galeri</h3>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <img src="https://source.unsplash.com/400x300/?school,campus" alt="gal1" class="rounded shadow"/>
-        <img src="https://source.unsplash.com/400x300/?students,school" alt="gal2" class="rounded shadow"/>
-        <img src="https://source.unsplash.com/400x300/?workshop,mechanic" alt="gal3" class="rounded shadow"/>
-        <img src="https://source.unsplash.com/400x300/?computer,network" alt="gal4" class="rounded shadow"/>
-      </div>
-    </section>
-
-    <!-- PPDB -->
-    <section id="ppdb" class="mb-8">
-      <h3 class="text-2xl font-semibold mb-4">PPDB - Penerimaan Peserta Didik Baru</h3>
-      <div class="bg-white rounded shadow p-6">
-        <ol class="list-decimal ml-6">
-          <li>Daftar online melalui portal sekolah atau datang ke kantor PPDB.</li>
-          <li>Siapkan fotokopi rapor, akta kelahiran, dan pas foto.</li>
-          <li>Seleksi administrasi dan pengumuman hasil.</li>
-        </ol>
-        <div class="mt-4">
-          <a href="#" class="bg-green-600 px-4 py-2 rounded text-white">Formulir Online (Contoh)</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Kontak -->
-    <section id="kontak" class="mb-8">
-      <h3 class="text-2xl font-semibold mb-4">Kontak</h3>
-      <div class="bg-white rounded shadow p-6 md:flex md:space-x-6">
-        <div class="md:flex-1">
-          <p><strong>Alamat:</strong> Jl. Raya Gondang-Lengkong, Gondang, Nganjuk</p>
-          <p><strong>Telp:</strong> (0358) - 123456</p>
-          <p><strong>Email:</strong> info@smkn1gondang.sch.id</p>
-          <p class="mt-4"><strong>Jam Operasional:</strong> Senin - Jumat, 07:00 - 15:00</p>
-        </div>
-        <div class="mt-4 md:mt-0 md:w-1/3">
-          <iframe class="w-full h-48 rounded" src="https://maps.google.com/maps?q=Gondang%20Nganjuk&t=&z=13&ie=UTF8&iwloc=&output=embed" frameborder="0"></iframe>
-        </div>
+      <div>
+        <a href="ppdb.html" class="btn-primary">Daftar Sekarang</a>
       </div>
     </section>
   </main>
 
-  <footer class="bg-gray-900 text-gray-200 py-6">
-    <div class="container mx-auto px-4 text-center">
-      <p>&copy; 2025 SMK Negeri 1 Gondang — Dibuat oleh Tim IT Sekolah</p>
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>© 2025 SMK Negeri 1 Gondang</div>
+      <div class="footer-right">Alamat: Jl. Raya Gondang-Lengkong, Gondang, Nganjuk • Telp: (0358) 123456</div>
     </div>
   </footer>
 
-  <script>
-    // simple mobile menu toggle
-    document.getElementById('menuBtn').addEventListener('click', function(){
-      var m = document.getElementById('mobileMenu');
-      m.classList.toggle('hidden');
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
