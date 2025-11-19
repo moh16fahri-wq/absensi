@@ -1,127 +1,86 @@
-// ==========================================
-// SMKN 1 GONDANG - ADVANCED SCRIPT.JS
-// ==========================================
+// ================================
+//  MOBILE NAVIGATION (HAMBURGER)
+// ================================
+const hamburger = document.querySelector('.hamburger');
+const navLinks = document.querySelector('.nav-links');
 
-// ========== NAVBAR STICKY ==========
-window.addEventListener("scroll", function () {
-    const navbar = document.querySelector(".navbar");
-    navbar.classList.toggle("sticky", window.scrollY > 50);
-});
-
-// ========== MOBILE MENU ==========
-function toggleMenu() {
-    const navLinks = document.querySelector(".nav-links");
-    const body = document.body;
-    navLinks.classList.toggle("active");
-    body.classList.toggle("no-scroll");
-}
-
-// Tutup menu jika klik di luar
-document.addEventListener("click", function (e) {
-    const nav = document.querySelector(".nav-links");
-    const hamb = document.querySelector(".hamburger");
-
-    if (!nav.contains(e.target) && !hamb.contains(e.target)) {
-        nav.classList.remove("active");
-        document.body.classList.remove("no-scroll");
-    }
-});
-
-// ========== SMOOTH SCROLL ==========
-document.querySelectorAll("a[href^='#']").forEach(link => {
-    link.addEventListener("click", function (e) {
-        const target = document.querySelector(this.getAttribute("href"));
-        if (target) {
-            e.preventDefault();
-            target.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-    });
-});
-
-// ========== SCROLL ANIMATION ==========
-const animatedElements = document.querySelectorAll(".animate");
-
-function scrollAnimation() {
-    animatedElements.forEach(el => {
-        const rect = el.getBoundingClientRect().top;
-        if (rect < window.innerHeight - 120) {
-            el.classList.add("visible");
-        }
+if (hamburger) {
+    hamburger.addEventListener('click', () => {
+        navLinks.classList.toggle('open');
+        hamburger.classList.toggle('active');
     });
 }
 
-window.addEventListener("scroll", scrollAnimation);
-scrollAnimation();
-
-// ========== DARK MODE ==========
-const darkToggle = document.createElement("div");
-darkToggle.className = "dark-toggle";
-darkToggle.innerHTML = "🌙";
-document.body.appendChild(darkToggle);
-
-darkToggle.addEventListener("click", () => {
-    document.body.classList.toggle("dark");
-    darkToggle.innerHTML = document.body.classList.contains("dark") ? "☀️" : "🌙";
-
-    localStorage.setItem("darkMode", document.body.classList.contains("dark"));
-});
-
-// Load tema sebelumnya
-if (localStorage.getItem("darkMode") === "true") {
-    document.body.classList.add("dark");
-    darkToggle.innerHTML = "☀️";
-}
-
-// ========== IMAGE SLIDER (Galeri) ==========
-const slider = document.querySelector(".slider");
-let slideIndex = 0;
-
-if (slider) {
-    const slides = slider.querySelectorAll("img");
-
-    function showSlide() {
-        slides.forEach(img => img.classList.remove("active"));
-        slides[slideIndex].classList.add("active");
-        slideIndex = (slideIndex + 1) % slides.length;
-    }
-
-    setInterval(showSlide, 3000);
-    showSlide();
-}
-
-// ========== FORM VALIDATION (Kontak) ==========
-const form = document.querySelector(".form-kontak");
-
-if (form) {
-    form.addEventListener("submit", (e) => {
-        e.preventDefault();
-
-        const nama = form.querySelector("input[type='text']");
-        const email = form.querySelector("input[type='email']");
-        const pesan = form.querySelector("textarea");
-
-        if (nama.value.trim() === "" || email.value.trim() === "" || pesan.value.trim() === "") {
-            alert("Isi semua data sebelum mengirim!");
-            return;
-        }
-
-        alert("Pesan berhasil dikirim! Terima kasih 👍");
-        form.reset();
+// Menutup menu setelah klik link
+document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => {
+        navLinks.classList.remove('open');
+        hamburger.classList.remove('active');
     });
-}
+});
 
-// ========== LOADING SCREEN ==========
-window.addEventListener("load", () => {
-    const loader = document.querySelector(".loading-screen");
-    if (loader) {
-        loader.classList.add("hide");
+
+// ==========================
+//  CLICK NEON EFFECT
+// ==========================
+document.addEventListener('click', function(e){
+    const eff = document.createElement("div");
+    eff.className = "click-effect";
+    eff.style.left = e.pageX + "px";
+    eff.style.top = e.pageY + "px";
+    document.body.appendChild(eff);
+
+    setTimeout(()=> eff.remove(), 500);
+});
+
+
+// ==========================
+//  FADE IN WHEN SCROLLING
+// ==========================
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting){
+            entry.target.classList.add('visible');
+        }
+    });
+}, {
+    threshold: 0.2
+});
+
+document.querySelectorAll('.fade-in-up').forEach(sec => {
+    observer.observe(sec);
+});
+
+
+// ==========================
+//  PAGE TRANSITION EFFECT
+// ==========================
+document.querySelectorAll("a").forEach(a => {
+    if (a.getAttribute("href")) {
+        a.addEventListener("click", e => {
+            const link = a.getAttribute("href");
+
+            if (link.includes(".html")) {
+                e.preventDefault();
+                document.body.classList.add("page-fade-out");
+
+                setTimeout(() => {
+                    window.location.href = link;
+                }, 250);
+            }
+        });
     }
 });
 
-// ========== FLOATING WHATSAPP BUTTON ==========
-const waBtn = document.createElement("a");
-waBtn.href = "https://wa.me/6281234567890";
-waBtn.className = "wa-float";
-waBtn.innerHTML = "💬";
-waBtn.target = "_blank";
-document.body.appendChild(waBtn);
+
+// ==========================
+//  OPTIONAL: AUTO GLOW ON NAV SCROLL
+// ==========================
+window.addEventListener("scroll", () => {
+    const nav = document.querySelector("nav");
+    if (window.scrollY > 10) {
+        nav.style.boxShadow = "0 0 22px rgba(51,176,255,0.12)";
+    } else {
+        nav.style.boxShadow = "none";
+    }
+});
