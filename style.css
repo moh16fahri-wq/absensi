@@ -1,270 +1,115 @@
-/* =====================================================
-   STYLE.CSS — Tema Estetik & Kekinian Untuk Website SMKN 1 GONDANG
-   ===================================================== */
-
-/* ====== Global ====== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  scroll-behavior: smooth;
+/* =========================================
+   STYLE PRO — DARK NEON (CYBERPUNK ELEGANT)
+   ======================================== */
+:root{
+  --bg:#050507;
+  --panel:#0f1116;
+  --muted:#9aa3b2;
+  --text:#ecf6ff;
+  --neon:#33b0ff;
+  --neon-2:#7a4dff;
+  --glass: rgba(255,255,255,0.03);
 }
 
-body {
-  font-family: "Poppins", sans-serif;
-  background: #f5f6fa;
-  color: #222;
-  line-height: 1.6;
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family: 'Poppins', sans-serif;
+  background:#050507;
+  color:var(--text);
+  overflow-x:hidden;
+}
+.container{width:92%;max-width:1200px;margin:0 auto}
+
+/* Neon helpers */
+.neon-text{
+  color:var(--neon);
+  text-shadow:0 0 10px rgba(51,176,255,.25);
 }
 
-img {
-  width: 100%;
-  display: block;
-  border-radius: 14px;
+/* Navbar */
+nav{
+  position:sticky;top:0;z-index:999;
+  padding:18px 0;
+  background:rgba(255,255,255,0.01);
+  backdrop-filter:blur(8px);
+  transition:0.3s;
+}
+.nav-inner{display:flex;justify-content:space-between;align-items:center}
+.nav-links{display:flex;gap:20px}
+.nav-links a{
+  color:var(--text);text-decoration:none;position:relative;
+}
+.nav-links a::after{
+  content:'';position:absolute;left:0;bottom:-6px;height:2px;width:0;
+  background:linear-gradient(90deg,var(--neon),var(--neon-2));
+  transition:.3s;
+}
+.nav-links a:hover::after{width:100%}
+.hamburger{display:none;color:var(--text);font-size:25px;background:none;border:none}
+
+/* HERO (Jurusan Page) */
+.jurusan-hero{
+  height:50vh;
+  display:flex;align-items:center;justify-content:center;
+  background:url('img/hero.jpg') center/cover fixed no-repeat;
+  position:relative;
+}
+.jurusan-hero::after{
+  content:'';position:absolute;inset:0;background:rgba(0,0,0,0.6);
+}
+.hero-card{
+  position:relative;z-index:2;
+  padding:30px 40px;border-radius:14px;
+  background:var(--glass);backdrop-filter:blur(8px);
+  border:1px solid rgba(51,176,255,.08);
+  text-align:center;
+}
+.hero .line, .hero-card .line{
+  height:3px;width:200px;margin:14px auto;
+  background:linear-gradient(90deg,var(--neon),var(--neon-2));
+  animation:glow 3s infinite;
 }
 
-.container {
-  width: 92%;
-  max-width: 1250px;
-  margin: auto;
+/* Jurusan Cards */
+.jurusan-section{padding:50px 0}
+.jurusan-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:20px;
+}
+.jurusan-card{
+  background:var(--glass);
+  padding:20px;border-radius:12px;
+  border:1px solid rgba(51,176,255,0.06);
+  backdrop-filter:blur(6px);
+  transition:.3s;
+}
+.jurusan-card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 12px 36px rgba(51,176,255,0.12);
 }
 
-/* ====== Navbar Glassmorphism ====== */
-.nav-glass {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  backdrop-filter: blur(16px);
-  background: rgba(255, 255, 255, 0.55);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-  z-index: 999;
+/* Footer */
+.site-footer{
+  margin-top:40px;padding:20px;text-align:center;
+  border-top:1px solid rgba(255,255,255,0.08);
+  color:var(--muted);
 }
 
-.nav-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 0;
+/* Click neon effect */
+.click-effect {
+  position:absolute;width:120px;height:120px;
+  background:radial-gradient(circle,rgba(51,176,255,.35),transparent 70%);
+  border-radius:50%;transform:translate(-50%,-50%);
+  pointer-events:none;animation:neonClick .5s ease-out forwards;
+}
+@keyframes neonClick{
+  from{opacity:.8;transform:scale(.2)}
+  to{opacity:0;transform:scale(1.8)}
 }
 
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-decoration: none;
-  color: #000;
-}
-
-.brand-img {
-  width: 52px;
-  height: 52px;
-  border-radius: 12px;
-  object-fit: cover;
-}
-
-.brand-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-bottom: -4px;
-}
-
-.brand-sub {
-  font-size: 0.75rem;
-  opacity: 0.7;
-}
-
-.nav-links a {
-  margin-left: 24px;
-  text-decoration: none;
-  color: #000;
-  font-weight: 500;
-  transition: 0.2s;
-}
-
-.nav-links a:hover {
-  color: #0077ff;
-}
-
-.btn-outline {
-  padding: 6px 14px;
-  border: 1px solid #0077ff;
-  border-radius: 12px;
-  transition: 0.3s;
-}
-
-.btn-outline:hover {
-  background: #0077ff;
-  color: white;
-}
-
-/* ====== Hamburger Button ====== */
-.hamburger {
-  display: none;
-  font-size: 1.7rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-/* ====== HERO ====== */
-.hero {
-  background: url("https://source.unsplash.com/1600x900/?modern,school") center/cover;
-  height: 88vh;
-  padding-top: 140px;
-  color: white;
-  display: flex;
-  align-items: center;
-}
-
-.hero-content h1 {
-  font-size: 2.8rem;
-  font-weight: 700;
-  max-width: 600px;
-}
-
-.accent { color: #4da3ff; }
-
-.lead {
-  font-size: 1.1rem;
-  max-width: 600px;
-  margin: 18px 0 28px;
-}
-
-.hero-actions a {
-  padding: 12px 26px;
-  margin-right: 12px;
-  border-radius: 14px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 1rem;
-}
-
-.btn-primary {
-  background: #0077ff;
-  color: white;
-}
-
-.btn-primary:hover {
-  background: #005fcc;
-}
-
-.btn-ghost {
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(4px);
-  color: white;
-}
-
-.btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.4);
-}
-
-/* ====== Cards Section ====== */
-.quick-cards {
-  margin: 80px 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 32px;
-}
-
-.card {
-  background: white;
-  border-radius: 18px;
-  overflow: hidden;
-  text-decoration: none;
-  color: #000;
-  transition: 0.3s;
-}
-
-.card-body {
-  padding: 16px 22px 26px;
-}
-
-.card h3 {
-  font-size: 1.3rem;
-  margin-bottom: 6px;
-}
-
-.card-glow:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.15);
-}
-
-/* ====== Announcements ====== */
-.announcements {
-  margin: 40px 0 80px;
-}
-
-.announcements h2 {
-  font-size: 1.9rem;
-  margin-bottom: 20px;
-}
-
-.ann-list {
-  display: grid;
-  gap: 20px;
-}
-
-.ann-item {
-  background: white;
-  padding: 22px;
-  border-radius: 16px;
-  border-left: 5px solid #0077ff;
-  transition: 0.3s;
-}
-
-.ann-item:hover {
-  transform: scale(1.02);
-}
-
-/* ====== CTA ====== */
-.cta-footer {
-  background: #0077ff;
-  color: white;
-  padding: 40px;
-  border-radius: 22px;
-  margin-bottom: 80px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-/* ====== Footer ====== */
-.site-footer {
-  background: #0d0d0d;
-  padding: 30px 0;
-  color: #bbb;
-}
-
-.footer-inner {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-/* ====== Responsive ====== */
-@media (max-width: 900px) {
-  .nav-links {
-    position: fixed;
-    top: 70px;
-    right: -100%;
-    width: 60%;
-    height: 100vh;
-    background: white;
-    padding: 40px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    transition: 0.4s;
-  }
-
-  .nav-links.open {
-    right: 0;
-  }
-
-  .hamburger {
-    display: block;
-  }
+/* Mobile */
+@media(max-width:900px){
+  .hamburger{display:block}
+  .nav-links{display:none;flex-direction:column;position:fixed;top:0;right:0;background:#0d0f13;height:100%;width:70%;padding:60px}
+  .nav-links.open{display:flex}
 }
