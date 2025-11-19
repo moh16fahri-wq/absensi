@@ -1,115 +1,75 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>SMK Negeri 1 Gondang — Beranda</title>
-  <meta name="description" content="Website resmi SMK Negeri 1 Gondang - Profil, Jurusan, PPDB, Galeri, Kontak." />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jurusan – SMKN 1 Gondang</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-  <!-- NAVBAR (glass) -->
-  <header class="nav-glass">
-    <div class="container nav-inner">
-      <a class="brand" href="index.html">
-        <img src="https://source.unsplash.com/64x64/?school,logo" alt="logo" class="brand-img">
-        <div>
-          <div class="brand-title">SMK Negeri 1 Gondang</div>
-          <div class="brand-sub">Gondang, Nganjuk — Jawa Timur</div>
-        </div>
-      </a>
 
-      <nav class="nav-links" id="navLinks">
-        <a href="profil.html">Profil</a>
-        <a href="jurusan.html">Jurusan</a>
-        <a href="ppdb.html">PPDB</a>
-        <a href="galeri.html">Galeri</a>
-        <a href="kontak.html" class="btn-outline">Kontak</a>
-      </nav>
-
-      <button id="menuBtn" class="hamburger" aria-label="menu">☰</button>
+<!-- NAVBAR -->
+<nav>
+  <div class="container nav-inner">
+    <div class="brand">
+      <img src="img/logo.png" alt="Logo">
+      <div class="title neon-text">SMKN 1 GONDANG</div>
     </div>
-  </header>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-content container">
-      <h1>Selamat Datang di <span class="accent">SMK Negeri 1 Gondang</span></h1>
-      <p class="lead">Sekolah kejuruan dengan semangat siap kerja, inovatif, dan berkarakter. Temukan program keahlian dan informasi PPDB terbaru.</p>
-      <div class="hero-actions">
-        <a href="jurusan.html" class="btn-primary">Lihat Jurusan</a>
-        <a href="ppdb.html" class="btn-ghost">Daftar PPDB</a>
-      </div>
+    <button class="hamburger">☰</button>
+
+    <div class="nav-links">
+      <a href="index.html">Beranda</a>
+      <a href="jurusan.html" class="active">Jurusan</a>
+      <a href="guru.html">Guru</a>
+      <a href="kontak.html">Kontak</a>
     </div>
-  </section>
+  </div>
+</nav>
 
-  <main class="container">
-    <!-- Quick Cards -->
-    <section class="quick-cards">
-      <a href="profil.html" class="card card-glow">
-        <img src="https://source.unsplash.com/600x400/?school,building" alt="profil">
-        <div class="card-body">
-          <h3>Profil Sekolah</h3>
-          <p>Sejarah, visi & misi, struktur organisasi, dan sambutan kepala sekolah.</p>
-        </div>
-      </a>
+<!-- HERO -->
+<section class="jurusan-hero">
+  <div class="hero-card">
+    <h2 class="neon-text">Program Keahlian</h2>
+    <div class="line"></div>
+    <p>Temukan pilihan jurusan terbaik untuk masa depanmu.</p>
+  </div>
+</section>
 
-      <a href="jurusan.html" class="card card-glow">
-        <img src="https://source.unsplash.com/600x400/?workshop,students" alt="jurusan">
-        <div class="card-body">
-          <h3>Program Keahlian</h3>
-          <p>Teknik Kendaraan Ringan, Teknik Komputer & Jaringan, Agribisnis, dan lainnya.</p>
-        </div>
-      </a>
+<!-- DAFTAR JURUSAN -->
+<section class="jurusan-section container fade-in-up">
+  <h2 class="center neon-text" style="margin-bottom:25px">Daftar Jurusan</h2>
 
-      <a href="ppdb.html" class="card card-glow">
-        <img src="https://source.unsplash.com/600x400/?students,admission" alt="ppdb">
-        <div class="card-body">
-          <h3>PPDB</h3>
-          <p>Informasi jalur pendaftaran, persyaratan, serta formulir online.</p>
-        </div>
-      </a>
-    </section>
+  <div class="jurusan-grid">
 
-    <!-- Announcement -->
-    <section class="announcements">
-      <h2>Pengumuman Terbaru</h2>
-      <div class="ann-list">
-        <article class="ann-item">
-          <h4>MPLS 2025</h4>
-          <p>Masa Pengenalan Lingkungan Sekolah akan dimulai 14 Juli 2025. Kehadiran semua siswa baru diwajibkan.</p>
-        </article>
-        <article class="ann-item">
-          <h4>Open Recruitment Guru</h4>
-          <p>Sekolah membuka lowongan untuk tenaga pendidik TKJ. Cek persyaratan di halaman profil.</p>
-        </article>
-        <article class="ann-item">
-          <h4>Prestasi LKS</h4>
-          <p>Tim TKR dan TKJ SMKN 1 Gondang meraih penghargaan di tingkat kabupaten.</p>
-        </article>
-      </div>
-    </section>
-
-    <!-- Footer CTA -->
-    <section class="cta-footer">
-      <div>
-        <h3>Ingin bergabung di SMK Negeri 1 Gondang?</h3>
-        <p>Pelajari jurusan kami atau langsung daftar melalui halaman PPDB.</p>
-      </div>
-      <div>
-        <a href="ppdb.html" class="btn-primary">Daftar Sekarang</a>
-      </div>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <div class="container footer-inner">
-      <div>© 2025 SMK Negeri 1 Gondang</div>
-      <div class="footer-right">Alamat: Jl. Raya Gondang-Lengkong, Gondang, Nganjuk • Telp: (0358) 123456</div>
+    <div class="jurusan-card">
+      <h3>🛠️ Teknik Kendaraan Ringan (TKR)</h3>
+      <p>Fokus pada perawatan, servis dan perbaikan kendaraan berbasis otomotif.</p>
     </div>
-  </footer>
 
-  <script src="script.js"></script>
+    <div class="jurusan-card">
+      <h3>💻 Rekayasa Perangkat Lunak (RPL)</h3>
+      <p>Mempelajari coding, pembuatan aplikasi, website, database, dan software modern.</p>
+    </div>
+
+    <div class="jurusan-card">
+      <h3>⚙️ Teknik Pemesinan (TP)</h3>
+      <p>Belajar mengoperasikan mesin industri dan teknik manufaktur.</p>
+    </div>
+
+    <div class="jurusan-card">
+      <h3>🏗️ Teknik Konstruksi</h3>
+      <p>Mempelajari struktur bangunan, konstruksi modern dan gambar teknik.</p>
+    </div>
+
+  </div>
+</section>
+
+<footer class="site-footer">
+  © 2025 SMKN 1 Gondang Nganjuk – All Rights Reserved
+</footer>
+
+<script src="script.js"></script>
 </body>
-</html>
+        </html>
