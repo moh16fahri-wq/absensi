@@ -1,468 +1,80 @@
-// ========== APLIKASI SEKOLAH DIGITAL - DENGAN JURNAL MENGAJAR ==========
+/* =============================
+   STYLE.CSS - SMKN 1 GONDANG
+   ============================= */
 
-// BAGIAN 1: DATABASE SIMULASI
-const data = {
-    users: {
-        admins: [{ username: "admin", password: "admin123" }],
-        gurus: [
-            { id: 1, nama: "Budi Santoso", password: "guru1", email: "budi@sekolah.com", jadwal: [ { id_kelas: 1, hari: 4, jam: 9, nama_kelas: "Kelas 10A" }, { id_kelas: 2, hari: 4, jam: 10, nama_kelas: "Kelas 11B" } ] },
-            { id: 2, nama: "Anisa Putri", password: "guru2", email: "anisa@sekolah.com", jadwal: [{ id_kelas: 2, hari: 2, jam: 10, nama_kelas: "Kelas 11B" }] }
-        ],
-        siswas: [
-            { id: 101, nama: "Agus", password: "siswa1", id_kelas: 1, nis: "2024001" }, 
-            { id: 102, nama: "Citra", password: "siswa2", id_kelas: 1, nis: "2024002" },
-            { id: 201, nama: "Dewi", password: "siswa3", id_kelas: 2, nis: "2024003" }, 
-            { id: 202, nama: "Eko", password: "siswa4", id_kelas: 2, nis: "2024004" }
-        ]
-    },
-    kelas: [
-        { id: 1, nama: "Kelas 10A", lokasi: { latitude: -7.983908, longitude: 112.621391 } },
-        { id: 2, nama: "Kelas 11B", lokasi: { latitude: -7.983500, longitude: 112.621800 } }
-    ],
-    tugas: [], 
-    absensi: [], 
-    pengumuman: [], 
-    materi: [], 
-    notifikasi: [],
-    jurnal: [], // Data jurnal mengajar
-    jadwalPelajaran: {
-        1: [
-            { id: 1672531200000, hari: 1, jamMulai: '08:00', jamSelesai: '09:30', mataPelajaran: 'Matematika' },
-            { id: 1672537200001, hari: 1, jamMulai: '10:00', jamSelesai: '11:30', mataPelajaran: 'Bahasa Indonesia' },
-            { id: 1672621200002, hari: 2, jamMulai: '08:00', jamSelesai: '09:30', mataPelajaran: 'Fisika' }
-        ],
-        2: [
-            { id: 1672707600003, hari: 3, jamMulai: '09:00', jamSelesai: '10:30', mataPelajaran: 'Kimia' }
-        ]
-    },
-    catatanPR: [],
-    diskusi: []
-};
-
-// FUNGSI TOGGLE PASSWORD VISIBILITY
-function togglePassword(inputId) {
-    const input = document.getElementById(inputId);
-    const button = input.nextElementSibling;
-    
-    if (input.type === "password") {
-        input.type = "text";
-        button.textContent = "ðŸ™ˆ";
-    } else {
-        input.type = "password";
-        button.textContent = "ðŸ‘ï¸";
-    }
+/* RESET SEDERHANA */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-// VARIABEL GLOBAL
-let currentUser = null;
-let currentRole = null;
-let absensiHariIniSelesai = false;
-let activeJurnalId = null; // ID jurnal yang sedang aktif
-
-// INISIALISASI
-document.addEventListener("DOMContentLoaded", () => {
-    if (document.getElementById("kata-harian")) {
-        setupHalamanAwal();
-    } else if (document.getElementById("app")) {
-        showView("view-role-selection");
-        // Cek jurnal yang expired setiap 1 menit
-        setInterval(checkExpiredJurnals, 60000);
-    }
-});
-
-function setupHalamanAwal() {
-    const quotes = ["Minggu: Istirahat.", "Senin: Mulailah!", "Selasa: Terus bertumbuh.", "Rabu: Jangan takut gagal.", "Kamis: Optimis!", "Jumat: Selesaikan.", "Sabtu: Refleksi."];
-    document.getElementById("kata-harian").textContent = quotes[new Date().getDay()];
-    document.getElementById("tombol-buka").addEventListener("click", () => window.location.href = "main.html");
+/* BODY */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
 }
 
-function showView(viewId) {
-    document.querySelectorAll("#app > div").forEach(div => div.classList.add("hidden"));
-    document.getElementById(viewId).classList.remove("hidden");
+/* NAVBAR */
+header {
+  background: #ffffff;
+  border-bottom: 1px solid #e2e2e2;
 }
 
-function getNomorMinggu(date) {
-    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-    const dayNum = d.getUTCDay() || 7;
-    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-    return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+header nav a {
+  font-weight: 500;
+  transition: 0.3s;
 }
 
-// FUNGSI CEK JURNAL EXPIRED
-function checkExpiredJurnals() {
-    const now = new Date();
-    const currentTime = now.getHours() * 60 + now.getMinutes();
-    
-    data.jurnal.forEach(jurnal => {
-        if (jurnal.status === 'aktif') {
-            const [jamSelesai, menitSelesai] = jurnal.jamSelesai.split(':').map(Number);
-            const endTime = jamSelesai * 60 + menitSelesai;
-            
-            // Jika waktu sudah lewat dan jurnal masih aktif
-            if (currentTime > endTime) {
-                // Auto-approve semua absensi yang belum di-approve
-                jurnal.daftarAbsensi.forEach(absen => {
-                    if (absen.statusApproval === 'pending') {
-                        absen.statusApproval = 'approved';
-                        absen.approvedAt = new Date().toLocaleString("id-ID");
-                        absen.approvedBy = 'System (Auto)';
-                    }
-                });
-                jurnal.status = 'selesai';
-                jurnal.selesaiAt = new Date().toLocaleString("id-ID");
-            }
-        }
-    });
+header nav a:hover {
+  color: #2563eb; /* biru */
 }
 
-// LOGIN & LOGOUT
-function showLogin(role) {
-    currentRole = role;
-    showView("view-login-form");
-    document.querySelectorAll("#view-login-form > div").forEach(div => div.classList.add("hidden"));
-    const title = document.getElementById("login-title");
-    
-    if (role === "admin") {
-        title.textContent = "Login Admin";
-        document.getElementById("form-admin").classList.remove("hidden");
-    } else if (role === "guru") {
-        title.textContent = "Login Guru";
-        document.getElementById("form-guru").classList.remove("hidden");
-        populateGuruDropdown();
-    } else if (role === "siswa") {
-        title.textContent = "Login Siswa";
-        document.getElementById("form-siswa").classList.remove("hidden");
-        populateKelasDropdown();
-    }
+/* HERO */
+.hero-custom {
+  background-image: url('https://source.unsplash.com/1600x900/?school,building');
+  background-size: cover;
+  background-position: center;
+  height: 380px;
+  display: flex;
+  align-items: center;
+  color: white;
+  padding: 20px;
 }
 
-function populateGuruDropdown() {
-    const select = document.getElementById("guru-select-nama");
-    select.innerHTML = '<option value="">-- Pilih Nama Guru --</option>';
-    data.users.gurus.forEach(guru => select.innerHTML += `<option value="${guru.id}">${guru.nama}</option>`);
+.hero-overlay {
+  background: rgba(0, 0, 0, 0.45);
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 600px;
 }
 
-function populateKelasDropdown() {
-    const select = document.getElementById("siswa-select-kelas");
-    select.innerHTML = '<option value="">-- Pilih Kelas --</option>';
-    data.kelas.forEach(k => select.innerHTML += `<option value="${k.id}">${k.nama}</option>`);
-    populateSiswaDropdown();
+/* CARD */
+.card {
+  background: white;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
-function populateSiswaDropdown() {
-    const kelasId = document.getElementById("siswa-select-kelas").value;
-    const select = document.getElementById("siswa-select-nama");
-    select.innerHTML = '<option value="">-- Pilih Nama Siswa --</option>';
-    if (kelasId) {
-        data.users.siswas.filter(s => s.id_kelas == kelasId).forEach(s => {
-            select.innerHTML += `<option value="${s.id}">${s.nama}</option>`;
-        });
-    }
+/* GALERI */
+.gallery-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-function login() {
-    let user = null;
-    if (currentRole === "admin") {
-        user = data.users.admins.find(u => u.username === document.getElementById("admin-user").value && u.password === document.getElementById("admin-pass").value);
-    } else if (currentRole === "guru") {
-        user = data.users.gurus.find(u => u.id == document.getElementById("guru-select-nama").value && u.password === document.getElementById("guru-pass").value);
-    } else if (currentRole === "siswa") {
-        user = data.users.siswas.find(u => u.id == document.getElementById("siswa-select-nama").value && u.password === document.getElementById("siswa-pass").value);
-    }
-    
-    if (user) {
-        currentUser = user;
-        alert("Login Berhasil!");
-        showDashboard();
-    } else {
-        alert("Login Gagal! Periksa kembali data Anda.");
-    }
+/* FOOTER */
+footer {
+  background: #111827;
+  padding: 20px;
+  text-align: center;
+  color: #ccc;
+  margin-top: 40px;
 }
-
-function logout() {
-    currentUser = null;
-    currentRole = null;
-    absensiHariIniSelesai = false;
-    activeJurnalId = null;
-    showView("view-role-selection");
-    document.querySelectorAll("input").forEach(i => i.value = "");
-}
-
-// PROFIL POPUP
-function toggleProfilPopup() {
-    const popup = document.getElementById("profil-popup");
-    popup.classList.toggle("hidden");
-}
-
-function renderProfilPopup() {
-    let dataProfil = '';
-    if (currentRole === 'admin') {
-        dataProfil = `<div class="profil-info"><p><strong>Username:</strong> ${currentUser.username}</p><p><strong>Role:</strong> Administrator</p></div>`;
-    } else if (currentRole === 'guru') {
-        const jumlahJadwal = currentUser.jadwal ? currentUser.jadwal.length : 0;
-        dataProfil = `<div class="profil-info"><p><strong>Nama:</strong> ${currentUser.nama}</p><p><strong>Email:</strong> ${currentUser.email || '-'}</p><p><strong>ID Guru:</strong> ${currentUser.id}</p><p><strong>Jadwal Mengajar:</strong> ${jumlahJadwal} sesi</p></div>`;
-    } else if (currentRole === 'siswa') {
-        const namaKelas = data.kelas.find(k => k.id === currentUser.id_kelas)?.nama || '-';
-        dataProfil = `<div class="profil-info"><p><strong>Nama:</strong> ${currentUser.nama}</p><p><strong>NIS:</strong> ${currentUser.nis || '-'}</p><p><strong>Kelas:</strong> ${namaKelas}</p></div>`;
-    }
-    return `<div class="profil-header"><div class="profil-avatar">ðŸ‘¤</div><h4>${currentUser.nama || currentUser.username}</h4></div>${dataProfil}<div class="profil-actions"><button class="profil-btn ganti-pass-btn" onclick="showGantiPassword()">ðŸ”’ Ganti Password</button><button class="profil-btn logout-btn" onclick="logout()">ðŸšª Logout</button></div><div id="ganti-password-section" class="hidden"><hr><h5>Ganti Password</h5><div class="password-wrapper"><input type="password" id="old-pass-popup" placeholder="Password Lama"><button type="button" class="toggle-password" onclick="togglePassword('old-pass-popup')">ðŸ‘ï¸</button></div><div class="password-wrapper"><input type="password" id="new-pass-popup" placeholder="Password Baru"><button type="button" class="toggle-password" onclick="togglePassword('new-pass-popup')">ðŸ‘ï¸</button></div><div class="password-wrapper"><input type="password" id="confirm-new-pass-popup" placeholder="Konfirmasi Password"><button type="button" class="toggle-password" onclick="togglePassword('confirm-new-pass-popup')">ðŸ‘ï¸</button></div><button onclick="changePasswordFromPopup()">Simpan Password</button></div>`;
-}
-
-function showGantiPassword() {
-    document.getElementById("ganti-password-section").classList.toggle("hidden");
-}
-
-function changePasswordFromPopup() {
-    const oldP = document.getElementById("old-pass-popup").value;
-    const newP = document.getElementById("new-pass-popup").value;
-    const confirmP = document.getElementById("confirm-new-pass-popup").value;
-    if (!oldP || !newP || !confirmP) return alert("Semua kolom harus diisi!");
-    if (newP !== confirmP) return alert("Password baru tidak cocok!");
-    if (oldP !== currentUser.password) return alert("Password lama salah!");
-    currentUser.password = newP;
-    alert("Password berhasil diubah!");
-    document.getElementById("old-pass-popup").value = "";
-    document.getElementById("new-pass-popup").value = "";
-    document.getElementById("confirm-new-pass-popup").value = "";
-    document.getElementById("ganti-password-section").classList.add("hidden");
-}
-
-// DASHBOARD
-function showDashboard() {
-    showView("view-dashboard");
-    const header = document.querySelector("#view-dashboard .header");
-    const content = document.getElementById("dashboard-content");
-    content.innerHTML = "";
-    
-    if (!document.getElementById('notification-bell')) {
-        header.innerHTML = `<h2 id="dashboard-title">Dashboard</h2><div class="header-actions"><div id="notification-bell" onclick="toggleNotifDropdown()"><span id="notif-badge" class="notification-badge hidden">0</span>ðŸ””</div><div id="notification-dropdown" class="hidden"></div><div class="profil-menu" onclick="toggleProfilPopup()"><div class="profil-icon">ðŸ‘¤</div><span class="profil-name">${currentUser.nama || currentUser.username}</span></div><div id="profil-popup" class="hidden"></div></div>`;
-    }
-
-    if (currentRole === 'admin') {
-        document.getElementById('dashboard-title').textContent = "Dashboard Admin";
-        content.innerHTML = renderAdminDashboard();
-        renderAdminAnalitik();
-    } else if (currentRole === 'guru') {
-        document.getElementById('dashboard-title').textContent = `Selamat Datang, ${currentUser.nama}`;
-        content.innerHTML = renderGuruDashboard();
-        cekJadwalMengajar();
-        renderTugasSubmissions();
-    } else if (currentRole === 'siswa') {
-        document.getElementById('dashboard-title').textContent = `Selamat Datang, ${currentUser.nama}`;
-        cekAbsensiSiswaHariIni();
-        content.innerHTML = renderSiswaDashboard();
-        renderSiswaFeatures();
-    }
-    
-    document.getElementById('profil-popup').innerHTML = renderProfilPopup();
-    renderNotificationBell();
-}
-
-function renderAdminDashboard() {
-    return `<div class="tabs"><button class="tab-link active" onclick="openAdminTab(event, 'Analitik')">ðŸ“ˆ Analitik</button><button class="tab-link" onclick="openAdminTab(event, 'Absensi')">ðŸ“Š Rekap Absensi</button><button class="tab-link" onclick="openAdminTab(event, 'Jurnal')">ðŸ“ Jurnal Mengajar</button><button class="tab-link" onclick="openAdminTab(event, 'Manajemen')">âš™ï¸ Manajemen Data</button><button class="tab-link" onclick="openAdminTab(event, 'JadwalGuru')">ðŸ—“ï¸ Jadwal Guru</button><button class="tab-link" onclick="openAdminTab(event, 'JadwalPelajaran')">ðŸ“š Jadwal Pelajaran</button><button class="tab-link" onclick="openAdminTab(event, 'Pengumuman')">ðŸ“¢ Pengumuman</button></div><div id="Analitik" class="tab-content" style="display:block;"></div><div id="Absensi" class="tab-content"></div><div id="Jurnal" class="tab-content"></div><div id="Manajemen" class="tab-content"></div><div id="JadwalGuru" class="tab-content"></div><div id="JadwalPelajaran" class="tab-content"></div><div id="Pengumuman" class="tab-content"></div>`;
-}
-
-function openAdminTab(evt, tabName) {
-    document.querySelectorAll(".tab-content").forEach(tc => tc.style.display = "none");
-    document.querySelectorAll(".tab-link").forEach(tl => tl.className = tl.className.replace(" active", ""));
-    document.getElementById(tabName).style.display = "block";
-    evt.currentTarget.className += " active";
-    if (tabName === 'Analitik') renderAdminAnalitik();
-    else if (tabName === 'Absensi') renderAdminAbsensi();
-    else if (tabName === 'Jurnal') renderAdminJurnal();
-    else if (tabName === 'Manajemen') renderAdminManajemen();
-    else if (tabName === 'JadwalGuru') renderAdminJadwal();
-    else if (tabName === 'JadwalPelajaran') renderAdminManajemenJadwal();
-    else if (tabName === 'Pengumuman') renderAdminPengumuman();
-}
-
-function renderGuruDashboard() {
-    return `<div class="dashboard-section" id="guru-absen"><h4>ðŸ—“ï¸ Jurnal & Absensi Mengajar</h4><p id="info-absen-guru">Mengecek jadwal...</p><button id="btn-mulai-ajar" onclick="mulaiAjar()" disabled>Mulai Mengajar</button><div id="container-jurnal-kelas" style="margin-top: 1rem;"></div></div><div class="dashboard-section" id="guru-tugas"><h4>ðŸ“¤ Manajemen Tugas</h4><div class="form-container"><h5>Buat Tugas Baru</h5><select id="tugas-kelas">${data.kelas.map(k => `<option value="${k.id}">${k.nama}</option>`).join("")}</select><input type="text" id="tugas-judul" placeholder="Judul Tugas"><textarea id="tugas-deskripsi" placeholder="Deskripsi tugas..."></textarea><input type="date" id="tugas-deadline"><label>Upload File (Simulasi):</label><input type="file" id="tugas-file"><button onclick="buatTugas()">Kirim Tugas</button></div><div id="submission-container"></div></div><div class="dashboard-section"><h4>ðŸ“š Unggah Materi</h4><select id="materi-kelas">${data.kelas.map(k => `<option value="${k.id}">${k.nama}</option>`).join("")}</select><input type="text" id="materi-judul" placeholder="Judul Materi"><textarea id="materi-deskripsi" placeholder="Deskripsi..."></textarea><label>Upload File (Simulasi):</label><input type="file" id="materi-file"><button onclick="unggahMateri()">Unggah</button></div>`;
-}
-
-function renderSiswaDashboard() {
-    const locked = absensiHariIniSelesai ? "" : "locked-feature";
-    const warning = absensiHariIniSelesai ? "" : '<p style="color: var(--danger-color); font-weight: 600;">ðŸ”’ Lakukan absensi untuk membuka fitur lain.</p>';
-    return `<div class="dashboard-section" id="siswa-absen"><h4>âœ… Absensi Siswa</h4><button id="btn-absen-masuk-siswa" onclick="absen('masuk')">ðŸ“ Masuk</button><button onclick="absen('izin')">ðŸ“ Izin</button><button onclick="absen('sakit')">ðŸ¤’ Sakit (Wajib Foto)</button></div><div class="dashboard-section"><h4>ðŸ—“ï¸ Jadwal & Catatan PR</h4><div id="jadwal-siswa-container">Memuat jadwal...</div></div><div id="fitur-siswa-wrapper" class="${locked}">${warning}<div class="dashboard-section"><h4>ðŸ“¢ Pengumuman</h4><div id="pengumuman-container"></div></div><div class="dashboard-section"><h4>ðŸ“š Materi Pembelajaran</h4><div id="materi-container"></div></div><div class="dashboard-section"><h4>ðŸ“š Tugas Sekolah <span id="notif-tugas" class="notification-badge">0</span></h4><div id="daftar-tugas-container"></div></div></div>`;
-}
-
-function renderSiswaFeatures() {
-    cekDanHapusCatatanLama();
-    renderJadwalSiswa();
-    renderPengumumanSiswa();
-    renderMateriSiswa();
-    renderDaftarTugas();
-}
-
-function cekDanHapusCatatanLama() {
-    const mingguSekarang = getNomorMinggu(new Date());
-    data.catatanPR = data.catatanPR.filter(catatan => !(catatan.id_siswa === currentUser.id && catatan.mingguDibuat < mingguSekarang));
-}
-
-function renderJadwalSiswa() {
-    const container = document.getElementById('jadwal-siswa-container');
-    const jadwalKelas = data.jadwalPelajaran[currentUser.id_kelas] || [];
-    if (jadwalKelas.length === 0) { container.innerHTML = '<p>Jadwal pelajaran belum diatur oleh admin.</p>'; return; }
-    const hariSekolah = [1, 2, 3, 4, 5];
-    const namaHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
-    let html = '<div class="jadwal-grid">';
-    hariSekolah.forEach(hari => {
-        html += `<div class="jadwal-hari"><h5>${namaHari[hari]}</h5>`;
-        const sesiUntukHariIni = jadwalKelas.filter(s => s.hari === hari);
-        if (sesiUntukHariIni.length > 0) {
-            sesiUntukHariIni.forEach(sesi => {
-                const catatanTersimpan = data.catatanPR.find(c => c.id_siswa === currentUser.id && c.id_jadwal === sesi.id);
-                html += `<div class="jadwal-sesi"><div class="sesi-info"><strong>${sesi.mataPelajaran}</strong><span>${sesi.jamMulai} - ${sesi.jamSelesai}</span></div><textarea class="catatan-pr" id="catatan-${sesi.id}" placeholder="Ketik catatan PR..." onblur="simpanCatatan(${sesi.id})">${catatanTersimpan ? catatanTersimpan.catatan : ''}</textarea></div>`;
-            });
-        } else { html += '<p class="sesi-kosong">Tidak ada jadwal</p>'; }
-        html += `</div>`;
-    });
-    html += `</div>`;
-    container.innerHTML = html;
-}
-
-function simpanCatatan(id_jadwal) {
-    const textarea = document.getElementById(`catatan-${id_jadwal}`);
-    const catatanTeks = textarea.value.trim();
-    data.catatanPR = data.catatanPR.filter(c => !(c.id_siswa === currentUser.id && c.id_jadwal === id_jadwal));
-    if (catatanTeks) { data.catatanPR.push({ id_siswa: currentUser.id, id_jadwal, catatan: catatanTeks, mingguDibuat: getNomorMinggu(new Date()) }); }
-    textarea.style.borderColor = 'var(--success-color)';
-    setTimeout(() => { textarea.style.borderColor = 'var(--border-color)'; }, 1500);
-}
-
-// FUNGSI ABSENSI SISWA
-function cekAbsensiSiswaHariIni() {
-    const today = new Date().toLocaleDateString("id-ID");
-    const sudahAbsen = data.absensi.some(a => a.id_siswa === currentUser.id && a.tanggal === today);
-    absensiHariIniSelesai = sudahAbsen;
-}
-
-function absen(status) {
-    const today = new Date().toLocaleDateString("id-ID");
-    const sudahAbsen = data.absensi.some(a => a.id_siswa === currentUser.id && a.tanggal === today);
-    
-    if (sudahAbsen) {
-        return alert("Anda sudah melakukan absensi hari ini!");
-    }
-
-    if (status === 'sakit') {
-        const fileInput = document.createElement('input');
-        fileInput.type = 'file';
-        fileInput.accept = 'image/*';
-        fileInput.onchange = (e) => {
-            if (e.target.files[0]) {
-                prosesAbsensi(status, e.target.files[0].name);
-            } else {
-                alert("Foto bukti wajib diupload untuk status sakit!");
-            }
-        };
-        fileInput.click();
-    } else if (status === 'masuk') {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lokasi = data.kelas.find(k => k.id === currentUser.id_kelas).lokasi;
-                    const jarak = hitungJarak(position.coords.latitude, position.coords.longitude, lokasi.latitude, lokasi.longitude);
-                    
-                    if (jarak <= 50) {
-                        prosesAbsensi(status);
-                    } else {
-                        alert(`Anda terlalu jauh dari lokasi kelas (${jarak.toFixed(0)}m). Maksimal 50m.`);
-                    }
-                },
-                () => {
-                    alert("Tidak dapat mengakses lokasi. Absensi masuk memerlukan GPS.");
-                }
-            );
-        } else {
-            alert("Browser tidak mendukung geolokasi.");
-        }
-    } else {
-        prosesAbsensi(status);
-    }
-}
-
-function prosesAbsensi(status, fotoNama = null) {
-    const today = new Date().toLocaleDateString("id-ID");
-    data.absensi.push({
-        id: Date.now(),
-        id_siswa: currentUser.id,
-        nama_siswa: currentUser.nama,
-        id_kelas: currentUser.id_kelas,
-        status: status,
-        tanggal: today,
-        waktu: new Date().toLocaleTimeString("id-ID"),
-        foto: fotoNama
-    });
-    
-    absensiHariIniSelesai = true;
-    alert(`Absensi ${status} berhasil dicatat!`);
-    showDashboard();
-}
-
-function hitungJarak(lat1, lon1, lat2, lon2) {
-    const R = 6371000;
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-              Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
-}
-
-// ========== FITUR JURNAL MENGAJAR ==========
-
-function cekJadwalMengajar() {
-    const infoText = document.getElementById("info-absen-guru");
-    const btnMulai = document.getElementById("btn-mulai-ajar");
-    
-    const now = new Date();
-    const hariIni = now.getDay();
-    const jamSekarang = now.getHours();
-    
-    const jadwalHariIni = currentUser.jadwal.filter(j => j.hari === hariIni);
-    
-    if (jadwalHariIni.length === 0) {
-        infoText.textContent = "Tidak ada jadwal mengajar hari ini.";
-        return;
-    }
-    
-    const jadwalAktif = jadwalHariIni.find(j => j.jam === jamSekarang);
-    
-    if (jadwalAktif) {
-        // Cek apakah sudah ada jurnal aktif
-        const jurnalAktif = data.jurnal.find(j => 
-            j.id_guru === currentUser.id && 
-            j.id_kelas === jadwalAktif.id_kelas && 
-            j.status === 'aktif' &&
-            j.tanggal === new Date().toLocaleDateString("id-ID")
-        );
-        
-        if (jurnalAktif) {
-            infoText.innerHTML = `<strong style="color: var(--success-color);">âœ… Sedang Mengajar:</strong> ${jadwalAktif.nama_kelas} (Jam ${jadwalAktif.jam}:00)`;
-            btnMulai.disabled = true;
-            btnMulai.textContent = "Mengajar Berlangsung";
-            activeJurnalId = jurnalAktif.id;
-            renderJurnalAktif();
-        } else {
-            infoText.innerHTML = `<strong>Jadwal Aktif:</strong> ${jadwalAktif.nama_kelas} (Jam ${jadwalAktif.jam}:00)`;
-            btnMulai.disabled = false;
-            btnMulai.setAttribute('data-kelas-id', jadwalAktif.id_kelas);
-            btnMulai.setAttribute('data-jam-mulai', `${jadwalAktif.jam}:00`);
-            btnMulai.setAttribute('data-jam-selesai', `${jadwalAktif.jam + 1}:30`);
-        }
-    } else {
-        infoText.innerHTML = `<strong>Jadwal Hari Ini:</strong><br>`;
-        jadwalHariIni.forEach(j => {
-            infoText.innerHTML += `${j.nama_kelas} - Jam ${j.jam}:00<br>`;
-        });
-    }
-}
-
-function mulaiAjar() {
-    const kelasId = parseInt(document.getElementById("btn-mulai-ajar").getAttribute('data-kelas-id'));
     const jamMulai = document.getElementById("btn-mulai-ajar").getAttribute('data-jam-mulai');
     const jamSelesai = document.getElementById("btn-mulai-ajar").getAttribute('data-jam-selesai');
     const kelas = data.kelas.find(k => k.id === kelasId);
@@ -985,7 +597,7 @@ function buatTugas() {
         deskripsi,
         deadline: new Date(deadline).toLocaleDateString("id-ID"),
         file: file ? file.name : "Tidak ada file",
-        submissions: []
+        submissions: [] 
     };
     
     data.tugas.push(tugas);
