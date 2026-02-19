@@ -9,6 +9,8 @@ function toggleMenu() {
 // Smooth Scroll to Section
 function scrollToSection(id) {
     const element = document.getElementById(id);
+    if (!element) return;
+    
     const offset = 80;
     const elementPosition = element.getBoundingClientRect().top;
     const offsetPosition = elementPosition + window.pageYOffset - offset;
@@ -73,61 +75,32 @@ function showProgramDetail(program) {
                 'Linux Professional Institute'
             ]
         },
-        'AK': {
-            title: 'Akuntansi & Keuangan',
-            icon: '📊',
-            description: 'Program keahlian yang mempelajari pencatatan, pengelolaan, dan pelaporan keuangan perusahaan.',
+        'TSM': {
+            title: 'Teknik Sepeda Motor',
+            icon: '🏍️',
+            description: 'Program keahlian yang mempelajari perawatan, perbaikan, dan modifikasi sepeda motor dengan teknologi terkini.',
             skills: [
-                'Akuntansi Dasar hingga Lanjutan',
-                'Perpajakan',
-                'Aplikasi MYOB & Accurate',
-                'Microsoft Excel Advanced',
-                'Analisis Laporan Keuangan',
-                'Administrasi Perkantoran',
-                'Perbankan',
-                'Kewirausahaan'
+                'Engine Sepeda Motor',
+                'Sistem Kelistrikan Motor',
+                'Sistem Bahan Bakar Injeksi',
+                'Tune Up & Balancing',
+                'Transmisi Manual & Otomatis',
+                'Sistem Rem & Suspensi',
+                'Diagnosa Motor Injeksi',
+                'Custom & Modifikasi Motor'
             ],
             career: [
-                'Staff Accounting',
-                'Kasir',
-                'Admin Keuangan',
-                'Tax Staff',
-                'Auditor Junior',
-                'Teller Bank'
+                'Mekanik Sepeda Motor',
+                'Teknisi AHASS',
+                'Service Advisor',
+                'Spare Part Specialist',
+                'Quality Control Motor',
+                'Wirausaha Bengkel Motor'
             ],
             certification: [
-                'Sertifikat Komputer Akuntansi',
-                'Sertifikat Perpajakan Brevet A & B',
-                'Microsoft Office Specialist'
-            ]
-        },
-        'MM': {
-            title: 'Multimedia',
-            icon: '🎨',
-            description: 'Program keahlian yang mengembangkan kreativitas dalam desain grafis, video, animasi, dan konten digital.',
-            skills: [
-                'Desain Grafis (Photoshop, Illustrator)',
-                'Video Editing (Premiere, After Effects)',
-                'Animasi 2D & 3D (Blender)',
-                'Web Design',
-                'Fotografi & Videografi',
-                'Motion Graphics',
-                'UI/UX Design',
-                'Digital Marketing'
-            ],
-            career: [
-                'Graphic Designer',
-                'Video Editor',
-                'Content Creator',
-                'Animator',
-                'Fotografer/Videografer',
-                'Social Media Specialist',
-                'UI/UX Designer'
-            ],
-            certification: [
-                'Adobe Certified Professional',
-                'Sertifikat Desain Grafis',
-                'Sertifikat Multimedia'
+                'Sertifikat Kompetensi Mekanik Motor',
+                'Sertifikat AHASS',
+                'Sertifikat K3 (Keselamatan Kerja)'
             ]
         },
         'TKR': {
@@ -156,6 +129,90 @@ function showProgramDetail(program) {
                 'Sertifikat Kompetensi Mekanik',
                 'Sertifikat K3 (Keselamatan Kerja)',
                 'Sertifikat ATPM'
+            ]
+        },
+        'APHP': {
+            title: 'Agribisnis Pengolahan Pangan Hasil Pertanian',
+            icon: '🍞',
+            description: 'Program keahlian yang mempelajari pengolahan hasil pertanian menjadi produk pangan bernilai ekonomis tinggi.',
+            skills: [
+                'Teknologi Pengolahan Pangan',
+                'Pengawetan & Penyimpanan',
+                'Quality Control Produk Pangan',
+                'Food Safety & Hygiene',
+                'Packaging & Labeling',
+                'Marketing Produk Pangan',
+                'Analisis Mutu Pangan',
+                'Kewirausahaan Pangan'
+            ],
+            career: [
+                'Supervisor Produksi Pangan',
+                'Quality Control',
+                'Food Safety Officer',
+                'Wirausaha Produk Olahan',
+                'R&D Food Industry',
+                'Packaging Designer'
+            ],
+            certification: [
+                'Sertifikat Pengolahan Pangan',
+                'Sertifikat HACCP',
+                'Sertifikat Halal'
+            ]
+        },
+        'ATU': {
+            title: 'Agribisnis Ternak Unggas',
+            icon: '🐔',
+            description: 'Program keahlian yang mengelola peternakan unggas modern dengan teknologi dan manajemen terkini.',
+            skills: [
+                'Budidaya Ayam Pedaging',
+                'Budidaya Ayam Petelur',
+                'Kesehatan & Vaksinasi Ternak',
+                'Pakan & Nutrisi Unggas',
+                'Manajemen Kandang Modern',
+                'Biosecurity & Sanitasi',
+                'Pengolahan Produk Unggas',
+                'Agribisnis Peternakan'
+            ],
+            career: [
+                'Manager Peternakan Unggas',
+                'Supervisor Kandang',
+                'Technical Service',
+                'Quality Control Produk Unggas',
+                'Wirausaha Peternakan',
+                'Konsultan Peternakan'
+            ],
+            certification: [
+                'Sertifikat Budidaya Unggas',
+                'Sertifikat Kesehatan Ternak',
+                'Sertifikat Biosecurity'
+            ]
+        },
+        'ATPH': {
+            title: 'Agribisnis Tanaman Pangan & Hortikultura',
+            icon: '🌾',
+            description: 'Program keahlian budidaya tanaman pangan dan hortikultura dengan teknik modern dan berkelanjutan.',
+            skills: [
+                'Budidaya Tanaman Padi',
+                'Budidaya Hortikultura',
+                'Hidroponik & Vertikultur',
+                'Pertanian Organik',
+                'Integrated Pest Management',
+                'Pasca Panen & Penyimpanan',
+                'Agribisnis & Marketing',
+                'Smart Farming Technology'
+            ],
+            career: [
+                'Supervisor Pertanian',
+                'Farm Manager',
+                'Konsultan Pertanian',
+                'Quality Control Produk Pertanian',
+                'Wirausaha Agribisnis',
+                'Extension Officer'
+            ],
+            certification: [
+                'Sertifikat Budidaya Tanaman',
+                'Sertifikat Pertanian Organik',
+                'Sertifikat Good Agricultural Practices'
             ]
         }
     };
@@ -224,7 +281,7 @@ function showProgramDetail(program) {
             </div>
             
             <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--light); text-align: center;">
-                <a onclick="scrollToSection('contact'); this.closest('div[style*=fixed]').remove();" class="btn btn-primary" style="padding: 1rem 2rem;">Daftar Sekarang</a>
+                <a href="#contact" onclick="this.closest('div[style*=fixed]').remove();" class="btn btn-primary" style="padding: 1rem 2rem;">Daftar Sekarang</a>
             </div>
         </div>
     `;
@@ -413,50 +470,4 @@ function showPPDB() {
                 </ul>
             </div>
 
-            <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 2rem; text-align: center;">
-                <h3 style="margin-bottom: 1rem; color: white;">💰 Biaya Pendaftaran</h3>
-                <div style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem;">GRATIS</div>
-                <p style="opacity: 0.9;">Tidak dipungut biaya pendaftaran</p>
-            </div>
-
-            <div style="text-align: center;">
-                <button onclick="scrollToSection('contact'); this.closest('div[style*=fixed]').remove();" class="btn btn-primary" style="margin-bottom: 1rem; width: 100%;">Daftar Sekarang</button>
-                <button onclick="this.closest('div[style*=fixed]').remove()" class="btn btn-outline" style="width: 100%;">Tutup</button>
-            </div>
-        </div>
-    `;
-
-    document.body.appendChild(modal);
-    modal.onclick = function(e) {
-        if (e.target === modal) {
-            modal.remove();
-        }
-    };
-}
-
-// News Modal
-function showNews() {
-    const news = [
-        {
-            title: 'SMKN 1 Gondang Raih Juara 1 LKS Tingkat Provinsi',
-            date: '15 November 2024',
-            category: 'Prestasi',
-            content: 'Tim siswa TKJ SMKN 1 Gondang berhasil meraih juara 1 dalam Lomba Kompetensi Siswa (LKS) bidang Network Support tingkat Provinsi Jawa Timur.'
-        },
-        {
-            title: 'Kerjasama dengan 10 Perusahaan untuk Program Prakerin',
-            date: '10 November 2024',
-            category: 'Kemitraan',
-            content: 'SMKN 1 Gondang menjalin kerjasama dengan 10 perusahaan terkemuka untuk program Praktek Kerja Industri (Prakerin) siswa kelas XI.'
-        },
-        {
-            title: 'Workshop Digital Marketing untuk Siswa Multimedia',
-            date: '5 November 2024',
-            category: 'Kegiatan',
-            content: 'Jurusan Multimedia mengadakan workshop Digital Marketing dengan menghadirkan praktisi profesional dari industri kreatif.'
-        },
-        {
-            title: 'Upgrade Fasilitas Lab Komputer dengan 50 Unit PC Baru',
-            date: '1 November 2024',
-            category: 'Fasilitas',
-            content: 'Sekolah melakukan upgrade fasilitas lab komputer dengan menambah
+            <div style="background: lin
