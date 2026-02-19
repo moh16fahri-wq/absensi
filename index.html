@@ -16,12 +16,12 @@
                 <span>SMKN 1 Gondang</span>
             </div>
             <ul class="nav-menu" id="navMenu">
-                <li><a onclick="scrollToSection('home')">Beranda</a></li>
-                <li><a onclick="scrollToSection('about')">Tentang</a></li>
-                <li><a onclick="scrollToSection('programs')">Jurusan</a></li>
-                <li><a onclick="scrollToSection('facilities')">Fasilitas</a></li>
-                <li><a onclick="scrollToSection('gallery')">Galeri</a></li>
-                <li><a onclick="scrollToSection('contact')">Kontak</a></li>
+                <li><a href="#home" onclick="scrollToSection('home')">Beranda</a></li>
+                <li><a href="#about" onclick="scrollToSection('about')">Tentang</a></li>
+                <li><a href="#programs" onclick="scrollToSection('programs')">Jurusan</a></li>
+                <li><a href="#facilities" onclick="scrollToSection('facilities')">Fasilitas</a></li>
+                <li><a href="#gallery" onclick="scrollToSection('gallery')">Galeri</a></li>
+                <li><a href="#contact" onclick="scrollToSection('contact')">Kontak</a></li>
             </ul>
             <div class="menu-toggle" onclick="toggleMenu()">
                 <span></span>
@@ -38,8 +38,8 @@
                 <h1>SMKN 1 Gondang Nganjuk</h1>
                 <p>Sekolah Menengah Kejuruan Unggulan di Kabupaten Nganjuk. Mencetak Generasi Terampil, Kreatif, dan Siap Kerja!</p>
                 <div class="hero-buttons">
-                    <a onclick="scrollToSection('programs')" class="btn btn-primary">Lihat Jurusan</a>
-                    <a onclick="scrollToSection('contact')" class="btn btn-outline">Hubungi Kami</a>
+                    <a href="#programs" class="btn btn-primary">Lihat Jurusan</a>
+                    <a href="#contact" class="btn btn-outline">Hubungi Kami</a>
                 </div>
             </div>
             <div class="hero-image">
@@ -79,7 +79,7 @@
                             <span class="stat-label">Guru & Staff</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-number">4</span>
+                            <span class="stat-number">6</span>
                             <span class="stat-label">Jurusan</span>
                         </div>
                     </div>
@@ -106,33 +106,20 @@
                         <li>Cyber Security</li>
                         <li>Cloud Computing</li>
                     </ul>
-                    <a onclick="showProgramDetail('TKJ')" class="btn btn-primary" style="width: 100%; text-align: center;">Selengkapnya</a>
+                    <a href="javascript:void(0)" onclick="showProgramDetail('TKJ')" class="btn btn-primary" style="width: 100%; text-align: center;">Selengkapnya</a>
                 </div>
 
                 <div class="program-card">
-                    <div class="program-icon">📊</div>
-                    <h3>Akuntansi & Keuangan</h3>
-                    <p>Menguasai pencatatan keuangan, perpajakan, dan aplikasi akuntansi modern.</p>
+                    <div class="program-icon">🏍️</div>
+                    <h3>Teknik Sepeda Motor</h3>
+                    <p>Menguasai perawatan, perbaikan, dan modifikasi sepeda motor modern.</p>
                     <ul class="program-features">
-                        <li>Akuntansi Perusahaan</li>
-                        <li>Perpajakan</li>
-                        <li>Aplikasi Akuntansi</li>
-                        <li>Analisis Laporan Keuangan</li>
+                        <li>Engine Motor</li>
+                        <li>Sistem Kelistrikan Motor</li>
+                        <li>Tune Up & Balancing</li>
+                        <li>Diagnosa Injeksi</li>
                     </ul>
-                    <a onclick="showProgramDetail('AK')" class="btn btn-primary" style="width: 100%; text-align: center;">Selengkapnya</a>
-                </div>
-
-                <div class="program-card">
-                    <div class="program-icon">🎨</div>
-                    <h3>Multimedia</h3>
-                    <p>Kreativitas dalam desain grafis, video editing, dan produksi konten digital.</p>
-                    <ul class="program-features">
-                        <li>Desain Grafis</li>
-                        <li>Video Production</li>
-                        <li>Animasi 2D/3D</li>
-                        <li>Web Design</li>
-                    </ul>
-                    <a onclick="showProgramDetail('MM')" class="btn btn-primary" style="width: 100%; text-align: center;">Selengkapnya</a>
+                    <a href="javascript:void(0)" onclick="showProgramDetail('TSM')" class="btn btn-primary" style="width: 100%; text-align: center;">Selengkapnya</a>
                 </div>
 
                 <div class="program-card">
@@ -145,7 +132,46 @@
                         <li>Chasis & Pemindah Tenaga</li>
                         <li>AC & Tune Up</li>
                     </ul>
-                    <a onclick="showProgramDetail('TKR')" class="btn btn-primary" style="width: 100%; text-align: center;">Selengkapnya</a>
+                    <a href="javascript:void(0)" onclick="showProgramDetail('TKR')" class="btn btn-primary" style="width: 100%; text-align: center;">Selengkapnya</a>
+                </div>
+
+                <div class="program-card">
+                    <div class="program-icon">🍞</div>
+                    <h3>Agribisnis Pengolahan Pangan Hasil Pertanian</h3>
+                    <p>Mengolah hasil pertanian menjadi produk pangan bernilai ekonomis tinggi.</p>
+                    <ul class="program-features">
+                        <li>Teknologi Pengolahan Pangan</li>
+                        <li>Quality Control</li>
+                        <li>Packaging & Marketing</li>
+                        <li>Food Safety</li>
+                    </ul>
+                    <a href="javascript:void(0)" onclick="showProgramDetail('APHP')" class="btn btn-primary" style="width: 100%; text-align: center;">Selengkapnya</a>
+                </div>
+
+                <div class="program-card">
+                    <div class="program-icon">🐔</div>
+                    <h3>Agribisnis Ternak Unggas</h3>
+                    <p>Mengelola peternakan unggas modern dengan teknologi terkini.</p>
+                    <ul class="program-features">
+                        <li>Budidaya Unggas</li>
+                        <li>Kesehatan Ternak</li>
+                        <li>Pakan & Nutrisi</li>
+                        <li>Manajemen Kandang</li>
+                    </ul>
+                    <a href="javascript:void(0)" onclick="showProgramDetail('ATU')" class="btn btn-primary" style="width: 100%; text-align: center;">Selengkapnya</a>
+                </div>
+
+                <div class="program-card">
+                    <div class="program-icon">🌾</div>
+                    <h3>Agribisnis Tanaman Pangan & Hortikultura</h3>
+                    <p>Budidaya tanaman pangan dan hortikultura dengan teknik modern dan berkelanjutan.</p>
+                    <ul class="program-features">
+                        <li>Budidaya Tanaman</li>
+                        <li>Hidroponik & Organik</li>
+                        <li>Pest Management</li>
+                        <li>Agribisnis Modern</li>
+                    </ul>
+                    <a href="javascript:void(0)" onclick="showProgramDetail('ATPH')" class="btn btn-primary" style="width: 100%; text-align: center;">Selengkapnya</a>
                 </div>
             </div>
         </div>
@@ -343,18 +369,20 @@
 
                 <div class="footer-section">
                     <h3>Link Cepat</h3>
-                    <a onclick="scrollToSection('about')">Tentang Kami</a>
-                    <a onclick="scrollToSection('programs')">Program Keahlian</a>
-                    <a onclick="scrollToSection('facilities')">Fasilitas</a>
-                    <a onclick="scrollToSection('gallery')">Galeri</a>
+                    <a href="#about">Tentang Kami</a>
+                    <a href="#programs">Program Keahlian</a>
+                    <a href="#facilities">Fasilitas</a>
+                    <a href="#gallery">Galeri</a>
                 </div>
 
                 <div class="footer-section">
                     <h3>Program Keahlian</h3>
-                    <a href="#">Teknik Komputer & Jaringan</a>
-                    <a href="#">Akuntansi & Keuangan</a>
-                    <a href="#">Multimedia</a>
-                    <a href="#">Teknik Kendaraan Ringan</a>
+                    <a href="javascript:void(0)">Teknik Komputer & Jaringan</a>
+                    <a href="javascript:void(0)">Teknik Sepeda Motor</a>
+                    <a href="javascript:void(0)">Teknik Kendaraan Ringan</a>
+                    <a href="javascript:void(0)">Agribisnis Pengolahan Pangan</a>
+                    <a href="javascript:void(0)">Agribisnis Ternak Unggas</a>
+                    <a href="javascript:void(0)">Agribisnis Tanaman Pangan</a>
                 </div>
 
                 <div class="footer-section">
@@ -377,4 +405,4 @@
 
     <script src="script.js"></script>
 </body>
-</html>
+        </html>
