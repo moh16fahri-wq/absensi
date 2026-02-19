@@ -3,73 +3,378 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jurusan – SMKN 1 Gondang</title>
+    <title>SMKN 1 Gondang Nganjuk - Sekolah Menengah Kejuruan Unggulan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-icon">🏫</div>
+                <span>SMKN 1 Gondang</span>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a onclick="scrollToSection('home')">Beranda</a></li>
+                <li><a onclick="scrollToSection('about')">Tentang</a></li>
+                <li><a onclick="scrollToSection('programs')">Jurusan</a></li>
+                <li><a onclick="scrollToSection('facilities')">Fasilitas</a></li>
+                <li><a onclick="scrollToSection('gallery')">Galeri</a></li>
+                <li><a onclick="scrollToSection('contact')">Kontak</a></li>
+            </ul>
+            <div class="menu-toggle" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
 
-<!-- NAVBAR -->
-<nav>
-  <div class="container nav-inner">
-    <div class="brand">
-      <img src="img/logo.png" alt="Logo">
-      <div class="title neon-text">SMKN 1 GONDANG</div>
-    </div>
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>SMKN 1 Gondang Nganjuk</h1>
+                <p>Sekolah Menengah Kejuruan Unggulan di Kabupaten Nganjuk. Mencetak Generasi Terampil, Kreatif, dan Siap Kerja!</p>
+                <div class="hero-buttons">
+                    <a onclick="scrollToSection('programs')" class="btn btn-primary">Lihat Jurusan</a>
+                    <a onclick="scrollToSection('contact')" class="btn btn-outline">Hubungi Kami</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="data:image/svg+xml,<svg width='400' height='400' xmlns='http://www.w3.org/2000/svg'><rect width='400' height='400' fill='%23ffffff' opacity='0.1' rx='20'/><text x='200' y='220' font-size='120' text-anchor='middle' fill='white'>🎓</text></svg>" alt="Education">
+            </div>
+        </div>
+    </section>
 
-    <button class="hamburger">☰</button>
+    <!-- About Section -->
+    <section id="about">
+        <div class="container">
+            <div class="section-title">
+                <h2>Tentang SMKN 1 Gondang</h2>
+                <p>Mengenal Lebih Dekat Sekolah Kami</p>
+            </div>
+            <div class="about-content">
+                <div class="about-image">
+                    <img src="data:image/svg+xml,<svg width='500' height='400' xmlns='http://www.w3.org/2000/svg'><rect width='500' height='400' fill='%230f766e' opacity='0.1'/><text x='250' y='220' font-size='100' text-anchor='middle' fill='%230f766e'>🏫</text></svg>" alt="School Building">
+                </div>
+                <div class="about-text">
+                    <h3>Visi & Misi</h3>
+                    <p><strong>Visi:</strong> Menjadi SMK unggulan yang menghasilkan lulusan berkompeten, berkarakter, dan berdaya saing global.</p>
+                    <p><strong>Misi:</strong></p>
+                    <ul style="color: #64748b; margin-left: 20px; margin-bottom: 2rem;">
+                        <li>Menyelenggarakan pendidikan kejuruan berkualitas</li>
+                        <li>Mengembangkan keterampilan siswa sesuai kebutuhan industri</li>
+                        <li>Membentuk karakter siswa yang berakhlak mulia</li>
+                        <li>Membangun kemitraan dengan dunia usaha dan industri</li>
+                    </ul>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <span class="stat-number">1000+</span>
+                            <span class="stat-label">Siswa Aktif</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">50+</span>
+                            <span class="stat-label">Guru & Staff</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">4</span>
+                            <span class="stat-label">Jurusan</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <div class="nav-links">
-      <a href="index.html">Beranda</a>
-      <a href="jurusan.html" class="active">Jurusan</a>
-      <a href="guru.html">Guru</a>
-      <a href="kontak.html">Kontak</a>
-    </div>
-  </div>
-</nav>
+    <!-- Programs Section -->
+    <section id="programs" style="background: var(--light);">
+        <div class="container">
+            <div class="section-title">
+                <h2>Program Keahlian</h2>
+                <p>Pilih Jurusan Sesuai Minat dan Bakatmu</p>
+            </div>
+            <div class="programs-grid">
+                <div class="program-card">
+                    <div class="program-icon">💻</div>
+                    <h3>Teknik Komputer & Jaringan</h3>
+                    <p>Mempelajari instalasi, konfigurasi, dan pemeliharaan sistem komputer dan jaringan.</p>
+                    <ul class="program-features">
+                        <li>Jaringan Komputer</li>
+                        <li>System Administration</li>
+                        <li>Cyber Security</li>
+                        <li>Cloud Computing</li>
+                    </ul>
+                    <a onclick="showProgramDetail('TKJ')" class="btn btn-primary" style="width: 100%; text-align: center;">Selengkapnya</a>
+                </div>
 
-<!-- HERO -->
-<section class="jurusan-hero">
-  <div class="hero-card">
-    <h2 class="neon-text">Program Keahlian</h2>
-    <div class="line"></div>
-    <p>Temukan pilihan jurusan terbaik untuk masa depanmu.</p>
-  </div>
-</section>
+                <div class="program-card">
+                    <div class="program-icon">📊</div>
+                    <h3>Akuntansi & Keuangan</h3>
+                    <p>Menguasai pencatatan keuangan, perpajakan, dan aplikasi akuntansi modern.</p>
+                    <ul class="program-features">
+                        <li>Akuntansi Perusahaan</li>
+                        <li>Perpajakan</li>
+                        <li>Aplikasi Akuntansi</li>
+                        <li>Analisis Laporan Keuangan</li>
+                    </ul>
+                    <a onclick="showProgramDetail('AK')" class="btn btn-primary" style="width: 100%; text-align: center;">Selengkapnya</a>
+                </div>
 
-<!-- DAFTAR JURUSAN -->
-<section class="jurusan-section container fade-in-up">
-  <h2 class="center neon-text" style="margin-bottom:25px">Daftar Jurusan</h2>
+                <div class="program-card">
+                    <div class="program-icon">🎨</div>
+                    <h3>Multimedia</h3>
+                    <p>Kreativitas dalam desain grafis, video editing, dan produksi konten digital.</p>
+                    <ul class="program-features">
+                        <li>Desain Grafis</li>
+                        <li>Video Production</li>
+                        <li>Animasi 2D/3D</li>
+                        <li>Web Design</li>
+                    </ul>
+                    <a onclick="showProgramDetail('MM')" class="btn btn-primary" style="width: 100%; text-align: center;">Selengkapnya</a>
+                </div>
 
-  <div class="jurusan-grid">
+                <div class="program-card">
+                    <div class="program-icon">🚗</div>
+                    <h3>Teknik Kendaraan Ringan</h3>
+                    <p>Ahli dalam perawatan, perbaikan, dan modifikasi kendaraan bermotor roda empat.</p>
+                    <ul class="program-features">
+                        <li>Mesin Kendaraan</li>
+                        <li>Sistem Kelistrikan</li>
+                        <li>Chasis & Pemindah Tenaga</li>
+                        <li>AC & Tune Up</li>
+                    </ul>
+                    <a onclick="showProgramDetail('TKR')" class="btn btn-primary" style="width: 100%; text-align: center;">Selengkapnya</a>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <div class="jurusan-card">
-      <h3>🛠️ Teknik Kendaraan Ringan (TKR)</h3>
-      <p>Fokus pada perawatan, servis dan perbaikan kendaraan berbasis otomotif.</p>
-    </div>
+    <!-- Facilities Section -->
+    <section id="facilities">
+        <div class="container">
+            <div class="section-title">
+                <h2>Fasilitas Sekolah</h2>
+                <p>Sarana dan Prasarana Lengkap untuk Mendukung Pembelajaran</p>
+            </div>
+            <div class="facilities-grid">
+                <div class="facility-card">
+                    <div class="facility-icon">🖥️</div>
+                    <h3>Lab Komputer</h3>
+                    <p>5 Lab dengan 150+ unit komputer modern</p>
+                </div>
+                <div class="facility-card">
+                    <div class="facility-icon">🔧</div>
+                    <h3>Workshop</h3>
+                    <p>Workshop lengkap untuk praktek otomotif</p>
+                </div>
+                <div class="facility-card">
+                    <div class="facility-icon">📚</div>
+                    <h3>Perpustakaan</h3>
+                    <p>10.000+ koleksi buku dan digital library</p>
+                </div>
+                <div class="facility-card">
+                    <div class="facility-icon">🏃</div>
+                    <h3>Lapangan Olahraga</h3>
+                    <p>Lapangan basket, voli, dan futsal</p>
+                </div>
+                <div class="facility-card">
+                    <div class="facility-icon">🍽️</div>
+                    <h3>Kantin</h3>
+                    <p>Kantin sehat dan nyaman</p>
+                </div>
+                <div class="facility-card">
+                    <div class="facility-icon">🕌</div>
+                    <h3>Musholla</h3>
+                    <p>Tempat ibadah yang representatif</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <div class="jurusan-card">
-      <h3>💻 Rekayasa Perangkat Lunak (RPL)</h3>
-      <p>Mempelajari coding, pembuatan aplikasi, website, database, dan software modern.</p>
-    </div>
+    <!-- Gallery Section -->
+    <section id="gallery" style="background: var(--light);">
+        <div class="container">
+            <div class="section-title">
+                <h2>Galeri Kegiatan</h2>
+                <p>Dokumentasi Kegiatan dan Prestasi Siswa</p>
+            </div>
+            <div class="gallery-grid">
+                <div class="gallery-item"></div>
+                <div class="gallery-item"></div>
+                <div class="gallery-item"></div>
+                <div class="gallery-item"></div>
+                <div class="gallery-item"></div>
+                <div class="gallery-item"></div>
+            </div>
+        </div>
+    </section>
 
-    <div class="jurusan-card">
-      <h3>⚙️ Teknik Pemesinan (TP)</h3>
-      <p>Belajar mengoperasikan mesin industri dan teknik manufaktur.</p>
-    </div>
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <div class="container">
+            <div class="section-title">
+                <h2>Testimoni Alumni</h2>
+                <p>Cerita Sukses Lulusan SMKN 1 Gondang</p>
+            </div>
+            <div class="testimonial-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">👨‍💼</div>
+                        <div class="testimonial-info">
+                            <h4>Budi Santoso</h4>
+                            <p>Alumni TKJ 2020</p>
+                        </div>
+                    </div>
+                    <p class="testimonial-text">"Setelah lulus dari SMKN 1 Gondang jurusan TKJ, saya langsung diterima bekerja di perusahaan IT ternama. Ilmu yang didapat sangat aplikatif dan sesuai kebutuhan industri."</p>
+                    <div class="rating">⭐⭐⭐⭐⭐</div>
+                </div>
 
-    <div class="jurusan-card">
-      <h3>🏗️ Teknik Konstruksi</h3>
-      <p>Mempelajari struktur bangunan, konstruksi modern dan gambar teknik.</p>
-    </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">👩‍💼</div>
+                        <div class="testimonial-info">
+                            <h4>Siti Aminah</h4>
+                            <p>Alumni Akuntansi 2019</p>
+                        </div>
+                    </div>
+                    <p class="testimonial-text">"Guru-guru di SMKN 1 Gondang sangat kompeten dan peduli dengan masa depan siswa. Berkat bimbingan mereka, saya sekarang menjadi staff accounting di perusahaan multinasional."</p>
+                    <div class="rating">⭐⭐⭐⭐⭐</div>
+                </div>
 
-  </div>
-</section>
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">👨‍🎨</div>
+                        <div class="testimonial-info">
+                            <h4>Ahmad Rizki</h4>
+                            <p>Alumni Multimedia 2021</p>
+                        </div>
+                    </div>
+                    <p class="testimonial-text">"Fasilitas lab multimedia yang lengkap membuat saya bisa mengembangkan skill desain dan video editing. Sekarang saya bekerja sebagai freelance designer dengan penghasilan yang baik."</p>
+                    <div class="rating">⭐⭐⭐⭐⭐</div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<footer class="site-footer">
-  © 2025 SMKN 1 Gondang Nganjuk – All Rights Reserved
-</footer>
+    <!-- Contact Section -->
+    <section id="contact">
+        <div class="container">
+            <div class="section-title">
+                <h2>Hubungi Kami</h2>
+                <p>Untuk informasi lebih lanjut, silakan hubungi kami</p>
+            </div>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">📍</div>
+                        <div class="contact-details">
+                            <h4>Alamat</h4>
+                            <p>Jl. Pendidikan No. 123<br>Gondang, Nganjuk<br>Jawa Timur 64183</p>
+                        </div>
+                    </div>
 
-<script src="script.js"></script>
+                    <div class="contact-item">
+                        <div class="contact-icon">📞</div>
+                        <div class="contact-details">
+                            <h4>Telepon</h4>
+                            <p>(0358) 123456<br>0812-3456-7890</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">✉️</div>
+                        <div class="contact-details">
+                            <h4>Email</h4>
+                            <p>info@smkn1gondang.sch.id<br>ppdb@smkn1gondang.sch.id</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">🕐</div>
+                        <div class="contact-details">
+                            <h4>Jam Operasional</h4>
+                            <p>Senin - Jumat: 07.00 - 16.00 WIB<br>Sabtu: 07.00 - 12.00 WIB</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-form">
+                    <h3 style="margin-bottom: 1.5rem;">Kirim Pesan</h3>
+                    <form onsubmit="handleSubmit(event)">
+                        <div class="form-group">
+                            <label>Nama Lengkap</label>
+                            <input type="text" id="name" placeholder="Masukkan nama lengkap" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="email" placeholder="email@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Nomor Telepon</label>
+                            <input type="tel" id="phone" placeholder="08xx-xxxx-xxxx" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Pesan</label>
+                            <textarea id="message" placeholder="Tulis pesan Anda..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Kirim Pesan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>SMKN 1 Gondang Nganjuk</h3>
+                    <p>Sekolah Menengah Kejuruan unggulan yang menghasilkan lulusan berkompeten dan siap kerja.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">📘</a>
+                        <a href="#" class="social-link">📸</a>
+                        <a href="#" class="social-link">🐦</a>
+                        <a href="#" class="social-link">▶️</a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Link Cepat</h3>
+                    <a onclick="scrollToSection('about')">Tentang Kami</a>
+                    <a onclick="scrollToSection('programs')">Program Keahlian</a>
+                    <a onclick="scrollToSection('facilities')">Fasilitas</a>
+                    <a onclick="scrollToSection('gallery')">Galeri</a>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Program Keahlian</h3>
+                    <a href="#">Teknik Komputer & Jaringan</a>
+                    <a href="#">Akuntansi & Keuangan</a>
+                    <a href="#">Multimedia</a>
+                    <a href="#">Teknik Kendaraan Ringan</a>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Informasi</h3>
+                    <a href="#">PPDB</a>
+                    <a href="#">Berita & Artikel</a>
+                    <a href="#">Prestasi</a>
+                    <a href="#">Kerjasama Industri</a>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2024 SMKN 1 Gondang Nganjuk. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <div class="scroll-top" id="scrollTop" onclick="scrollToTop()">⬆️</div>
+
+    <script src="script.js"></script>
 </body>
-        </html>
+</html>
