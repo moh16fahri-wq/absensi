@@ -24,17 +24,25 @@ let testimoniData = JSON.parse(localStorage.getItem('testimoniSMKN1')) || [
 
 // Toggle Mobile Menu
 function toggleMenu() {
+    console.log('Toggle menu clicked'); // Debug
     const navMenu = document.getElementById('navMenu');
     const menuToggle = document.querySelector('.menu-toggle');
     
-    navMenu.classList.toggle('active');
-    menuToggle.classList.toggle('active');
+    if (navMenu && menuToggle) {
+        navMenu.classList.toggle('active');
+        menuToggle.classList.toggle('active');
+        console.log('Menu toggled'); // Debug
+    }
 }
 
 // Smooth Scroll to Section
 function scrollToSection(id) {
+    console.log('Scroll to:', id); // Debug
     const element = document.getElementById(id);
-    if (!element) return;
+    if (!element) {
+        console.log('Element not found:', id); // Debug
+        return;
+    }
     
     const offset = 80;
     const elementPosition = element.getBoundingClientRect().top;
@@ -48,8 +56,8 @@ function scrollToSection(id) {
     // Close mobile menu if open
     const navMenu = document.getElementById('navMenu');
     const menuToggle = document.querySelector('.menu-toggle');
-    navMenu.classList.remove('active');
-    menuToggle.classList.remove('active');
+    if (navMenu) navMenu.classList.remove('active');
+    if (menuToggle) menuToggle.classList.remove('active');
 }
 
 // Scroll to Top
@@ -63,10 +71,12 @@ function scrollToTop() {
 // Show/Hide Scroll to Top Button
 window.addEventListener('scroll', function() {
     const scrollTop = document.getElementById('scrollTop');
-    if (window.pageYOffset > 300) {
-        scrollTop.classList.add('visible');
-    } else {
-        scrollTop.classList.remove('visible');
+    if (scrollTop) {
+        if (window.pageYOffset > 300) {
+            scrollTop.classList.add('visible');
+        } else {
+            scrollTop.classList.remove('visible');
+        }
     }
 });
 
@@ -95,6 +105,8 @@ function renderTestimoni() {
 
 // Program Detail Modal
 function showProgramDetail(program) {
+    console.log('Show program detail:', program); // Debug
+    
     const programDetails = {
         'TKJ': {
             title: 'Teknik Komputer & Jaringan',
@@ -268,9 +280,15 @@ function showProgramDetail(program) {
     };
 
     const detail = programDetails[program];
-    if (!detail) return;
+    if (!detail) {
+        console.log('Program not found:', program); // Debug
+        return;
+    }
+    
+    console.log('Creating modal...'); // Debug
     
     const modal = document.createElement('div');
+    modal.className = 'program-modal';
     modal.style.cssText = `
         position: fixed;
         top: 0;
@@ -293,7 +311,7 @@ function showProgramDetail(program) {
                     <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #0f766e, #0891b2); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 2rem;">${detail.icon}</div>
                     <h2 style="font-size: 1.75rem; color: #0f172a; margin: 0;">${detail.title}</h2>
                 </div>
-                <button onclick="this.closest('div').remove()" style="background: transparent; border: none; font-size: 2rem; cursor: pointer; color: #64748b;">×</button>
+                <button class="modal-close-btn" style="background: transparent; border: none; font-size: 2rem; cursor: pointer; color: #64748b; padding: 0.5rem;">×</button>
             </div>
             
             <p style="color: #64748b; font-size: 1.125rem; margin-bottom: 2rem; line-height: 1.8;">${detail.description}</p>
@@ -332,14 +350,40 @@ function showProgramDetail(program) {
             </div>
             
             <div style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid #f8fafc; text-align: center;">
-                <button onclick="window.location.href='#contact'; this.closest('div').remove();" class="btn btn-primary" style="padding: 1rem 2rem;">Daftar Sekarang</button>
+                <button class="modal-contact-btn btn btn-primary" style="padding: 1rem 2rem;">Daftar Sekarang</button>
             </div>
         </div>
     `;
 
     document.body.appendChild(modal);
+    console.log('Modal appended'); // Debug
+    
+    // Close button event
+    const closeBtn = modal.querySelector('.modal-close-btn');
+    if (closeBtn) {
+        closeBtn.onclick = function() {
+            console.log('Close button clicked'); // Debug
+            modal.remove();
+        };
+    }
+    
+    // Contact button event
+    const contactBtn = modal.querySelector('.modal-contact-btn');
+    if (contactBtn) {
+        contactBtn.onclick = function() {
+            console.log('Contact button clicked'); // Debug
+            modal.remove();
+            const contactSection = document.getElementById('contact');
+            if (contactSection) {
+                contactSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        };
+    }
+    
+    // Click outside to close
     modal.onclick = function(e) {
         if (e.target === modal) {
+            console.log('Clicked outside modal'); // Debug
             modal.remove();
         }
     };
@@ -381,10 +425,10 @@ function showGalleryModal(index) {
             </div>
             <h2 style="color: white; font-size: 2rem; margin-bottom: 1rem;">${image.title}</h2>
             <p style="color: rgba(255,255,255,0.8); font-size: 1.125rem; margin-bottom: 2rem;">${image.desc}</p>
-            <div style="display: flex; gap: 1rem; justify-content: center;">
-                <button onclick="showGalleryModal(${index > 0 ? index - 1 : galleryImages.length - 1})" class="btn btn-outline" style="width: auto;">← Previous</button>
-                <button onclick="this.closest('div[style*=fixed]').remove()" class="btn btn-primary" style="width: auto;">Tutup</button>
-                <button onclick="showGalleryModal(${index < galleryImages.length - 1 ? index + 1 : 0})" class="btn btn-outline" style="width: auto;">Next →</button>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <button class="btn btn-outline gallery-prev" style="width: auto;">← Previous</button>
+                <button class="btn btn-primary gallery-close" style="width: auto;">Tutup</button>
+                <button class="btn btn-outline gallery-next" style="width: auto;">Next →</button>
             </div>
         </div>
     `;
@@ -396,6 +440,32 @@ function showGalleryModal(index) {
     }
 
     document.body.appendChild(modal);
+    
+    // Event listeners
+    const prevBtn = modal.querySelector('.gallery-prev');
+    const nextBtn = modal.querySelector('.gallery-next');
+    const closeBtn = modal.querySelector('.gallery-close');
+    
+    if (prevBtn) {
+        prevBtn.onclick = function() {
+            modal.remove();
+            showGalleryModal(index > 0 ? index - 1 : galleryImages.length - 1);
+        };
+    }
+    
+    if (nextBtn) {
+        nextBtn.onclick = function() {
+            modal.remove();
+            showGalleryModal(index < galleryImages.length - 1 ? index + 1 : 0);
+        };
+    }
+    
+    if (closeBtn) {
+        closeBtn.onclick = function() {
+            modal.remove();
+        };
+    }
+    
     modal.onclick = function(e) {
         if (e.target === modal) {
             modal.remove();
@@ -406,6 +476,7 @@ function showGalleryModal(index) {
 // Handle Form Submit
 function handleSubmit(event) {
     event.preventDefault();
+    console.log('Form submitted'); // Debug
     
     const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
@@ -422,6 +493,7 @@ function handleSubmit(event) {
 
     testimoniData.push(newTestimoni);
     localStorage.setItem('testimoniSMKN1', JSON.stringify(testimoniData));
+    console.log('Testimoni saved'); // Debug
 
     // Update tampilan testimoni
     renderTestimoni();
@@ -443,63 +515,16 @@ function handleSubmit(event) {
     `;
 
     successModal.innerHTML = `
-        <div style="background: white; border-radius: 20px; padding: 3rem; text-align: center; max-width: 500px;">
+        <div style="background: white; border-radius: 20px; padding: 3rem; text-align: center; max-width: 500px; margin: 20px;">
             <div style="font-size: 4rem; margin-bottom: 1rem;">✅</div>
             <h2 style="color: #0f766e; margin-bottom: 1rem;">Pesan Terkirim!</h2>
-            <p style="color: #64748b; margin-bottom: 2rem;">Terima kasih ${name}, pesan Anda telah kami terima dan ditambahkan ke testimoni. Tim kami akan segera menghubungi Anda.</p>
-            <button onclick="this.closest('div').remove()" class="btn btn-primary">Tutup</button>
+            <p style="color: #64748b; margin-bottom: 2rem;">Terima kasih <strong>${name}</strong>, pesan Anda telah kami terima dan ditambahkan ke testimoni. Tim kami akan segera menghubungi Anda.</p>
+            <button class="btn btn-primary success-close-btn">Tutup</button>
         </div>
     `;
 
     document.body.appendChild(successModal);
-
-    // Reset form
-    event.target.reset();
-
-    // Scroll ke testimoni untuk lihat pesan
-    setTimeout(() => {
-        const testimoniSection = document.querySelector('.testimonials');
-        if (testimoniSection) {
-            testimoniSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    }, 2000);
-}
-
-// PPDB Modal
-function showPPDB() {
-    const modal = document.createElement('div');
-    modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.8);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        padding: 20px;
-        animation: fadeIn 0.3s ease;
-    `;
-
-    modal.innerHTML = `
-        <div style="background: white; border-radius: 20px; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 2rem;">
-            <div style="text-align: center; margin-bottom: 2rem;">
-                <div style="font-size: 4rem; margin-bottom: 1rem;">📋</div>
-                <h2 style="font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem;">Penerimaan Peserta Didik Baru</h2>
-                <p style="color: #64748b;">Tahun Ajaran 2025/2026</p>
-            </div>
-
-            <div style="background: var(--light); padding: 1.5rem; border-radius: 15px; margin-bottom: 2rem;">
-                <h3 style="color: var(--primary); margin-bottom: 1rem;">📅 Jadwal Pendaftaran</h3>
-                <div style="display: grid; gap: 1rem;">
-                    <div style="display: flex; justify-content: space-between; padding: 0.75rem; background: white; border-radius: 10px;">
-                        <strong>Pendaftaran Online:</strong>
-                        <span>1 Mei - 30 Juni 2025</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; padding: 0.75rem; background: white; border-radius: 10px;">
-                        <strong>Tes Masuk:</strong>
-                        <span>1 - 5 Juli 2025</span>
-                    </div>
-              
+    
+    const successCloseBtn = successModal.querySelector('.success-close-btn');
+    if (successCloseBtn) {
+       
